@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Smart Segregation | Unified Single-Page System</title>
+    <!-- Google Fonts & Font Awesome -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #ecfdf5;
+            overflow-x: hidden;
+        }
+
+        /* ========= SIDEBAR (fixed) ========= */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 280px;
+            height: 100vh;
+            background: linear-gradient(180deg, #0a2f2a 0%, #051f1c 100%);
+            color: white;
+            z-index: 100;
+            transition: transform 0.3s ease;
+            box-shadow: 2px 0 20px rgba(0,0,0,0.1);
+            overflow-y: auto;
+        }
+
+        .logo-area {
+            padding: 2rem 1.5rem 1.5rem;
+            border-bottom: 1px solid rgba(70, 170, 120, 0.3);
+            margin-bottom: 2rem;
+            cursor: pointer;
+        }
+        .logo-area h2 {
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 700;
+        }
+        .logo-area h2 i {
+            color: #2ecc71;
+            font-size: 1.8rem;
+        }
+        .logo-area p {
+            font-size: 0.7rem;
+            color: #9bc5b4;
+            margin-top: 0.5rem;
+        }
+
+        .nav-menu {
+            padding: 0 1rem;
+        }
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 0.85rem 1rem;
+            margin: 0.4rem 0;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: #d0e6dd;
+            font-weight: 500;
+        }
+        .nav-item:hover, .nav-item.active {
+            background: rgba(46, 204, 113, 0.2);
+            color: white;
+        }
+        .nav-item.active {
+            background: linear-gradient(90deg, #2ecc71, #27ae60);
+            box-shadow: 0 2px 8px rgba(46,204,113,0.3);
+        }
+        .nav-item i {
+            width: 24px;
+            font-size: 1.2rem;
+        }
+
+        /* Main content area */
+        .main-content {
+            margin-left: 280px;
+            padding: 1.5rem 2rem;
+            min-height: 100vh;
+            transition: margin-left 0.3s;
+        }
+
+        /* Top bar */
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            background: white;
+            padding: 1rem 1.8rem;
+            border-radius: 24px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        .page-title h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #1a3a33;
+        }
+        .page-title p {
+            color: #6c8b81;
+            font-size: 0.85rem;
+            margin-top: 0.2rem;
+        }
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        .notification-badge {
+            position: relative;
+            cursor: pointer;
+        }
+        .notification-badge i {
+            font-size: 1.4rem;
+            color: #2c6e55;
+        }
+        .badge {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: #e74c3c;
+            color: white;
+            border-radius: 50%;
+            padding: 2px 6px;
+            font-size: 0.7rem;
+            font-weight: bold;
+        }
+        .user-avatar {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: #f0f7f4;
+            padding: 0.5rem 1rem;
+            border-radius: 30px;
+            cursor: pointer;
+        }
+        .avatar-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .avatar-icon i {
+            font-size: 1.3rem;
+            color: white;
+        }
+        .user-name {
+            font-weight: 600;
+            color: #1e4a3b;
+        }
+
+        /* Dynamic page container */
+        .page-container {
+            animation: fadeIn 0.3s ease;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px);}
+            to { opacity: 1; transform: translateY(0);}
+        }
+
+        /* Shared card styles */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        .stat-card {
+            background: white;
+            padding: 1.3rem 1.5rem;
+            border-radius: 24px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+            border-left: 4px solid #2ecc71;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .stat-card:hover { transform: translateY(-3px);}
+        .stat-card h3 { font-size: 0.85rem; color: #6c8b81; margin-bottom: 8px; }
+        .stat-value { font-size: 2rem; font-weight: 800; color: #1a3a33; }
+
+        .dashboard-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 1.8rem;
+            margin-bottom: 1.8rem;
+        }
+        .card {
+            background: white;
+            border-radius: 24px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+        }
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            border-bottom: 2px solid #ecfdf5;
+            padding-bottom: 0.5rem;
+        }
+        .bin-list, .alert-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .bin-item, .alert-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.8rem;
+            border-bottom: 1px solid #eef3ef;
+        }
+        .progress-bar-bg {
+            width: 100px;
+            height: 6px;
+            background: #e2e8f0;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .progress-fill { height: 100%; border-radius: 10px; transition: width 0.3s; }
+        .btn-sm {
+            background: #2ecc71;
+            border: none;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            color: white;
+            cursor: pointer;
+        }
+        canvas { max-height: 260px; width: 100%; cursor: pointer; }
+        .upload-area {
+            border: 2px dashed #2ecc71;
+            border-radius: 16px;
+            padding: 1.5rem;
+            text-align: center;
+            margin-top: 1rem;
+            cursor: pointer;
+        }
+        @media (max-width: 768px) {
+            .sidebar { transform: translateX(-100%); }
+            .main-content { margin-left: 0; }
+        }
+        .btn-primary {
+            background: #2ecc71;
+            color: white;
+            border: none;
+            padding: 0.6rem 1rem;
+            border-radius: 40px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .flex-between { display: flex; justify-content: space-between; align-items: center; }
+    </style>
+</head>
+<body>
+
+<div class="sidebar" id="sidebar">
+    <div class="logo-area" id="logoHome">
+        <h2><i class="fas fa-leaf"></i> SmartSeg</h2>
+        <p>AI-Powered Waste Management</p>
+    </div>
+    <div class="nav-menu">
+        <div class="nav-item" data-page="dashboard">
+            <i class="fas fa-tachometer-alt"></i>
+            <span>Dashboard</span>
+        </div>
+        <div class="nav-item" data-page="waste-monitoring">
+            <i class="fas fa-video"></i>
+            <span>Waste Monitoring</span>
+        </div>
+        <div class="nav-item" data-page="bin-management">
+            <i class="fas fa-trash-alt"></i>
+            <span>Bin Management</span>
+        </div>
+        <div class="nav-item" data-page="ai-training">
+            <i class="fas fa-robot"></i>
+            <span>AI Training</span>
+        </div>
+        <div class="nav-item" data-page="reports">
+            <i class="fas fa-chart-line"></i>
+            <span>Reports & Alerts</span>
+        </div>
+    </div>
+</div>
+
+<div class="main-content" id="mainContent">
+    <div class="top-bar">
+        <div class="page-title" id="pageTitle">
+            <h1>Smart Segregation Dashboard</h1>
+            <p>Real-time waste analytics & AI monitoring</p>
+        </div>
+        <div class="user-info">
+            <div class="notification-badge" id="globalNotificationBtn">
+                <i class="fas fa-bell"></i>
+                <span class="badge" id="globalBadge">4</span>
+            </div>
+            <div class="user-avatar" id="userAvatarBtn">
+                <div class="avatar-icon"><i class="fas fa-user-check"></i></div>
+                <div class="user-name">System Operator</div>
+            </div>
+        </div>
+    </div>
+    <div id="dynamicPage" class="page-container">
+        <!-- content injected via JS -->
+        <div class="stats-grid">Loading...</div>
+    </div>
+</div>
+
+<script>
+    // ---------- GLOBAL DATA ----------
+    let activePage = "dashboard";
+    let wasteChart, trendChart, performanceChart;
+    
+    // Bin data (shared)
+    const bins = [
+        { id: "B-101", name: "Organic Waste", location: "Zone A - Kitchen", fill: 78, color: "organic", type: "organic", weight: 342 },
+        { id: "B-102", name: "Recyclables", location: "Zone B - Paper/Plastic", fill: 92, color: "recyclable", type: "recyclable", weight: 512 },
+        { id: "B-103", name: "Hazardous Waste", location: "Zone C - Lab", fill: 45, color: "hazardous", type: "hazardous", weight: 78 },
+        { id: "B-104", name: "Residual Waste", location: "Zone D - Landfill", fill: 63, color: "residual", type: "residual", weight: 289 },
+        { id: "B-105", name: "E-Waste", location: "Zone E - Electronics", fill: 31, color: "ewaste", type: "ewaste", weight: 156 }
+    ];
+    
+    let alerts = [
+        { title: "Recyclables bin at 92% - Schedule pickup", time: "2 hours ago", type: "warning", icon: "fas fa-truck" },
+        { title: "AI model update available (v2.4.1)", time: "5 hours ago", type: "info", icon: "fas fa-download" },
+        { title: "Sensor #B3 offline - Maintenance required", time: "Yesterday", type: "danger", icon: "fas fa-wifi" },
+        { title: "Peak waste hour detected: 2-4 PM", time: "Yesterday", type: "info", icon: "fas fa-chart-line" }
+    ];
+    
+    let detectionHistory = [];
+    let isDetecting = true;
+    let detectionInterval;
+    let currentDetection = null;
+    let cameraCtx = null;
+    let cameraAnimation = null;
+    
+    // Helper: update sidebar active style
+    function setActiveNav(pageId) {
+        document.querySelectorAll('.nav-item').forEach(item => {
+            if(item.getAttribute('data-page') === pageId) item.classList.add('active');
+            else item.classList.remove('active');
+        });
+    }
+    
+    // Render Dashboard Page
+    function renderDashboard() {
+        const statsHtml = `
+            <div class="stats-grid">
+                <div class="stat-card"><h3>Total Waste Processed</h3><div class="stat-value">12,876 <span style="font-size:1rem;">kg</span></div><div class="trend-up">↑ 12% this week</div></div>
+                <div class="stat-card"><h3>Recycling Rate</h3><div class="stat-value">68.4%</div><div class="trend-up">↑ 5.2% vs last month</div></div>
+                <div class="stat-card"><h3>Active Bins</h3><div class="stat-value">24 / 28</div><div class="trend-down">${bins.filter(b=>b.fill>=85).length} bins near capacity</div></div>
+                <div class="stat-card"><h3>CO₂ Saved</h3><div class="stat-value">3.2 tons</div><div>🌳 140 trees</div></div>
+            </div>
+            <div class="dashboard-row">
+                <div class="card"><div class="card-header"><h3><i class="fas fa-chart-pie"></i> Waste Composition</h3><span class="btn-sm" onclick="navigateToPage('reports')">Details →</span></div><canvas id="wasteCompositionCanvas" height="220"></canvas><div class="flex-between" style="margin-top:0.8rem;"><span>AI Accuracy: <span id="aiAccuracy">94.7</span>%</span><i class="fas fa-microchip"></i></div></div>
+                <div class="card"><div class="card-header"><h3><i class="fas fa-chart-line"></i> Weekly Segregation Trend</h3><span class="btn-sm" onclick="navigateToPage('reports')">Trend →</span></div><canvas id="weeklyTrendCanvas" height="220"></canvas></div>
+            </div>
+            <div class="dashboard-row">
+                <div class="card"><div class="card-header"><h3><i class="fas fa-dumpster"></i> Bin Status</h3><span class="btn-sm" onclick="navigateToPage('bin-management')">Manage</span></div><div id="binListDashboard" class="bin-list"></div></div>
+                <div class="card"><div class="card-header"><h3><i class="fas fa-exclamation-triangle"></i> Recent Alerts</h3><span class="btn-sm" onclick="navigateToPage('reports')">All Alerts</span></div><div id="alertListDashboard" class="alert-list"></div><div class="ai-insight" style="margin-top:1rem;background:#eefaf3;padding:0.8rem;border-radius:20px;"><i class="fas fa-brain"></i> <strong>AI Insight:</strong> <span id="insightText">Recyclable contamination decreased 8%.</span></div></div>
+            </div>
+        `;
+        document.getElementById('dynamicPage').innerHTML = statsHtml;
+        document.getElementById('pageTitle').innerHTML = '<h1>Smart Segregation Dashboard</h1><p>Real-time waste analytics & AI monitoring</p>';
+        
+        // render bin list
+        const binContainer = document.getElementById('binListDashboard');
+        if(binContainer) {
+            binContainer.innerHTML = bins.map(bin => `
+                <div class="bin-item" onclick="navigateToPage('bin-management')">
+                    <div><strong>${bin.name}</strong><br/><small>${bin.location}</small></div>
+                    <div>${bin.fill}%<div class="progress-bar-bg"><div class="progress-fill" style="width:${bin.fill}%; background:${bin.fill>85?'#e74c3c':'#2ecc71'}"></div></div></div>
+                </div>
+            `).join('');
+        }
+        // alerts
+        const alertDiv = document.getElementById('alertListDashboard');
+        if(alertDiv) {
+            alertDiv.innerHTML = alerts.slice(0,3).map(a => `<div class="bin-item"><i class="${a.icon}"></i><span>${a.title}</span><small>${a.time}</small></div>`).join('');
+        }
+        // charts
+        if(window.wasteCompositionChart) window.wasteCompositionChart.destroy();
+        if(window.weeklyTrendChart) window.weeklyTrendChart.destroy();
+        const pieCtx = document.getElementById('wasteCompositionCanvas')?.getContext('2d');
+        if(pieCtx) {
+            window.wasteCompositionChart = new Chart(pieCtx, {
+                type: 'pie', data: { labels: ['Organic 42%','Recyclable 28%','Hazardous 8%','Residual 15%','E-Waste 7%'], datasets: [{ data: [42,28,8,15,7], backgroundColor: ['#2ecc71','#3498db','#e67e22','#95a5a6','#f1c40f'] }] },
+                options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { position: 'bottom' } } }
+            });
+        }
+        const lineCtx = document.getElementById('weeklyTrendCanvas')?.getContext('2d');
+        if(lineCtx) {
+            window.weeklyTrendChart = new Chart(lineCtx, {
+                type: 'line', data: { labels: ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'], datasets: [{ label:'Organic', data:[420,480,450,520,580,610,550], borderColor:'#2ecc71'},{ label:'Recyclable', data:[310,345,370,390,410,445,430], borderColor:'#3498db'}] },
+                options: { responsive: true }
+            });
+        }
+    }
+    
+    // Waste Monitoring Page (simulated camera)
+    function renderWasteMonitoring() {
+        document.getElementById('dynamicPage').innerHTML = `
+            <div style="display:grid; grid-template-columns:1fr 320px; gap:1.5rem;">
+                <div class="card"><div class="card-header"><h3><i class="fas fa-camera"></i> Live Feed | Conveyor A</h3><span class="live-badge" style="background:#e74c3c; padding:2px 10px; border-radius:20px; font-size:0.7rem;">LIVE</span></div>
+                <canvas id="cameraCanvas" width="700" height="400" style="width:100%; background:#1a1a2e; border-radius:20px;"></canvas>
+                <div style="display:flex; gap:1rem; margin-top:1rem;"><button id="pauseDetectBtn" class="btn-primary"><i class="fas fa-pause"></i> Pause</button><button id="clearHistoryBtn" class="btn-primary" style="background:#6c8b81;">Clear History</button></div></div>
+                <div class="card"><div class="card-header"><h3><i class="fas fa-chart-simple"></i> Current Detection</h3></div>
+                <div><strong>Item:</strong> <span id="currentItem">—</span></div><div><strong>Confidence:</strong> <span id="confidenceValue">0%</span><div class="progress-bar-bg" style="width:100%; margin-top:5px;"><div id="confidenceFill" style="width:0%; height:6px; background:#2ecc71;"></div></div></div>
+                <div><strong>Category:</strong> <span id="wasteCategory">—</span></div><div><strong>Bin:</strong> <span id="recommendedBin">—</span></div><hr style="margin:1rem 0;"><h4>Recent Detections</h4><div id="historyList" style="max-height:280px; overflow-y:auto;"></div></div>
+            </div>
+        `;
+        document.getElementById('pageTitle').innerHTML = '<h1><i class="fas fa-eye"></i> AI Waste Monitoring</h1><p>Real-time object detection & segregation</p>';
+        initCameraSimulation();
+    }
+    
+    function initCameraSimulation() {
+        const canvas = document.getElementById('cameraCanvas');
+        if(!canvas) return;
+        const ctx = canvas.getContext('2d');
+        canvas.width = 700; canvas.height = 400;
+        const wasteTypes = [
+            { name: "Plastic Bottle", category: "recyclable", bin: "Recyclables", icon: "fa-recycle", color: "#3498db" },
+            { name: "Apple Core", category: "organic", bin: "Organic", icon: "fa-apple-alt", color: "#2ecc71" },
+            { name: "Battery", category: "hazardous", bin: "Hazardous", icon: "fa-battery-full", color: "#e67e22" },
+            { name: "Cardboard", category: "recyclable", bin: "Recyclables", icon: "fa-box", color: "#3498db" }
+        ];
+        function drawFeed() {
+            if(!ctx) return;
+            ctx.fillStyle = "#1a2a2a";
+            ctx.fillRect(0,0,canvas.width,canvas.height);
+            ctx.fillStyle = "#4a6b5e";
+            ctx.fillRect(0,canvas.height-60,canvas.width,60);
+            if(currentDetection && isDetecting) {
+                const x = canvas.width/2-40;
+                const y = canvas.height/2-40;
+                ctx.strokeStyle = "#2ecc71";
+                ctx.lineWidth=3;
+                ctx.strokeRect(x,y,80,80);
+                ctx.fillStyle = currentDetection.color;
+                ctx.fillRect(x+10,y+10,60,60);
+                ctx.fillStyle="white";
+                ctx.font="bold 14px Inter";
+                ctx.fillText(currentDetection.name, x+10, y-8);
+            }
+            requestAnimationFrame(drawFeed);
+        }
+        drawFeed();
+        if(detectionInterval) clearInterval(detectionInterval);
+        detectionInterval = setInterval(() => {
+            if(!isDetecting) return;
+            const rand = wasteTypes[Math.floor(Math.random()*wasteTypes.length)];
+            const confidence = 70+Math.random()*28;
+            currentDetection = { ...rand, confidence: Math.round(confidence), timestamp: new Date() };
+            document.getElementById('currentItem').innerHTML = `<i class="fas ${rand.icon}"></i> ${rand.name}`;
+            document.getElementById('confidenceValue').innerHTML = `${Math.round(confidence)}%`;
+            document.getElementById('confidenceFill').style.width = `${confidence}%`;
+            document.getElementById('wasteCategory').innerHTML = rand.category;
+            document.getElementById('recommendedBin').innerHTML = rand.bin;
+            detectionHistory.unshift(currentDetection);
+            if(detectionHistory.length>8) detectionHistory.pop();
+            const historyDiv = document.getElementById('historyList');
+            if(historyDiv) {
+                historyDiv.innerHTML = detectionHistory.map(d => `<div style="padding:8px; border-bottom:1px solid #eee;"><b>${d.name}</b> ${Math.round(d.confidence)}% <small>${new Date(d.timestamp).toLocaleTimeString()}</small></div>`).join('');
+            }
+        }, 2800);
+        document.getElementById('pauseDetectBtn')?.addEventListener('click',()=>{ isDetecting=!isDetecting; document.getElementById('pauseDetectBtn').innerHTML = isDetecting ? '<i class="fas fa-pause"></i> Pause' : '<i class="fas fa-play"></i> Start'; });
+        document.getElementById('clearHistoryBtn')?.addEventListener('click',()=>{ detectionHistory=[]; document.getElementById('historyList').innerHTML='<div style="color:#aaa;">No detections</div>'; });
+    }
+    
+    // Bin Management Page
+    function renderBinManagement() {
+        document.getElementById('dynamicPage').innerHTML = `
+            <div class="card"><div class="card-header"><h3><i class="fas fa-trash-alt"></i> All Bins & Fill Levels</h3></div>
+            <div id="fullBinList" class="bin-list"></div><div style="margin-top:1rem;"><button class="btn-primary" id="refreshBins">Refresh Status</button></div></div>
+        `;
+        document.getElementById('pageTitle').innerHTML = '<h1>Bin Management</h1><p>Monitor capacity & schedule collections</p>';
+        function renderFullBins() {
+            const container = document.getElementById('fullBinList');
+            if(container) container.innerHTML = bins.map(b => `<div class="bin-item"><div><b>${b.name}</b><br/>${b.location}</div><div>${b.fill}% <div class="progress-bar-bg"><div class="progress-fill" style="width:${b.fill}%; background:${b.fill>85?'#e74c3c':'#2ecc71'}"></div></div><button class="btn-sm" onclick="alert('Schedule pickup for ${b.name}')">Notify</button></div></div>`).join('');
+        }
+        renderFullBins();
+        document.getElementById('refreshBins')?.addEventListener('click',()=>{
+            bins.forEach(b=>{ let change = (Math.random()-0.5)*8; b.fill = Math.min(100, Math.max(0, Math.round(b.fill+change))); });
+            renderFullBins();
+        });
+    }
+    
+    // AI Training Page
+    function renderAITraining() {
+        document.getElementById('dynamicPage').innerHTML = `
+            <div class="stats-grid"><div class="stat-card"><h3>Total Images</h3><div class="stat-value">9,797</div></div><div class="stat-card"><h3>Categories</h3><div class="stat-value">5</div></div><div class="stat-card"><h3>Model Accuracy</h3><div class="stat-value" id="trainAcc">94.7%</div></div></div>
+            <div class="dashboard-row"><div class="card"><div class="card-header"><h3>Training Dataset</h3></div><div id="datasetPreview"></div><div class="upload-area" id="uploadMock"><i class="fas fa-cloud-upload-alt"></i><p>Upload images (simulated)</p></div></div>
+            <div class="card"><div class="card-header"><h3>Model Performance</h3></div><canvas id="perfChart" height="160"></canvas><div class="flex-between"><span>Precision:93%</span><span>Recall:92%</span></div><button class="btn-primary" id="trainModelBtn" style="margin-top:1rem;"><i class="fas fa-play"></i> Start Training</button><div id="trainProgress" style="display:none; margin-top:1rem;"><div class="progress-bar-bg" style="width:100%"><div id="trainFill" style="width:0%; height:8px; background:#2ecc71;"></div></div><span id="epochInfo">Epoch 0/50</span></div></div></div>
+        `;
+        document.getElementById('pageTitle').innerHTML = '<h1>AI Model Training</h1><p>Train waste classification models</p>';
+        const ctx = document.getElementById('perfChart')?.getContext('2d');
+        if(ctx) {
+            if(performanceChart) performanceChart.destroy();
+            performanceChart = new Chart(ctx, { type:'line', data:{ labels:['W1','W2','W3','W4','W5','W6'], datasets:[{ label:'Accuracy', data:[88,90,92,93.5,94.2,94.7], borderColor:'#2ecc71' }] } });
+        }
+        document.getElementById('uploadMock')?.addEventListener('click',()=> alert("📸 Simulated upload: 12 new images added to dataset."));
+        let training = false, interval;
+        document.getElementById('trainModelBtn')?.addEventListener('click',()=>{
+            if(training) return;
+            training=true;
+            const btn = document.getElementById('trainModelBtn');
+            btn.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> Training...';
+            document.getElementById('trainProgress').style.display='block';
+            let epoch=0, epochs=50;
+            interval = setInterval(()=>{
+                epoch++;
+                const percent = (epoch/epochs)*100;
+                document.getElementById('trainFill').style.width=`${percent}%`;
+                document.getElementById('epochInfo').innerHTML = `Epoch ${epoch}/${epochs} | Loss: ${(0.4*(1-epoch/epochs)+0.05).toFixed(3)}`;
+                if(epoch>=epochs){
+                    clearInterval(interval);
+                    const newAcc = (92+Math.random()*5).toFixed(1);
+                    document.getElementById('trainAcc').innerHTML = newAcc+'%';
+                    alert(`Training complete! New accuracy: ${newAcc}%`);
+                    btn.innerHTML = '<i class="fas fa-play"></i> Start Training';
+                    training=false;
+                    setTimeout(()=> document.getElementById('trainProgress').style.display='none',1500);
+                }
+            },150);
+        });
+    }
+    
+    // Reports & Alerts Page
+    function renderReports() {
+        document.getElementById('dynamicPage').innerHTML = `
+            <div class="card"><div class="card-header"><h3><i class="fas fa-bell"></i> All Alerts & Notifications</h3></div>
+            <div id="allAlertsList"></div></div>
+            <div class="card" style="margin-top:1.5rem;"><div class="card-header"><h3>Waste Trend Summary</h3></div><canvas id="reportChart" height="200"></canvas></div>
+        `;
+        document.getElementById('pageTitle').innerHTML = '<h1>Reports & Alerts</h1><p>System notifications & analytics</p>';
+        const alertsContainer = document.getElementById('allAlertsList');
+        if(alertsContainer) {
+            alertsContainer.innerHTML = alerts.map(a => `<div class="alert-item" style="padding:1rem; border-left:4px solid ${a.type==='danger'?'#e74c3c':'#f39c12'}; margin-bottom:0.8rem; background:#fff;"><i class="${a.icon}"></i> <strong>${a.title}</strong><br/><small>${a.time}</small></div>`).join('');
+        }
+        const ctxR = document.getElementById('reportChart')?.getContext('2d');
+        if(ctxR) new Chart(ctxR, { type:'bar', data:{ labels:['Organic','Recyclable','Hazardous','Residual'], datasets:[{ label:'kg (weekly)', data:[1250,980,240,560], backgroundColor:'#2ecc71' }] } });
+    }
+    
+    // Master navigation
+    function navigateToPage(pageId) {
+        activePage = pageId;
+        setActiveNav(pageId);
+        if(detectionInterval) clearInterval(detectionInterval);
+        if(pageId === 'dashboard') renderDashboard();
+        else if(pageId === 'waste-monitoring') renderWasteMonitoring();
+        else if(pageId === 'bin-management') renderBinManagement();
+        else if(pageId === 'ai-training') renderAITraining();
+        else if(pageId === 'reports') renderReports();
+        window.scrollTo(0,0);
+    }
+    
+    // Sidebar & UI events
+    document.querySelectorAll('.nav-item').forEach(item => {
+        item.addEventListener('click', (e) => {
+            const page = item.getAttribute('data-page');
+            navigateToPage(page);
+        });
+    });
+    document.getElementById('logoHome')?.addEventListener('click', () => navigateToPage('dashboard'));
+    document.getElementById('globalNotificationBtn')?.addEventListener('click', () => navigateToPage('reports'));
+    document.getElementById('userAvatarBtn')?.addEventListener('click', () => alert("System Operator | Access Level: Admin\nAll modules integrated."));
+    
+    // start with dashboard
+    navigateToPage('dashboard');
+    
+    // realtime badge update simulation
+    setInterval(() => {
+        const badge = document.getElementById('globalBadge');
+        if(badge) badge.textContent = Math.floor(Math.random() * 5) + 1;
+        const insightSpan = document.getElementById('insightText');
+        if(insightSpan && activePage === 'dashboard') insightSpan.textContent = "AI insight: Optimize organic sorting at Zone A.";
+    }, 12000);
+</script>
+</body>
+</html>

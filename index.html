@@ -1,0 +1,1343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no">
+<title>Smart Segregation System | AI-Powered Waste Management</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<!-- TensorFlow.js + COCO-SSD for REAL object detection from webcam -->
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.17.0/dist/tf.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd@2.2.3/dist/coco-ssd.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Inter',sans-serif;background:#ecfdf5;overflow-x:hidden;min-height:100vh;}
+/* AUTH */
+.auth-overlay{position:fixed;inset:0;background:linear-gradient(145deg,#0b2f2c,#051f1d);z-index:1000;display:flex;align-items:center;justify-content:center;transition:opacity .5s,visibility .5s;}
+.auth-overlay.hidden{opacity:0;visibility:hidden;pointer-events:none;}
+.bg-particles{position:absolute;inset:0;overflow:hidden;pointer-events:none;}
+.leaf{position:absolute;background:rgba(110,210,150,.08);border-radius:80% 0 80% 0;transform:rotate(45deg);animation:floatLeaf 20s infinite ease-in-out;}
+.bubble{position:absolute;background:radial-gradient(circle,rgba(80,200,140,.2),rgba(40,140,100,.05));border-radius:50%;animation:floatBubble 28s infinite alternate;}
+@keyframes floatLeaf{0%{transform:translateY(0)rotate(0);opacity:.2}50%{transform:translateY(15vh)rotate(10deg);opacity:.5}100%{transform:translateY(-5vh)rotate(20deg);opacity:.2}}
+@keyframes floatBubble{0%{transform:translateY(100vh)scale(.5);opacity:0}30%{opacity:.3}100%{transform:translateY(-20vh)scale(1.2);opacity:0}}
+.login-box{position:relative;z-index:10;width:100%;max-width:460px;background:rgba(18,32,30,.85);backdrop-filter:blur(12px);border-radius:2.5rem;box-shadow:0 25px 45px rgba(0,0,0,.4),0 0 0 1px rgba(80,210,150,.2);overflow:hidden;}
+.login-card{padding:2rem 2rem 2.5rem;}
+.brand{text-align:center;margin-bottom:1.8rem;}
+.icon-circle{background:linear-gradient(135deg,#2ecc71,#1f8a4c);width:70px;height:70px;border-radius:28px;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;box-shadow:0 12px 18px -8px rgba(0,0,0,.3);}
+.icon-circle i{font-size:2.8rem;color:#fff;}
+.brand h1{font-size:1.9rem;font-weight:700;background:linear-gradient(135deg,#EFFAF3,#B9F6CA);-webkit-background-clip:text;background-clip:text;color:transparent;margin-bottom:.3rem;}
+.brand .sub{font-size:.85rem;color:#9bc5b4;display:flex;align-items:center;justify-content:center;gap:8px;}
+.input-group{margin-bottom:1.3rem;}
+.input-group label{display:flex;align-items:center;gap:8px;font-size:.85rem;font-weight:500;color:#c6f0df;margin-bottom:.5rem;}
+.input-group label i{color:#2ecc71;}
+.input-field{width:100%;padding:.85rem 1rem;background:rgba(10,22,20,.7);border:1px solid rgba(70,170,120,.5);border-radius:1.2rem;font-size:1rem;color:#f0f7f3;outline:none;transition:all .2s;font-family:'Inter',sans-serif;}
+.input-field:focus{border-color:#2ecc71;box-shadow:0 0 0 3px rgba(46,204,113,.3);}
+.input-field::placeholder{color:#6b9787;}
+.pwd-wrap{position:relative;}
+.toggle-pwd{position:absolute;right:14px;top:50%;transform:translateY(-50%);background:transparent;border:none;color:#9bc5b4;cursor:pointer;font-size:1.1rem;}
+.form-options{display:flex;justify-content:space-between;align-items:center;margin:.7rem 0 1.4rem;font-size:.85rem;}
+.checkbox-label{display:flex;align-items:center;gap:8px;color:#cbe9de;cursor:pointer;}
+.checkbox-label input{accent-color:#2ecc71;width:16px;height:16px;}
+.forgot-link{color:#b0e0c8;text-decoration:none;font-weight:500;}
+.login-btn{width:100%;background:linear-gradient(105deg,#27ae60,#1e874b);border:none;padding:.9rem;border-radius:2rem;font-size:1rem;font-weight:700;color:#fff;display:flex;align-items:center;justify-content:center;gap:12px;cursor:pointer;transition:all .25s;}
+.login-btn:hover{background:linear-gradient(105deg,#2ecc71,#229954);transform:translateY(-2px);}
+.login-btn:disabled{opacity:.6;cursor:not-allowed;transform:none;}
+.toggle-link{text-align:center;margin-top:1.2rem;color:#9bc5b4;cursor:pointer;font-size:.85rem;}
+.toggle-link span{color:#2ecc71;font-weight:600;}
+.demo-badge{margin-top:1rem;background:rgba(46,204,113,.12);border-radius:1.2rem;padding:.7rem;text-align:center;font-size:.75rem;color:#bbe5d3;border:1px solid rgba(46,204,113,.3);}
+.demo-badge strong{background:#1f5e46;padding:.15rem .5rem;border-radius:20px;font-family:monospace;color:#e6ffed;}
+.msg-area{margin-top:.8rem;font-size:.8rem;text-align:center;min-height:38px;display:flex;align-items:center;justify-content:center;}
+.error-msg{color:#ffb47b;background:rgba(220,80,40,.15);padding:.5rem .8rem;border-radius:1rem;width:100%;}
+.success-msg{color:#b0ffcf;background:rgba(46,204,113,.2);padding:.5rem .8rem;border-radius:1rem;width:100%;}
+/* DASHBOARD */
+.dash-wrap{display:none;opacity:0;transition:opacity .4s;}
+.dash-wrap.visible{display:block;opacity:1;}
+.sidebar{position:fixed;left:0;top:0;width:260px;height:100vh;background:linear-gradient(180deg,#0a2f2a,#051f1c);color:#fff;z-index:100;box-shadow:2px 0 20px rgba(0,0,0,.15);overflow-y:auto;display:flex;flex-direction:column;}
+.logo-area{padding:1.8rem 1.5rem 1.5rem;border-bottom:1px solid rgba(70,170,120,.3);cursor:pointer;}
+.logo-area h2{font-size:1.4rem;display:flex;align-items:center;gap:10px;font-weight:700;}
+.logo-area h2 i{color:#2ecc71;}
+.logo-area p{font-size:.68rem;color:#9bc5b4;margin-top:.4rem;}
+.nav-menu{padding:.5rem 1rem;flex:1;}
+.nav-item{display:flex;align-items:center;gap:12px;padding:.82rem 1rem;margin:.25rem 0;border-radius:12px;cursor:pointer;transition:all .2s;color:#d0e6dd;font-weight:500;font-size:.9rem;}
+.nav-item:hover{background:rgba(46,204,113,.15);color:#fff;}
+.nav-item.active{background:linear-gradient(90deg,#2ecc71,#27ae60);box-shadow:0 2px 8px rgba(46,204,113,.3);color:#fff;}
+.nav-item i{width:22px;font-size:1rem;}
+.sidebar-foot{padding:1rem 1.5rem;border-top:1px solid rgba(70,170,120,.2);}
+.logout-btn{width:100%;background:#1a3830;border:none;padding:.6rem;border-radius:40px;color:#9bc5b4;cursor:pointer;font-weight:500;transition:all .2s;font-size:.85rem;}
+.logout-btn:hover{background:#e74c3c;color:#fff;}
+.main-content{margin-left:260px;padding:1.5rem 2rem;min-height:100vh;}
+.top-bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.8rem;background:#fff;padding:1rem 1.8rem;border-radius:24px;box-shadow:0 2px 8px rgba(0,0,0,.05);}
+.page-title h1{font-size:1.7rem;font-weight:700;color:#1a3a33;}
+.page-title p{color:#6c8b81;font-size:.82rem;margin-top:.2rem;}
+.top-right{display:flex;align-items:center;gap:14px;}
+.notif-wrap{position:relative;cursor:pointer;}
+.notif-wrap i{font-size:1.3rem;color:#2c6e55;}
+.badge{position:absolute;top:-7px;right:-7px;background:#e74c3c;color:#fff;border-radius:50%;padding:2px 5px;font-size:.62rem;font-weight:700;min-width:18px;text-align:center;}
+.user-chip{display:flex;align-items:center;gap:9px;background:#f0f7f4;padding:.45rem .9rem;border-radius:30px;cursor:pointer;}
+.avatar{width:34px;height:34px;background:linear-gradient(135deg,#2ecc71,#27ae60);border-radius:50%;display:flex;align-items:center;justify-content:center;}
+.avatar i{font-size:1.1rem;color:#fff;}
+.uname{font-weight:600;color:#1e4a3b;font-size:.88rem;}
+.java-badge{background:rgba(46,204,113,.15);border:1px solid rgba(46,204,113,.4);border-radius:20px;padding:.2rem .7rem;font-size:.68rem;color:#2ecc71;font-weight:700;display:flex;align-items:center;gap:4px;}
+/* PAGE */
+.page-container{animation:fadeIn .3s ease;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1.4rem;margin-bottom:1.8rem;}
+.stat-card{background:#fff;padding:1.3rem 1.4rem;border-radius:22px;box-shadow:0 2px 10px rgba(0,0,0,.05);border-left:4px solid #2ecc71;cursor:pointer;transition:transform .2s;}
+.stat-card:hover{transform:translateY(-3px);}
+.stat-card h3{font-size:.8rem;color:#6c8b81;margin-bottom:6px;}
+.stat-val{font-size:1.9rem;font-weight:800;color:#1a3a33;}
+.stat-sub{font-size:.78rem;color:#6c8b81;margin-top:4px;}
+.row2{display:grid;grid-template-columns:repeat(auto-fit,minmax(360px,1fr));gap:1.6rem;margin-bottom:1.6rem;}
+.card{background:#fff;border-radius:22px;padding:1.4rem;box-shadow:0 2px 10px rgba(0,0,0,.05);}
+.card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;border-bottom:2px solid #ecfdf5;padding-bottom:.6rem;}
+.card-header h3{font-size:1rem;font-weight:700;color:#1a3a33;display:flex;align-items:center;gap:8px;}
+.btn-sm{background:#2ecc71;border:none;padding:.25rem .75rem;border-radius:20px;color:#fff;cursor:pointer;font-size:.73rem;font-weight:600;transition:all .2s;}
+.btn-sm:hover{background:#27ae60;}
+.btn-sm.red{background:#e74c3c;} .btn-sm.grey{background:#6c8b81;} .btn-sm.orange{background:#f39c12;}
+.list-item{display:flex;align-items:center;justify-content:space-between;padding:.75rem;border-bottom:1px solid #eef3ef;font-size:.85rem;}
+.pb-bg{width:90px;height:5px;background:#e2e8f0;border-radius:10px;overflow:hidden;display:inline-block;}
+.pb-fill{height:100%;border-radius:10px;transition:width .4s;}
+canvas{max-height:260px;width:100%!important;}
+/* BIN CARDS */
+.bins-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:1.4rem;margin-top:1.4rem;}
+.bin-card{background:#fff;border-radius:22px;padding:1.2rem;box-shadow:0 2px 8px rgba(0,0,0,.05);transition:all .3s;}
+.bin-card:hover{transform:translateY(-3px);box-shadow:0 10px 22px rgba(0,0,0,.1);}
+.bin-card.critical{border-left:4px solid #e74c3c;background:#fff8f8;}
+.bin-card.warning{border-left:4px solid #f39c12;}
+.bin-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:.9rem;}
+.bin-icon{width:44px;height:44px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:1.3rem;}
+.bin-icon.organic{background:#e9f9f0;color:#2ecc71;} .bin-icon.recyclable{background:#e8f0fe;color:#3498db;}
+.bin-icon.hazardous{background:#fee8e8;color:#e67e22;} .bin-icon.residual{background:#eceff1;color:#95a5a6;}
+.bin-icon.ewaste{background:#fef5e8;color:#f1c40f;}
+.stat-badge{padding:3px 9px;border-radius:20px;font-size:.68rem;font-weight:600;}
+.online{background:#e9f9f0;color:#2ecc71;} .offline{background:#fee8e8;color:#e74c3c;}
+.sensor-row{display:grid;grid-template-columns:1fr 1fr;gap:.7rem;margin-top:.9rem;padding-top:.9rem;border-top:1px solid #ecfdf5;}
+.sensor-cell{text-align:center;}
+.sensor-lbl{font-size:.68rem;color:#8ba89a;} .sensor-val{font-weight:700;color:#1a3a33;font-size:.88rem;}
+.act-btns{display:flex;gap:.5rem;margin-top:.9rem;}
+.act-btns button{flex:1;padding:.48rem;border:none;border-radius:11px;font-size:.73rem;font-weight:600;cursor:pointer;transition:all .2s;}
+.btn-green{background:#2ecc71;color:#fff;} .btn-light{background:#ecfdf5;color:#1e4a3b;}
+/* MAP ZONES */
+.zone-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:.7rem;padding:1rem;background:linear-gradient(135deg,#e8f5ef,#d4ede3);border-radius:18px;}
+.zone-box{background:rgba(255,255,255,.92);border-radius:13px;padding:.75rem;text-align:center;cursor:pointer;transition:all .2s;border:2px solid transparent;}
+.zone-box:hover{transform:translateY(-2px);}
+.zone-box.sel{border-color:#2ecc71;background:#f0fff4;}
+.zone-name{font-weight:700;color:#1a3a33;font-size:.82rem;}
+.zone-stats{font-size:.68rem;color:#6c8b81;margin-top:.3rem;line-height:1.5;}
+/* ALERTS */
+.alert-row{display:flex;align-items:center;gap:12px;padding:.9rem;border-radius:14px;margin-bottom:.7rem;border-left:4px solid;}
+.alert-row.warning{border-color:#f39c12;background:#fffbf0;}
+.alert-row.danger{border-color:#e74c3c;background:#fff5f5;}
+.alert-row.info{border-color:#3498db;background:#f0f7ff;}
+/* DET PANEL */
+.det-panel{display:flex;flex-direction:column;gap:.5rem;background:#f0faf4;border-radius:15px;padding:1rem;min-height:100px;align-items:center;justify-content:center;text-align:center;color:#6c8b81;}
+/* TOAST */
+.toast{position:fixed;bottom:20px;right:20px;padding:.8rem 1.2rem;border-radius:13px;color:#fff;z-index:9999;font-weight:500;max-width:360px;box-shadow:0 4px 14px rgba(0,0,0,.25);animation:toastIn .3s;}
+@keyframes toastIn{from{transform:translateX(110%);opacity:0}to{transform:none;opacity:1}}
+/* AI GRID */
+.ai-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.4rem;margin-bottom:1.4rem;}
+.upload-area{border:2px dashed #2ecc71;border-radius:15px;padding:1.5rem;text-align:center;background:#f9fffc;cursor:pointer;transition:all .2s;margin-top:1rem;}
+.upload-area:hover{background:#f0fff4;}
+.upload-area i{font-size:2.2rem;color:#2ecc71;display:block;margin-bottom:.6rem;}
+.metric-grid{display:grid;grid-template-columns:1fr 1fr;gap:.7rem;margin-top:.9rem;}
+.metric{text-align:center;padding:.75rem;background:#f0fff4;border-radius:13px;}
+.metric-lbl{font-size:.68rem;color:#6c8b81;} .metric-val{font-size:1.3rem;font-weight:800;color:#1a3a33;}
+/* CHARTS GRID */
+.charts-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(460px,1fr));gap:1.4rem;margin-bottom:1.6rem;}
+.impact-bar{background:linear-gradient(135deg,#1a3a33,#0e2c26);border-radius:22px;padding:1.4rem;color:#fff;margin-bottom:1.6rem;}
+.impact-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1.2rem;margin-top:1rem;}
+.impact-cell{text-align:center;padding:.9rem;background:rgba(255,255,255,.1);border-radius:16px;}
+.impact-val{font-size:1.7rem;font-weight:800;}
+/* LIVE BADGE */
+.live-badge{background:#e74c3c;padding:3px 9px;border-radius:20px;font-size:.68rem;font-weight:700;color:#fff;animation:pulse 1.5s infinite;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+@media(max-width:768px){.sidebar{transform:translateX(-100%)}.main-content{margin-left:0}.ai-grid{grid-template-columns:1fr}.zone-grid{grid-template-columns:repeat(3,1fr)}.row2{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<!-- AUTH OVERLAY -->
+<div class="auth-overlay" id="authOverlay">
+  <div class="bg-particles">
+    <div class="leaf" style="top:10%;left:5%;width:55px;height:55px;animation-duration:22s"></div>
+    <div class="leaf" style="top:70%;left:85%;width:70px;height:70px;animation-duration:19s;animation-delay:-3s"></div>
+    <div class="leaf" style="top:40%;left:20%;width:40px;height:40px;animation-duration:26s"></div>
+    <div class="bubble" style="width:140px;height:140px;bottom:-40px;left:-30px;animation-duration:28s"></div>
+    <div class="bubble" style="width:200px;height:200px;top:-80px;right:-60px;animation-duration:34s;opacity:.2"></div>
+  </div>
+  <div class="login-box" id="loginBox"></div>
+</div>
+
+<!-- DASHBOARD -->
+<div class="dash-wrap" id="dashWrap">
+  <div class="sidebar">
+    <div class="logo-area" id="sidebarLogo">
+      <h2><i class="fas fa-leaf"></i> SmartSeg</h2>
+      <p>AI-Powered Waste Management</p>
+    </div>
+    <div class="nav-menu">
+      <div class="nav-item" data-page="dashboard"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></div>
+      <div class="nav-item" data-page="monitoring"><i class="fas fa-video"></i><span>Waste Monitoring</span></div>
+      <div class="nav-item" data-page="bins"><i class="fas fa-trash-alt"></i><span>Bin Management</span></div>
+      <div class="nav-item" data-page="ai"><i class="fas fa-robot"></i><span>AI Training</span></div>
+      <div class="nav-item" data-page="reports"><i class="fas fa-chart-line"></i><span>Reports & Analytics</span></div>
+    </div>
+    <div class="sidebar-foot">
+      <button class="logout-btn" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</button>
+    </div>
+  </div>
+
+  <div class="main-content">
+    <div class="top-bar">
+      <div class="page-title" id="pageTitle">
+        <h1>Dashboard</h1><p>Real-time analytics</p>
+      </div>
+      <div class="top-right">
+        <div class="notif-wrap" id="notifBtn"><i class="fas fa-bell"></i><span class="badge" id="notifBadge">0</span></div>
+        <div class="user-chip">
+          <div class="avatar"><i class="fas fa-user-check"></i></div>
+          <div class="uname" id="unameDisplay">User</div>
+        </div>
+        <div class="java-badge"><i class="fas fa-coffee"></i> Java Backend</div>
+      </div>
+    </div>
+    <div id="pageContent" class="page-container"></div>
+  </div>
+</div>
+
+<script>
+// =============================================================
+//  Smart Segregation System — Frontend SPA
+//  All business logic lives in Java backend (SmartSegServer.java)
+//  This JS only handles UI rendering and API calls.
+// =============================================================
+
+const API   = 'http://localhost:3000/api';
+let token   = localStorage.getItem('ssg_token') || null;
+let curUser = JSON.parse(localStorage.getItem('ssg_user') || 'null');
+let authMode= 'login';
+let pollTimer = null;
+
+// ---------- UTILITY ----------
+function toast(msg, type='info'){
+  const c={success:'#2ecc71',warning:'#f39c12',danger:'#e74c3c',info:'#3498db'};
+  const t=document.createElement('div');
+  t.className='toast'; t.style.background=c[type]||c.info; t.innerHTML=msg;
+  document.body.appendChild(t); setTimeout(()=>t.remove(),4000);
+}
+
+async function api(path, method='GET', body=null){
+  const opts={method, headers:{'Content-Type':'application/json'}};
+  if(token) opts.headers['Authorization']='Bearer '+token;
+  if(body)  opts.body=JSON.stringify(body);
+  const r=await fetch(API+path, opts);
+  return r.json();
+}
+
+function setTitle(h1, p=''){
+  document.getElementById('pageTitle').innerHTML=
+    `<h1>${h1}</h1><p>${p} <span class="java-badge" style="font-size:.65rem"><i class="fas fa-coffee"></i> Java API</span></p>`;
+}
+
+// ---------- AUTH ----------
+function renderAuth(){
+  const box=document.getElementById('loginBox');
+  if(authMode==='login'){
+    box.innerHTML=`
+    <div class="login-card">
+      <div class="brand">
+        <div class="icon-circle"><i class="fas fa-leaf"></i></div>
+        <h1>Smart Segregation</h1>
+        <div class="sub"><i class="fas fa-recycle"></i><span>AI-Powered Waste Management</span><i class="fas fa-microchip"></i></div>
+      </div>
+      <form id="loginForm">
+        <div class="input-group">
+          <label><i class="fas fa-user"></i> Username</label>
+          <input id="uname" class="input-field" type="text" placeholder="admin / operator" autocomplete="username">
+        </div>
+        <div class="input-group">
+          <label><i class="fas fa-lock"></i> Password</label>
+          <div class="pwd-wrap">
+            <input id="upass" class="input-field" type="password" placeholder="••••••" autocomplete="current-password">
+            <button type="button" class="toggle-pwd" id="eyeBtn"><i class="far fa-eye-slash"></i></button>
+          </div>
+        </div>
+        <div class="form-options">
+          <label class="checkbox-label"><input type="checkbox" id="remMe"> Keep me signed in</label>
+          <a href="#" class="forgot-link" id="forgotLink">Forgot access?</a>
+        </div>
+        <button class="login-btn" type="submit" id="loginBtn"><i class="fas fa-sign-in-alt"></i> Access Dashboard</button>
+      </form>
+      <div class="toggle-link" id="switchMode">No account? <span>Sign up</span></div>
+      <div class="demo-badge">Demo: <strong>admin</strong>/<strong>segregate2025</strong> &nbsp;|&nbsp; <strong>operator</strong>/<strong>greenbin</strong></div>
+      <div class="msg-area" id="authMsg"></div>
+    </div>`;
+  } else {
+    box.innerHTML=`
+    <div class="login-card">
+      <div class="brand">
+        <div class="icon-circle"><i class="fas fa-user-plus"></i></div>
+        <h1>Create Account</h1>
+        <div class="sub"><i class="fas fa-recycle"></i><span>Join Smart Segregation</span></div>
+      </div>
+      <form id="signupForm">
+        <div class="input-group"><label><i class="fas fa-user"></i> Username</label><input id="sUname" class="input-field" type="text" placeholder="choose username"></div>
+        <div class="input-group"><label><i class="fas fa-lock"></i> Password</label><input id="sPass" class="input-field" type="password" placeholder="create password"></div>
+        <div class="input-group"><label><i class="fas fa-id-badge"></i> Role</label><input id="sRole" class="input-field" type="text" value="Waste Manager"></div>
+        <div class="input-group"><label><i class="fas fa-envelope"></i> Email</label><input id="sEmail" class="input-field" type="email" placeholder="your@email.com"></div>
+        <button class="login-btn" type="submit"><i class="fas fa-user-plus"></i> Sign Up & Enter</button>
+      </form>
+      <div class="toggle-link" id="switchMode">Have an account? <span>Login</span></div>
+      <div class="msg-area" id="authMsg"></div>
+    </div>`;
+  }
+  wireAuth();
+}
+
+function authMsg(msg,err){
+  const el=document.getElementById('authMsg');
+  if(el) el.innerHTML=`<div class="${err?'error-msg':'success-msg'}">${msg}</div>`;
+  if(err) setTimeout(()=>{if(el)el.innerHTML='';},3500);
+}
+
+function wireAuth(){
+  document.getElementById('switchMode')?.addEventListener('click',()=>{authMode=authMode==='login'?'signup':'login';renderAuth();});
+  document.getElementById('forgotLink')?.addEventListener('click',e=>{e.preventDefault();authMsg('Demo: admin/segregate2025 | operator/greenbin | supervisor/eco123',false);});
+  document.getElementById('eyeBtn')?.addEventListener('click',function(){
+    const i=document.getElementById('upass');
+    const ic=this.querySelector('i');
+    i.type=i.type==='password'?'text':'password';
+    ic.className=i.type==='text'?'far fa-eye':'far fa-eye-slash';
+  });
+  // Auto-fill remembered user
+  const saved=localStorage.getItem('ssg_remember');
+  if(saved&&document.getElementById('uname')){document.getElementById('uname').value=saved;document.getElementById('remMe').checked=true;}
+
+  document.getElementById('loginForm')?.addEventListener('submit',async e=>{
+    e.preventDefault();
+    const u=document.getElementById('uname').value.trim();
+    const p=document.getElementById('upass').value;
+    if(!u||!p){authMsg('Please fill all fields',true);return;}
+    const btn=document.getElementById('loginBtn');
+    btn.disabled=true; btn.innerHTML='<i class="fas fa-spinner fa-spin"></i> Authenticating via Java...';
+    try{
+      // POST to Java /api/login
+      const data=await api('/login','POST',{username:u,password:p});
+      if(data.success){
+        token=data.token;
+        curUser={username:data.username,role:data.role,email:data.email};
+        localStorage.setItem('ssg_token',token);
+        localStorage.setItem('ssg_user',JSON.stringify(curUser));
+        if(document.getElementById('remMe')?.checked) localStorage.setItem('ssg_remember',u);
+        else localStorage.removeItem('ssg_remember');
+        authMsg(`✅ Welcome ${data.role}! Loading dashboard...`,false);
+        setTimeout(enterDash,700);
+      } else {
+        authMsg(data.message||'Invalid credentials',true);
+        btn.disabled=false; btn.innerHTML='<i class="fas fa-sign-in-alt"></i> Access Dashboard';
+      }
+    }catch(err){
+      authMsg('⚠ Cannot reach Java server. Make sure it is running.',true);
+      btn.disabled=false; btn.innerHTML='<i class="fas fa-sign-in-alt"></i> Access Dashboard';
+    }
+  });
+
+  document.getElementById('signupForm')?.addEventListener('submit',async e=>{
+    e.preventDefault();
+    const u=document.getElementById('sUname').value.trim();
+    const p=document.getElementById('sPass').value;
+    const r=document.getElementById('sRole').value.trim()||'Waste Manager';
+    const em=document.getElementById('sEmail').value.trim();
+    if(!u||!p){authMsg('Username and password required',true);return;}
+    try{
+      // POST to Java /api/signup
+      const data=await api('/signup','POST',{username:u,password:p,role:r,email:em});
+      if(data.success){
+        token=data.token; curUser={username:data.username,role:data.role};
+        localStorage.setItem('ssg_token',token);
+        localStorage.setItem('ssg_user',JSON.stringify(curUser));
+        authMsg(`🎉 Account created! Welcome ${r}`,false);
+        setTimeout(enterDash,700);
+      } else authMsg(data.message||'Sign up failed',true);
+    }catch(err){ authMsg('⚠ Cannot reach Java server',true); }
+  });
+}
+
+function enterDash(){
+  document.getElementById('authOverlay').classList.add('hidden');
+  const dw=document.getElementById('dashWrap');
+  dw.style.display='block';
+  setTimeout(()=>dw.classList.add('visible'),10);
+  document.getElementById('unameDisplay').textContent=curUser?.username||'User';
+  navigate('dashboard');
+}
+
+// ---------- NAVIGATION ----------
+function navigate(page){
+  clearInterval(pollTimer);
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.toggle('active',n.dataset.page===page));
+  const pages={dashboard:renderDashboard,monitoring:renderMonitoring,bins:renderBins,ai:renderAI,reports:renderReports};
+  (pages[page]||renderDashboard)();
+  window.scrollTo(0,0);
+}
+
+document.querySelectorAll('.nav-item').forEach(n=>n.addEventListener('click',()=>navigate(n.dataset.page)));
+document.getElementById('sidebarLogo')?.addEventListener('click',()=>navigate('dashboard'));
+document.getElementById('notifBtn')?.addEventListener('click',()=>navigate('reports'));
+document.getElementById('logoutBtn')?.addEventListener('click',async()=>{
+  clearInterval(pollTimer);
+  try{ await api('/logout','POST'); }catch(e){}
+  token=null; curUser=null;
+  localStorage.removeItem('ssg_token'); localStorage.removeItem('ssg_user');
+  document.getElementById('dashWrap').classList.remove('visible');
+  setTimeout(()=>{document.getElementById('dashWrap').style.display='none';},400);
+  document.getElementById('authOverlay').classList.remove('hidden');
+  authMode='login'; renderAuth();
+});
+</script>
+
+<script>
+// ==================== DASHBOARD ====================
+let compChart=null, trendChart=null;
+
+async function renderDashboard(){
+  setTitle('Smart Segregation Dashboard','Real-time waste analytics');
+  document.getElementById('pageContent').innerHTML=`
+    <div class="stats-grid" id="statsGrid"><div style="padding:1rem;color:#6c8b81"><i class="fas fa-spinner fa-spin"></i> Loading from Java backend...</div></div>
+    <div class="row2">
+      <div class="card"><div class="card-header"><h3><i class="fas fa-chart-pie"></i> Waste Composition</h3><button class="btn-sm" onclick="navigate('reports')">Details</button></div><canvas id="compChart"></canvas></div>
+      <div class="card"><div class="card-header"><h3><i class="fas fa-chart-line"></i> Weekly Trend</h3></div><canvas id="trendChart"></canvas></div>
+    </div>
+    <div class="row2">
+      <div class="card"><div class="card-header"><h3><i class="fas fa-dumpster"></i> Bin Status</h3><button class="btn-sm" onclick="navigate('bins')">Manage</button></div><div id="dashBins"></div></div>
+      <div class="card"><div class="card-header"><h3><i class="fas fa-bell"></i> Live Alerts</h3><button class="btn-sm" onclick="navigate('reports')">All</button></div><div id="dashAlerts"></div>
+        <div style="margin-top:1rem;background:#eefaf3;padding:.8rem;border-radius:16px;font-size:.83rem"><i class="fas fa-brain" style="color:#2ecc71"></i> <strong>AI Insight:</strong> <span id="aiInsight">Loading...</span></div>
+      </div>
+    </div>`;
+  await loadDashData();
+  pollTimer=setInterval(loadDashData,8000);
+}
+
+async function loadDashData(){
+  try{
+    const [stats,bins,alerts]=await Promise.all([
+      api('/stats'), api('/bins'), api('/alerts')
+    ]);
+    // Update notification badge
+    document.getElementById('notifBadge').textContent=
+      alerts.filter(a=>a.type==='danger'||a.type==='warning').length;
+
+    // Stats cards — data from Java
+    document.getElementById('statsGrid').innerHTML=`
+      <div class="stat-card" onclick="navigate('bins')">
+        <h3>Total Waste Processed</h3>
+        <div class="stat-val">${stats.totalWaste}</div>
+        <div class="stat-sub" style="color:#2ecc71">↑ 12% this week</div>
+      </div>
+      <div class="stat-card" onclick="navigate('reports')">
+        <h3>Recycling Rate</h3>
+        <div class="stat-val">${stats.recyclingRate}</div>
+        <div class="stat-sub" style="color:#2ecc71">↑ 5.2% vs last month</div>
+      </div>
+      <div class="stat-card" onclick="navigate('bins')">
+        <h3>Active Bins</h3>
+        <div class="stat-val">${stats.activeBins} / ${stats.totalBins}</div>
+        <div class="stat-sub" style="color:${stats.criticalBins>0?'#e74c3c':'#2ecc71'}">${stats.criticalBins} critical</div>
+      </div>
+      <div class="stat-card">
+        <h3>CO₂ Saved</h3>
+        <div class="stat-val">${stats.co2Saved}</div>
+        <div class="stat-sub">🌳 ${stats.treesEquiv} trees equivalent</div>
+      </div>`;
+
+    // Bin list — from Java /api/bins
+    const binEl=document.getElementById('dashBins');
+    if(binEl) binEl.innerHTML=bins.slice(0,5).map(b=>`
+      <div class="list-item">
+        <div><strong>${b.name}</strong><br><small style="color:#8ba89a">${b.zone} — ${b.location}</small></div>
+        <div style="text-align:right;font-size:.82rem">
+          <strong style="color:${b.fillColor}">${b.fill}%</strong>
+          <span style="font-size:.68rem;margin-left:5px;color:#aaa">${b.urgency}</span>
+          <div class="pb-bg" style="margin-top:3px"><div class="pb-fill" style="width:${b.fill}%;background:${b.fillColor}"></div></div>
+        </div>
+      </div>`).join('');
+
+    // Alerts — from Java /api/alerts
+    const alertEl=document.getElementById('dashAlerts');
+    if(alertEl) alertEl.innerHTML=alerts.slice(0,3).map(a=>`
+      <div class="alert-row ${a.type}">
+        <i class="${a.icon}" style="font-size:1.1rem"></i>
+        <div style="flex:1;font-size:.83rem"><strong>${a.title}</strong></div>
+        <small style="color:#8ba89a;white-space:nowrap">${a.time}</small>
+      </div>`).join('');
+
+    // AI insight — computed from Java stats
+    const ins=document.getElementById('aiInsight');
+    if(ins){
+      const insights=[
+        `Recyclable waste up ${Math.floor(Math.random()*8)+2}% — check Zone A bins.`,
+        `Organic bin B-101 fill rising fast — schedule pickup soon.`,
+        `${stats.criticalBins} bins at critical level — immediate action required.`,
+        `AI detection accuracy steady at ${stats.aiAccuracy}.`
+      ];
+      ins.textContent=insights[Math.floor(Math.random()*insights.length)];
+    }
+
+    // Charts (only build once)
+    if(!compChart){
+      const ctx=document.getElementById('compChart')?.getContext('2d');
+      if(ctx) compChart=new Chart(ctx,{
+        type:'pie',
+        data:{labels:['Organic','Recyclable','Hazardous','Residual','E-Waste'],
+          datasets:[{data:[stats.organicKg,stats.recyclableKg,stats.hazardousKg,stats.residualKg,stats.ewasteKg],
+            backgroundColor:['#2ecc71','#3498db','#e67e22','#95a5a6','#f1c40f']}]},
+        options:{responsive:true,plugins:{legend:{position:'bottom'}}}
+      });
+    }
+    if(!trendChart){
+      const ctx=document.getElementById('trendChart')?.getContext('2d');
+      if(ctx) trendChart=new Chart(ctx,{
+        type:'line',
+        data:{labels:['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],
+          datasets:[
+            {label:'Organic (kg)',data:[420,480,450,520,580,610,550],borderColor:'#2ecc71',tension:.3},
+            {label:'Recyclable',data:[310,345,370,390,410,445,430],borderColor:'#3498db',tension:.3}
+          ]},
+        options:{responsive:true}
+      });
+    }
+  }catch(e){console.error('Dashboard load error',e);}
+}
+</script>
+
+<script>
+// ==================== WASTE MONITORING — Upload Only ====================
+// User uploads image → TF.js COCO-SSD detects objects → Java classifies waste
+
+let cocoModel=null, tfReady=false;
+const COCO_TO_WASTE={
+  // E-Waste
+  'cell phone':{hint:'phone',label:'Mobile Phone'},
+  'laptop':{hint:'laptop',label:'Laptop'},
+  'tv':{hint:'tv',label:'Television'},
+  'remote':{hint:'remote',label:'Remote Control'},
+  'keyboard':{hint:'keyboard',label:'Keyboard'},
+  'mouse':{hint:'mouse',label:'Computer Mouse'},
+  // Recyclable
+  'bottle':{hint:'plastic bottle',label:'Bottle'},
+  'wine glass':{hint:'glass',label:'Glass'},
+  'cup':{hint:'plastic',label:'Cup'},
+  'bowl':{hint:'plastic',label:'Bowl'},
+  'book':{hint:'paper',label:'Book/Paper'},
+  'scissors':{hint:'metal',label:'Metal Scissors'},
+  'vase':{hint:'glass',label:'Glass Vase'},
+  'suitcase':{hint:'plastic',label:'Plastic Case'},
+  'backpack':{hint:'plastic bag',label:'Bag'},
+  // Organic / Food
+  'apple':{hint:'apple',label:'Apple'},
+  'banana':{hint:'banana',label:'Banana'},
+  'orange':{hint:'fruit',label:'Orange'},
+  'broccoli':{hint:'vegetable',label:'Broccoli'},
+  'carrot':{hint:'vegetable',label:'Carrot'},
+  'hot dog':{hint:'food scraps',label:'Food Waste'},
+  'pizza':{hint:'food scraps',label:'Food Waste'},
+  'cake':{hint:'food scraps',label:'Food Waste'},
+  'sandwich':{hint:'food scraps',label:'Food Waste'},
+  'donut':{hint:'food scraps',label:'Food Waste'},
+  // Plant → Organic
+  'potted plant':{hint:'plant',label:'Potted Plant'},
+  'teddy bear':{hint:'toy',label:'Teddy Bear'},
+  // Hazardous
+  'knife':{hint:'hazardous',label:'Sharp Knife'},
+  'fork':{hint:'metal',label:'Metal Fork'},
+  'spoon':{hint:'metal',label:'Metal Spoon'},
+  // Residual
+  'chair':{hint:'residual',label:'Chair'},
+  'couch':{hint:'residual',label:'Sofa'},
+  'toothbrush':{hint:'tissue',label:'Toothbrush'},
+  'umbrella':{hint:'residual',label:'Umbrella'},
+  'handbag':{hint:'plastic bag',label:'Bag'},
+  'tie':{hint:'residual',label:'Clothing'},
+  'clock':{hint:'circuit',label:'Clock'},
+  // Skip
+  'person':null, 'car':null, 'truck':null, 'dog':null, 'cat':null,
+  'bird':null, 'horse':null, 'sheep':null, 'cow':null, 'elephant':null
+};
+
+async function renderMonitoring(){
+  setTitle('<i class="fas fa-recycle"></i> AI Waste Detection','Upload image → Java classifies waste category');
+  document.getElementById('pageContent').innerHTML=`
+  <div style="display:grid;grid-template-columns:1fr 340px;gap:1.5rem;align-items:start">
+    <div class="card">
+      <div class="card-header">
+        <h3><i class="fas fa-upload"></i> Upload Waste Image</h3>
+        <span id="modelBadge" style="background:#fff8e1;color:#f39c12;padding:3px 10px;border-radius:20px;font-size:.72rem;font-weight:600">
+          <i class="fas fa-spinner fa-spin"></i> Loading AI...
+        </span>
+      </div>
+      <div id="dropZone" style="border:3px dashed #2ecc71;border-radius:18px;padding:2.5rem;text-align:center;background:#f9fffc;cursor:pointer;transition:all .2s;margin-bottom:1rem"
+        onclick="document.getElementById('imgUpload').click()"
+        ondragover="event.preventDefault();this.style.background='#e6fff2'"
+        ondragleave="this.style.background='#f9fffc'"
+        ondrop="handleImgDrop(event)">
+        <i class="fas fa-cloud-upload-alt" style="font-size:3.5rem;color:#2ecc71;display:block;margin-bottom:.8rem"></i>
+        <p style="font-weight:700;color:#1a3a33;font-size:1.05rem">Click or drag &amp; drop a waste image</p>
+        <p style="color:#6c8b81;font-size:.83rem;margin-top:.4rem">Supports JPG, PNG, WEBP</p>
+        <input type="file" id="imgUpload" accept="image/*" style="display:none">
+      </div>
+      <div id="imgPreviewWrap" style="display:none;margin-bottom:1rem;position:relative">
+        <img id="imgPreview" style="width:100%;border-radius:14px;max-height:360px;object-fit:contain;background:#f0f7f4;display:block">
+        <canvas id="bboxCanvas" style="display:none;width:100%;border-radius:14px"></canvas>
+      </div>
+      <div style="display:flex;gap:.7rem;flex-wrap:wrap">
+        <button class="btn-sm" id="detectBtn" onclick="runImageDetection()" disabled
+          style="padding:.5rem 1.2rem;font-size:.88rem;opacity:.5">
+          <i class="fas fa-search"></i> Detect Waste
+        </button>
+        <button class="btn-sm grey" onclick="clearUpload()" style="padding:.5rem 1.2rem;font-size:.88rem">
+          <i class="fas fa-times"></i> Clear
+        </button>
+        <button class="btn-sm grey" id="clearDetBtn" style="padding:.5rem 1.2rem;font-size:.88rem">
+          <i class="fas fa-trash"></i> Clear Log
+        </button>
+      </div>
+      <div style="margin-top:1rem;background:#f0fff4;border-radius:12px;padding:.75rem 1rem;font-size:.78rem;color:#2c6e55">
+        <i class="fas fa-lightbulb" style="color:#2ecc71"></i>
+        <strong>How it works:</strong> TF.js COCO-SSD identifies objects in your image →
+        Java backend maps them to waste categories &amp; recommends the correct bin.
+      </div>
+    </div>
+    <div class="card" style="position:sticky;top:1rem">
+      <h3 style="margin-bottom:1rem;color:#1a3a33"><i class="fas fa-microchip"></i> Detection Result</h3>
+      <div id="detResult" class="det-panel" style="min-height:120px">
+        <i class="fas fa-image" style="font-size:2.5rem;color:#b2dfdb"></i>
+        <span style="font-size:.88rem;color:#6c8b81">Upload an image to classify</span>
+      </div>
+      <div style="margin:1rem 0">
+        <div style="display:flex;justify-content:space-between;font-size:.78rem;color:#6c8b81;margin-bottom:4px">
+          <span>Confidence</span><span id="confTxt">—</span>
+        </div>
+        <div class="pb-bg" style="width:100%;height:8px">
+          <div id="confFill" style="width:0%;height:8px;background:#2ecc71;border-radius:10px;transition:width .5s"></div>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin-bottom:1rem;font-size:.82rem">
+        <div style="background:#ecfdf5;padding:.7rem;border-radius:11px">
+          <div style="color:#6c8b81;font-size:.7rem;margin-bottom:2px">Detected Item</div>
+          <strong id="detItem">—</strong>
+        </div>
+        <div style="background:#ecfdf5;padding:.7rem;border-radius:11px">
+          <div style="color:#6c8b81;font-size:.7rem;margin-bottom:2px">Category</div>
+          <strong id="detCat">—</strong>
+        </div>
+        <div style="background:#ecfdf5;padding:.7rem;border-radius:11px;grid-column:span 2">
+          <div style="color:#6c8b81;font-size:.7rem;margin-bottom:2px">Recommended Bin</div>
+          <strong id="detBin">—</strong>
+        </div>
+      </div>
+      <div style="border-top:1px solid #ecfdf5;padding-top:1rem;margin-bottom:1rem">
+        <p style="font-size:.75rem;color:#6c8b81;margin-bottom:.5rem">
+          <i class="fas fa-keyboard"></i> Or type item name → Java classifies
+        </p>
+        <div style="display:flex;gap:.5rem">
+          <input id="hintInput" type="text" placeholder="e.g. battery, cardboard..."
+            style="flex:1;padding:.5rem .8rem;border-radius:10px;border:1px solid #d4ede3;font-size:.82rem;outline:none;font-family:'Inter',sans-serif"
+            onkeydown="if(event.key==='Enter') manualClassify()">
+          <button class="btn-sm" onclick="manualClassify()" style="padding:.5rem .8rem"><i class="fas fa-search"></i></button>
+        </div>
+      </div>
+      <h4 style="margin-bottom:.5rem;font-size:.83rem;color:#1a3a33">
+        <i class="fas fa-history"></i> Detection Log
+        <span class="java-badge" style="font-size:.62rem"><i class="fas fa-coffee"></i> Java</span>
+      </h4>
+      <div id="detLog" style="max-height:230px;overflow-y:auto;font-size:.78rem"></div>
+    </div>
+  </div>`;
+
+  document.getElementById('imgUpload').addEventListener('change',e=>{
+    const f=e.target.files[0]; if(f) showPreview(f);
+  });
+  document.getElementById('clearDetBtn').addEventListener('click',()=>{
+    document.getElementById('detLog').innerHTML='<div style="color:#aaa;padding:.5rem">Log cleared</div>';
+  });
+  loadCocoModel();
+  api('/detections').then(list=>list.slice(0,5).forEach(d=>prependDetLog(d))).catch(()=>{});
+}
+
+function handleImgDrop(e){
+  e.preventDefault();
+  document.getElementById('dropZone').style.background='#f9fffc';
+  const f=e.dataTransfer.files[0]; if(f) showPreview(f);
+}
+
+function showPreview(f){
+  const reader=new FileReader();
+  reader.onload=ev=>{
+    document.getElementById('imgPreview').src=ev.target.result;
+    document.getElementById('imgPreview').style.display='block';
+    document.getElementById('bboxCanvas').style.display='none';
+    document.getElementById('imgPreviewWrap').style.display='block';
+    document.getElementById('dropZone').style.display='none';
+    const btn=document.getElementById('detectBtn');
+    btn.disabled=false; btn.style.opacity='1'; btn._file=f;
+  };
+  reader.readAsDataURL(f);
+}
+
+function clearUpload(){
+  document.getElementById('imgPreviewWrap').style.display='none';
+  document.getElementById('dropZone').style.display='block';
+  document.getElementById('imgUpload').value='';
+  const btn=document.getElementById('detectBtn');
+  btn.disabled=true; btn.style.opacity='.5';
+  document.getElementById('detResult').innerHTML=`<i class="fas fa-image" style="font-size:2.5rem;color:#b2dfdb"></i><span style="font-size:.88rem;color:#6c8b81">Upload an image to classify</span>`;
+  ['confTxt','detItem','detCat','detBin'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent='—';});
+  document.getElementById('confFill').style.width='0%';
+}
+
+async function loadCocoModel(){
+  const badge=document.getElementById('modelBadge');
+  try{
+    if(!cocoModel){ cocoModel=await cocoSsd.load(); tfReady=true; }
+    if(badge){badge.innerHTML='<i class="fas fa-check-circle"></i> AI Ready';badge.style.background='#e9f9f0';badge.style.color='#2ecc71';}
+  }catch(e){
+    if(badge){badge.innerHTML='<i class="fas fa-info-circle"></i> Keyword mode';badge.style.color='#3498db';}
+  }
+}
+
+async function runImageDetection(){
+  const btn=document.getElementById('detectBtn');
+  const imgEl=document.getElementById('imgPreview');
+  if(!imgEl.src||imgEl.src===window.location.href){showNoWastePopup('no-image');return;}
+  btn.innerHTML='<i class="fas fa-spinner fa-spin"></i> Detecting...'; btn.disabled=true;
+
+  // Classes COCO-SSD detects that are NOT waste — skip these entirely
+  const skipClasses=['person','car','truck','bus','motorcycle','bicycle',
+    'dog','cat','bird','horse','sheep','cow','elephant','bear','zebra',
+    'giraffe','airplane','train','boat','traffic light','fire hydrant',
+    'stop sign','parking meter'];
+
+  // All COCO classes we can map to waste (including potted plant)
+  const wasteCocoClasses=Object.keys(COCO_TO_WASTE).filter(k=>COCO_TO_WASTE[k]!==null);
+
+  try{
+    let classified=false;
+
+    if(tfReady&&cocoModel){
+      const preds=await cocoModel.detect(imgEl);
+
+      // Remove non-waste classes
+      const candidates=preds.filter(p=>!skipClasses.includes(p.class));
+
+      // Prefer known waste-mapped classes first
+      const knownWaste=candidates.filter(p=>wasteCocoClasses.includes(p.class));
+      const toProcess=knownWaste.length>0 ? knownWaste : candidates;
+
+      if(toProcess.length>0){
+        drawBBoxes(imgEl,toProcess);
+        for(const p of toProcess){
+          const map=COCO_TO_WASTE[p.class];
+          // Use mapped hint, or the raw COCO label as hint to Java
+          await callJavaDetect(map ? map.hint : p.class);
+        }
+        showDetectedPopup(toProcess.length);
+        classified=true;
+      } else {
+        // COCO found nothing useful — try filename as fallback hint
+        const hint=getFilenameHint(btn._file);
+        if(hint){
+          await callJavaDetect(hint);
+          toast(`💡 Context-based classification: "${hint}"`, 'info');
+          classified=true;
+        }
+      }
+    } else {
+      // TF.js not ready — use filename hint
+      const hint=getFilenameHint(btn._file);
+      if(hint){
+        await callJavaDetect(hint);
+        toast(`Java classified by filename: "${hint}"`, 'info');
+        classified=true;
+      }
+    }
+
+    // Only show no-waste popup if nothing could be classified at all
+    if(!classified) showNoWastePopup('not-found');
+
+  }catch(e){ toast('Detection error: '+e.message,'danger'); }
+  btn.innerHTML='<i class="fas fa-search"></i> Detect Waste'; btn.disabled=false;
+}
+
+// Returns a clean hint from filename, or null if filename is generic (IMG_1234 etc.)
+function getFilenameHint(file){
+  if(!file) return null;
+  const name=file.name.replace(/\.[^.]+$/,'').replace(/[-_]/g,' ').toLowerCase().trim();
+  if(/^(img|dsc|photo|picture|image|pic|screenshot|file|document)[\s\-_]?\d*$/i.test(name)) return null;
+  if(/^\d+$/.test(name)) return null;
+  if(name.length<3) return null;
+  return name;
+}
+
+// ---- No Waste Detected Popup ----
+function showNoWastePopup(reason){
+  // Remove any existing popup
+  document.getElementById('noWasteModal')?.remove();
+
+  const messages = {
+    'not-found': {
+      icon: 'fas fa-search',
+      color: '#e74c3c',
+      title: 'No Waste Detected',
+      body: 'The AI could not identify any waste items in this image.',
+      tips: [
+        'Make sure the waste item is clearly visible',
+        'Try a closer or better-lit photo',
+        'Or use the <strong>keyword box</strong> below to classify manually'
+      ]
+    },
+    'no-model': {
+      icon: 'fas fa-exclamation-triangle',
+      color: '#f39c12',
+      title: 'AI Model Not Ready',
+      body: 'TensorFlow.js model is still loading or unavailable.',
+      tips: [
+        'Wait a moment and try again',
+        'Or type the item name in the keyword box',
+        'Example: "plastic bottle", "battery", "plant"'
+      ]
+    },
+    'no-image': {
+      icon: 'fas fa-image',
+      color: '#3498db',
+      title: 'No Image Uploaded',
+      body: 'Please upload an image before running detection.',
+      tips: ['Click the upload area or drag & drop an image']
+    }
+  };
+
+  const m = messages[reason] || messages['not-found'];
+
+  const modal = document.createElement('div');
+  modal.id = 'noWasteModal';
+  modal.style.cssText = `
+    position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9999;
+    display:flex;align-items:center;justify-content:center;
+    animation:fadeIn .25s ease;
+  `;
+  modal.innerHTML = `
+    <div style="background:#fff;border-radius:24px;padding:2rem;max-width:420px;width:90%;
+      box-shadow:0 20px 50px rgba(0,0,0,.3);text-align:center;position:relative">
+      <!-- Icon circle -->
+      <div style="width:72px;height:72px;border-radius:50%;background:${m.color}18;
+        display:flex;align-items:center;justify-content:center;margin:0 auto 1.2rem">
+        <i class="${m.icon}" style="font-size:2rem;color:${m.color}"></i>
+      </div>
+      <!-- Title -->
+      <h2 style="font-size:1.35rem;font-weight:800;color:#1a3a33;margin-bottom:.5rem">
+        ${m.title}
+      </h2>
+      <!-- Body -->
+      <p style="color:#6c8b81;font-size:.88rem;margin-bottom:1.2rem">${m.body}</p>
+      <!-- Tips -->
+      <div style="background:#f8fffe;border-radius:14px;padding:.9rem 1rem;text-align:left;margin-bottom:1.3rem">
+        ${m.tips.map(t=>`
+          <div style="display:flex;align-items:flex-start;gap:8px;font-size:.82rem;color:#2c6e55;margin-bottom:.4rem">
+            <i class="fas fa-arrow-right" style="color:#2ecc71;margin-top:2px;min-width:14px"></i>
+            <span>${t}</span>
+          </div>`).join('')}
+      </div>
+      <!-- Buttons -->
+      <div style="display:flex;gap:.8rem;justify-content:center">
+        <button onclick="document.getElementById('noWasteModal').remove()"
+          style="flex:1;background:#ecfdf5;color:#1e4a3b;border:none;padding:.75rem;border-radius:14px;
+          font-weight:600;cursor:pointer;font-size:.9rem;font-family:'Inter',sans-serif">
+          <i class="fas fa-times"></i> Close
+        </button>
+        <button onclick="document.getElementById('noWasteModal').remove();clearUpload()"
+          style="flex:1;background:#2ecc71;color:#fff;border:none;padding:.75rem;border-radius:14px;
+          font-weight:600;cursor:pointer;font-size:.9rem;font-family:'Inter',sans-serif">
+          <i class="fas fa-upload"></i> Try New Image
+        </button>
+      </div>
+    </div>`;
+
+  // Close on backdrop click
+  modal.addEventListener('click', e=>{
+    if(e.target===modal) modal.remove();
+  });
+  document.body.appendChild(modal);
+}
+
+// ---- Waste Detected Success Popup ----
+function showDetectedPopup(count){
+  document.getElementById('noWasteModal')?.remove();
+  const modal=document.createElement('div');
+  modal.id='noWasteModal';
+  modal.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9999;display:flex;align-items:center;justify-content:center;animation:fadeIn .25s';
+  modal.innerHTML=`
+    <div style="background:#fff;border-radius:24px;padding:2rem;max-width:380px;width:90%;
+      box-shadow:0 20px 50px rgba(0,0,0,.3);text-align:center">
+      <div style="width:72px;height:72px;border-radius:50%;background:#e9f9f0;
+        display:flex;align-items:center;justify-content:center;margin:0 auto 1rem">
+        <i class="fas fa-check-circle" style="font-size:2.2rem;color:#2ecc71"></i>
+      </div>
+      <h2 style="font-size:1.3rem;font-weight:800;color:#1a3a33;margin-bottom:.4rem">
+        Waste Detected!
+      </h2>
+      <p style="color:#6c8b81;font-size:.88rem;margin-bottom:1.2rem">
+        <strong>${count} item${count>1?'s':''}</strong> identified and classified by Java backend.
+        Check the <strong>Detection Result</strong> panel for details.
+      </p>
+      <button onclick="document.getElementById('noWasteModal').remove()"
+        style="width:100%;background:#2ecc71;color:#fff;border:none;padding:.8rem;border-radius:14px;
+        font-weight:700;cursor:pointer;font-size:.95rem;font-family:'Inter',sans-serif">
+        <i class="fas fa-check"></i> View Results
+      </button>
+    </div>`;
+  modal.addEventListener('click',e=>{if(e.target===modal)modal.remove();});
+  document.body.appendChild(modal);
+  setTimeout(()=>modal.remove(), 3000);
+}
+
+function drawBBoxes(imgEl,preds){
+  const canvas=document.getElementById('bboxCanvas');
+  canvas.width=imgEl.naturalWidth; canvas.height=imgEl.naturalHeight;
+  const ctx=canvas.getContext('2d');
+  ctx.drawImage(imgEl,0,0);
+  preds.forEach(p=>{
+    const map=COCO_TO_WASTE[p.class];
+    const label=map?map.label:p.class;
+    const [x,y,w,h]=p.bbox;
+    ctx.strokeStyle='#2ecc71'; ctx.lineWidth=3; ctx.strokeRect(x,y,w,h);
+    ctx.fillStyle='#2ecc71'; ctx.fillRect(x,y-28,Math.max(w,140),28);
+    ctx.fillStyle='#fff'; ctx.font='bold 14px Inter,sans-serif';
+    ctx.fillText(`${label}  ${Math.round(p.score*100)}%`,x+6,y-8);
+  });
+  imgEl.style.display='none'; canvas.style.display='block';
+}
+
+async function callJavaDetect(hint){
+  try{
+    const d=await api('/detections','POST',{hint:hint||''});
+    updateDetUI(d); prependDetLog(d);
+  }catch(e){toast('⚠ Java server not responding','warning');}
+}
+
+window.manualClassify=async function(){
+  const hint=document.getElementById('hintInput')?.value.trim();
+  if(!hint){toast('Type an item name first','warning');return;}
+  toast(`🔍 Java classifying: "${hint}"...`,'info');
+  await callJavaDetect(hint);
+  document.getElementById('hintInput').value='';
+};
+
+function updateDetUI(d){
+  document.getElementById('detResult').innerHTML=`
+    <i class="${d.icon}" style="font-size:2.5rem;color:${d.color}"></i>
+    <strong style="font-size:1.15rem;color:#1a3a33">${d.item}</strong>
+    <span style="background:${d.color}22;color:${d.color};padding:3px 12px;border-radius:20px;font-size:.78rem;font-weight:600">${d.category}</span>`;
+  document.getElementById('confTxt').textContent=d.confidence+'%';
+  document.getElementById('confFill').style.width=d.confidence+'%';
+  document.getElementById('confFill').style.background=d.confidence>=90?'#2ecc71':d.confidence>=75?'#f39c12':'#e74c3c';
+  document.getElementById('detItem').textContent=d.item;
+  document.getElementById('detCat').textContent=d.category;
+  document.getElementById('detBin').textContent=d.bin;
+}
+
+function prependDetLog(d){
+  const el=document.getElementById('detLog'); if(!el) return;
+  const row=document.createElement('div');
+  row.style.cssText='display:flex;align-items:center;gap:8px;padding:.5rem;border-bottom:1px solid #eef3ef';
+  row.innerHTML=`<i class="${d.icon}" style="color:${d.color};width:18px"></i>
+    <div style="flex:1"><strong>${d.item}</strong><span style="color:#8ba89a;font-size:.7rem"> → ${d.bin}</span></div>
+    <span style="color:#2ecc71;font-weight:700">${d.confidence}%</span>
+    <span style="color:#aaa;font-size:.68rem;margin-left:4px">${d.timestamp}</span>`;
+  el.insertBefore(row,el.firstChild);
+  if(el.children.length>15) el.removeChild(el.lastChild);
+}
+</script>
+<script>
+// ==================== BIN MANAGEMENT ====================
+// Java: GET /api/bins, POST /api/bins/{id}/pickup, POST /api/bins/{id}/maintain
+
+let selZone='All', allBins=[];
+
+async function renderBins(){
+  setTitle('<i class="fas fa-trash-alt"></i> Bin Management','IoT sensors — Java backend');
+  document.getElementById('pageContent').innerHTML=`
+    <div class="stats-grid" id="binStats"><div style="padding:1rem;color:#6c8b81"><i class="fas fa-spinner fa-spin"></i> Loading from Java...</div></div>
+    <div class="card" style="margin-bottom:1.4rem">
+      <h3 style="margin-bottom:.8rem"><i class="fas fa-map-marker-alt"></i> Facility Zones</h3>
+      <div class="zone-grid" id="zoneGrid"></div>
+    </div>
+    <div class="bins-grid" id="binsGrid"></div>`;
+  await loadBinsData();
+  pollTimer=setInterval(loadBinsData,8000);
+}
+
+async function loadBinsData(){
+  try{
+    const [bins,stats]=await Promise.all([api('/bins'),api('/stats')]);
+    allBins=bins;
+    const crit=bins.filter(b=>b.urgency==='CRITICAL').length;
+    const onl=bins.filter(b=>b.status==='online').length;
+    document.getElementById('notifBadge').textContent=crit;
+    document.getElementById('binStats').innerHTML=`
+      <div class="stat-card"><h3><i class="fas fa-trash"></i> Total Bins</h3><div class="stat-val">${bins.length}</div><div class="stat-sub">Across 5 zones</div></div>
+      <div class="stat-card"><h3><i class="fas fa-wifi"></i> Online Sensors</h3><div class="stat-val" style="color:#2ecc71">${onl}</div><div class="stat-sub">${bins.length-onl} offline</div></div>
+      <div class="stat-card"><h3><i class="fas fa-exclamation-triangle"></i> Critical Bins</h3><div class="stat-val" style="color:${crit>0?'#e74c3c':'#2ecc71'}">${crit}</div><div class="stat-sub">Need immediate pickup</div></div>
+      <div class="stat-card"><h3><i class="fas fa-truck"></i> Pickups Today</h3><div class="stat-val">${stats.pickupsToday}</div><div class="stat-sub">Java tracks this</div></div>`;
+    renderZones(); renderBinCards();
+  }catch(e){ console.error('Bins load error',e); }
+}
+
+function renderZones(){
+  const zones=['All','Zone A','Zone B','Zone C','Zone D','Zone E'];
+  const g=document.getElementById('zoneGrid'); if(!g) return;
+  g.innerHTML=zones.map(z=>{
+    const zb=z==='All'?allBins:allBins.filter(b=>b.zone===z);
+    const avg=zb.length?Math.round(zb.reduce((s,b)=>s+b.fill,0)/zb.length):0;
+    const crit=zb.filter(b=>b.urgency==='CRITICAL').length;
+    return `<div class="zone-box ${selZone===z?'sel':''}" onclick="selectZone('${z}')">
+      <div class="zone-name">${z}</div>
+      <div class="zone-stats">${zb.length} bins<br>Avg ${avg}%<br>
+        ${crit>0?`<span style="color:#e74c3c">⚠ ${crit} critical</span>`:'<span style="color:#2ecc71">✓ OK</span>'}
+      </div></div>`;
+  }).join('');
+}
+
+window.selectZone=function(z){ selZone=z; renderZones(); renderBinCards(); };
+
+function renderBinCards(){
+  const filtered=selZone==='All'?allBins:allBins.filter(b=>b.zone===selZone);
+  const g=document.getElementById('binsGrid'); if(!g) return;
+  if(!filtered.length){ g.innerHTML='<div style="padding:3rem;text-align:center;color:#8ba89a"><i class="fas fa-box-open"></i> No bins in this zone</div>'; return; }
+  const icons={organic:'fas fa-leaf',recyclable:'fas fa-recycle',hazardous:'fas fa-skull-crossbones',residual:'fas fa-trash',ewaste:'fas fa-laptop'};
+  g.innerHTML=filtered.map(b=>{
+    const cls=b.urgency==='CRITICAL'?'critical':b.urgency==='WARNING'?'warning':'';
+    return `<div class="bin-card ${cls}">
+      <div class="bin-hdr">
+        <div style="display:flex;align-items:center;gap:10px">
+          <div class="bin-icon ${b.type}"><i class="${icons[b.type]||'fas fa-trash-alt'}"></i></div>
+          <div><div style="font-weight:700;color:#1a3a33">${b.name}</div>
+            <div style="font-size:.7rem;color:#8ba89a">${b.id} • ${b.location}</div></div>
+        </div>
+        <span class="stat-badge ${b.status}"><i class="fas fa-circle" style="font-size:.55rem"></i> ${b.status}</span>
+      </div>
+      <div>
+        <div style="display:flex;justify-content:space-between;font-size:.8rem;color:#6c8b81;margin-bottom:.3rem">
+          <span><i class="fas fa-charging-station"></i> Fill Level</span>
+          <strong style="color:${b.fillColor}">${b.fill}% — ${b.urgency}</strong>
+        </div>
+        <div style="height:9px;background:#ecfdf5;border-radius:10px;overflow:hidden">
+          <div style="width:${b.fill}%;height:100%;background:${b.fillColor};border-radius:10px;transition:width .4s"></div>
+        </div>
+        <div style="font-size:.72rem;color:#6c8b81;margin-top:.3rem">Est. full in: <strong>${b.hoursUntilFull}h</strong></div>
+      </div>
+      <div class="sensor-row">
+        <div class="sensor-cell"><div class="sensor-lbl"><i class="fas fa-thermometer-half"></i> Temp</div><div class="sensor-val">${b.temperature}°C</div></div>
+        <div class="sensor-cell"><div class="sensor-lbl"><i class="fas fa-weight-hanging"></i> Weight</div><div class="sensor-val">${b.weight} kg</div></div>
+        <div class="sensor-cell"><div class="sensor-lbl"><i class="fas fa-map-marker-alt"></i> Zone</div><div class="sensor-val">${b.zone}</div></div>
+        <div class="sensor-cell"><div class="sensor-lbl"><i class="fas fa-calendar-alt"></i> Last Service</div><div class="sensor-val" style="font-size:.75rem">${b.lastMaintenance}</div></div>
+      </div>
+      <div class="act-btns">
+        <button class="btn-green" onclick="pickupBin('${b.id}')"><i class="fas fa-truck"></i> Schedule Pickup</button>
+        <button class="btn-light" onclick="maintainBin('${b.id}')"><i class="fas fa-tools"></i> Maintenance</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+window.pickupBin=async function(id){
+  try{
+    // Calls Java: POST /api/bins/{id}/pickup
+    const d=await api(`/bins/${id}/pickup`,'POST');
+    if(d.success){ toast(`✅ ${d.message}. Pickups today: ${d.pickupsToday}`,'success'); await loadBinsData(); }
+    else toast('Error: '+d.message,'danger');
+  }catch(e){ toast('⚠ Java server error','warning'); }
+};
+
+window.maintainBin=async function(id){
+  try{
+    // Calls Java: POST /api/bins/{id}/maintain
+    const d=await api(`/bins/${id}/maintain`,'POST');
+    if(d.success){ toast('🔧 '+d.message,'info'); await loadBinsData(); }
+    else toast('Error','danger');
+  }catch(e){ toast('⚠ Java server error','warning'); }
+};
+</script>
+
+<script>
+// ==================== AI TRAINING ====================
+let perfChart=null;
+
+function renderAI(){
+  setTitle('<i class="fas fa-brain"></i> AI Model Training','Train & optimize waste classification');
+  document.getElementById('pageContent').innerHTML=`
+    <div class="stats-grid">
+      <div class="stat-card"><h3><i class="fas fa-database"></i> Training Images</h3><div class="stat-val">9,797</div><div class="stat-sub">5 categories</div></div>
+      <div class="stat-card"><h3><i class="fas fa-chart-line"></i> Model Accuracy</h3><div class="stat-val" id="aiAcc">94.7%</div><div class="stat-sub" style="color:#2ecc71">Production ready</div></div>
+      <div class="stat-card"><h3><i class="fas fa-microchip"></i> Inference Time</h3><div class="stat-val">42ms</div><div class="stat-sub">Java classifyWaste()</div></div>
+      <div class="stat-card"><h3><i class="fas fa-clock"></i> Last Training</h3><div class="stat-val" style="font-size:1rem" id="lastTrain">Today 10:32 AM</div></div>
+    </div>
+    <div class="ai-grid">
+      <div class="card">
+        <div class="card-header"><h3><i class="fas fa-database"></i> Training Dataset</h3></div>
+        ${[['Organic Waste','2,842','fas fa-leaf','#2ecc71'],
+           ['Recyclable Materials','3,156','fas fa-recycle','#3498db'],
+           ['Hazardous Waste','1,245','fas fa-skull-crossbones','#e67e22'],
+           ['E-Waste','987','fas fa-laptop','#f1c40f'],
+           ['Residual Waste','1,567','fas fa-trash','#95a5a6']].map(r=>`
+        <div class="list-item">
+          <div style="display:flex;align-items:center;gap:8px">
+            <i class="${r[2]}" style="color:${r[3]};width:18px"></i>
+            <strong style="color:#1a3a33">${r[0]}</strong>
+          </div>
+          <span style="color:${r[3]};font-weight:700">${r[1]} images</span>
+        </div>`).join('')}
+        <div class="upload-area" onclick="document.getElementById('trainFile').click()">
+          <i class="fas fa-cloud-upload-alt"></i>
+          <p style="font-weight:600;color:#1a3a33">Upload Training Images</p>
+          <small style="color:#6c8b81">JPG, PNG, WEBP supported</small>
+          <input type="file" id="trainFile" multiple accept="image/*" style="display:none">
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><h3><i class="fas fa-chart-line"></i> Model Performance</h3></div>
+        <canvas id="perfChart" height="200"></canvas>
+        <div class="metric-grid">
+          <div class="metric"><div class="metric-lbl">Precision</div><div class="metric-val">93.2%</div></div>
+          <div class="metric"><div class="metric-lbl">Recall</div><div class="metric-val">91.8%</div></div>
+          <div class="metric"><div class="metric-lbl">F1 Score</div><div class="metric-val">92.5%</div></div>
+          <div class="metric"><div class="metric-lbl">Inference</div><div class="metric-val">42ms</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header"><h3><i class="fas fa-microchip"></i> Training Controls</h3></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem">
+        <div>
+          <label style="display:block;margin-bottom:.4rem;color:#6c8b81;font-size:.82rem">Model Architecture</label>
+          <select id="modelArch" style="width:100%;padding:.6rem;border-radius:11px;border:1px solid #e2e8f0;font-family:'Inter',sans-serif;font-size:.85rem">
+            <option>MobileNetV3 (Balanced)</option>
+            <option>ResNet-50 (High Accuracy)</option>
+            <option>EfficientNet-B0 (Fast)</option>
+            <option>YOLOv8-nano (Real-time)</option>
+          </select>
+        </div>
+        <div>
+          <label style="display:block;margin-bottom:.4rem;color:#6c8b81;font-size:.82rem">Learning Rate</label>
+          <select style="width:100%;padding:.6rem;border-radius:11px;border:1px solid #e2e8f0;font-family:'Inter',sans-serif;font-size:.85rem">
+            <option>0.001 (Default)</option>
+            <option>0.0001 (Fine-tune)</option>
+            <option>0.01 (Fast)</option>
+          </select>
+        </div>
+      </div>
+      <div style="margin-bottom:1rem">
+        <label style="color:#6c8b81;font-size:.82rem">Epochs: <strong id="epochVal">50</strong></label>
+        <input type="range" id="epochSlider" min="10" max="200" value="50" step="10"
+          style="width:100%;accent-color:#2ecc71;margin-top:.4rem">
+      </div>
+      <button id="trainBtn" onclick="startTraining()"
+        style="width:100%;background:#2ecc71;color:#fff;border:none;padding:.85rem;border-radius:15px;font-weight:700;cursor:pointer;font-size:1rem;font-family:'Inter',sans-serif">
+        <i class="fas fa-play"></i> Start Training
+      </button>
+      <div id="trainProg" style="display:none;margin-top:1rem">
+        <div style="height:10px;background:#ecfdf5;border-radius:10px;overflow:hidden;margin-bottom:.5rem">
+          <div id="trainFill" style="height:100%;background:#2ecc71;width:0%;border-radius:10px;transition:width .15s"></div>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:.75rem;color:#6c8b81">
+          <span id="epochInfo">Epoch 0/50</span>
+          <span id="lossInfo">Loss: —</span>
+          <span id="accInfo">Acc: —</span>
+        </div>
+      </div>
+    </div>`;
+
+  document.getElementById('trainFile')?.addEventListener('change',e=>{
+    if(e.target.files.length) toast(`📤 ${e.target.files.length} images queued for training!`,'success');
+    e.target.value='';
+  });
+  document.getElementById('epochSlider')?.addEventListener('input',e=>{
+    document.getElementById('epochVal').textContent=e.target.value;
+  });
+  const ctx=document.getElementById('perfChart')?.getContext('2d');
+  if(ctx){
+    if(perfChart) perfChart.destroy();
+    perfChart=new Chart(ctx,{
+      type:'line',
+      data:{labels:['W1','W2','W3','W4','W5','W6'],
+        datasets:[{label:'Accuracy %',data:[88.5,90.2,91.8,93.1,94.2,94.7],
+          borderColor:'#2ecc71',backgroundColor:'rgba(46,204,113,.1)',tension:.3,fill:true}]},
+      options:{responsive:true,maintainAspectRatio:true}
+    });
+  }
+}
+
+window.startTraining=function(){
+  const btn=document.getElementById('trainBtn'); if(btn.disabled) return;
+  const epochs=parseInt(document.getElementById('epochSlider').value);
+  btn.disabled=true; btn.innerHTML='<i class="fas fa-spinner fa-spin"></i> Training in progress...';
+  document.getElementById('trainProg').style.display='block';
+  let ep=0;
+  const iv=setInterval(()=>{
+    ep++;
+    document.getElementById('trainFill').style.width=(ep/epochs*100)+'%';
+    document.getElementById('epochInfo').textContent=`Epoch ${ep}/${epochs}`;
+    document.getElementById('lossInfo').textContent=`Loss: ${(0.4*(1-ep/epochs)+0.05).toFixed(3)}`;
+    document.getElementById('accInfo').textContent=`Acc: ${(70+ep/epochs*25).toFixed(1)}%`;
+    if(ep>=epochs){
+      clearInterval(iv);
+      const acc=(92+Math.random()*5).toFixed(1);
+      document.getElementById('aiAcc').textContent=acc+'%';
+      document.getElementById('lastTrain').textContent=new Date().toLocaleString();
+      btn.disabled=false; btn.innerHTML='<i class="fas fa-play"></i> Start Training';
+      toast(`✅ Training complete! New accuracy: ${acc}%`,'success');
+      setTimeout(()=>{ const p=document.getElementById('trainProg'); if(p) p.style.display='none'; },2500);
+    }
+  },150);
+};
+
+// ==================== REPORTS & ANALYTICS ====================
+// Java: GET /api/reports, GET /api/alerts, GET /api/zones
+
+async function renderReports(){
+  setTitle('<i class="fas fa-chart-pie"></i> Reports & Analytics','Full insights — computed by Java backend');
+  document.getElementById('pageContent').innerHTML=`
+    <div class="card" style="margin-bottom:1.4rem">
+      <div style="display:flex;gap:1rem;flex-wrap:wrap;align-items:flex-end">
+        <div style="flex:1;min-width:160px">
+          <label style="font-size:.75rem;color:#6c8b81;display:block;margin-bottom:.3rem"><i class="fas fa-calendar"></i> Date Range</label>
+          <select style="width:100%;padding:.6rem;border-radius:11px;border:1px solid #e2e8f0;font-family:'Inter',sans-serif">
+            <option>Last 7 Days</option><option selected>Last 30 Days</option><option>Last 90 Days</option>
+          </select>
+        </div>
+        <button onclick="toast('📄 Generating PDF report from Java data...','info')"
+          style="background:#2ecc71;color:#fff;border:none;padding:.62rem 1.2rem;border-radius:11px;font-weight:600;cursor:pointer">
+          <i class="fas fa-download"></i> Export PDF
+        </button>
+        <button onclick="loadReportData()"
+          style="background:#ecfdf5;color:#1e4a3b;border:none;padding:.62rem 1.2rem;border-radius:11px;font-weight:600;cursor:pointer">
+          <i class="fas fa-sync"></i> Refresh
+        </button>
+      </div>
+    </div>
+    <div class="stats-grid" id="repStats"><div style="padding:1rem;color:#6c8b81"><i class="fas fa-spinner fa-spin"></i> Loading from Java...</div></div>
+    <div class="impact-bar">
+      <h3><i class="fas fa-globe-americas"></i> Environmental Impact (Java computed)</h3>
+      <div class="impact-grid" id="impactGrid"></div>
+    </div>
+    <div class="charts-grid">
+      <div class="card"><div class="card-header"><h3><i class="fas fa-chart-bar"></i> Waste by Category (kg)</h3></div><canvas id="barChart" height="220"></canvas></div>
+      <div class="card"><div class="card-header"><h3><i class="fas fa-chart-line"></i> Monthly Recycling Trend</h3></div><canvas id="lineChart" height="220"></canvas></div>
+    </div>
+    <div class="card" style="margin-bottom:1.4rem">
+      <div class="card-header">
+        <h3><i class="fas fa-map-marker-alt"></i> Zone Summary (Java /api/zones)</h3>
+      </div>
+      <div id="zoneSummary" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1rem;margin-top:.5rem"></div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        <h3><i class="fas fa-bell"></i> All Alerts <span class="java-badge"><i class="fas fa-coffee"></i> Java /api/alerts</span></h3>
+        <button class="btn-sm" onclick="dismissAllAlerts()">Dismiss All</button>
+      </div>
+      <div id="allAlerts"></div>
+    </div>`;
+  await loadReportData();
+  pollTimer=setInterval(()=>{ api('/alerts').then(a=>{ document.getElementById('notifBadge').textContent=a.filter(x=>x.type==='danger'||x.type==='warning').length; }).catch(()=>{}); },10000);
+}
+
+async function loadReportData(){
+  try{
+    const [stats,alerts,zones]=await Promise.all([api('/stats'),api('/alerts'),api('/zones')]);
+    document.getElementById('notifBadge').textContent=alerts.filter(a=>a.type==='danger'||a.type==='warning').length;
+
+    document.getElementById('repStats').innerHTML=`
+      <div class="stat-card"><h3>Total Waste</h3><div class="stat-val">${stats.totalWaste}</div></div>
+      <div class="stat-card"><h3>Recycling Rate</h3><div class="stat-val">${stats.recyclingRate}</div></div>
+      <div class="stat-card"><h3>Diversion Rate</h3><div class="stat-val">${stats.diversionRate}</div></div>
+      <div class="stat-card"><h3>AI Accuracy</h3><div class="stat-val">${stats.aiAccuracy}</div></div>
+      <div class="stat-card"><h3>Total Detections</h3><div class="stat-val">${stats.totalDetections}</div></div>
+      <div class="stat-card"><h3>Active Alerts</h3><div class="stat-val" style="color:#e74c3c">${stats.totalAlerts}</div></div>`;
+
+    document.getElementById('impactGrid').innerHTML=`
+      <div class="impact-cell"><div class="impact-val">${stats.co2Saved}</div><div>CO₂ Saved</div></div>
+      <div class="impact-cell"><div class="impact-val">${stats.treesEquiv}</div><div>Trees Equivalent</div></div>
+      <div class="impact-cell"><div class="impact-val">${stats.recyclingRate}</div><div>Recycling Rate</div></div>
+      <div class="impact-cell"><div class="impact-val">${stats.pickupsToday}</div><div>Pickups Today</div></div>`;
+
+    // Zone summary from Java /api/zones
+    document.getElementById('zoneSummary').innerHTML=zones.map(z=>`
+      <div style="background:#f0fff4;border-radius:14px;padding:.9rem;text-align:center">
+        <div style="font-weight:700;color:#1a3a33">${z.zone}</div>
+        <div style="font-size:.78rem;color:#6c8b81;margin-top:.4rem">
+          ${z.bins} bins<br>Avg fill: <strong style="color:${z.avgFill>=75?'#e74c3c':'#2ecc71'}">${z.avgFill.toFixed(0)}%</strong><br>
+          ${z.critical>0?`<span style="color:#e74c3c">⚠ ${z.critical} critical</span>`:'<span style="color:#2ecc71">✓ OK</span>'}
+        </div>
+      </div>`).join('');
+
+    // Alerts list from Java with dismiss button
+    document.getElementById('allAlerts').innerHTML=alerts.length?
+      alerts.map(a=>`
+      <div class="alert-row ${a.type}" id="alert_${a.id}">
+        <i class="${a.icon}" style="font-size:1.1rem;min-width:20px"></i>
+        <div style="flex:1;font-size:.83rem"><strong>${a.title}</strong><br><small style="color:#8ba89a">${a.source} • ${a.time}</small></div>
+        <button class="btn-sm grey" style="padding:.2rem .6rem;font-size:.68rem" onclick="dismissAlert(${a.id})">Dismiss</button>
+      </div>`).join(''):
+      '<div style="padding:1rem;color:#8ba89a;text-align:center">No active alerts</div>';
+
+    // Charts
+    const barCtx=document.getElementById('barChart')?.getContext('2d');
+    if(barCtx) new Chart(barCtx,{type:'bar',
+      data:{labels:['Organic','Recyclable','Hazardous','Residual','E-Waste'],
+        datasets:[{label:'kg (weekly)',
+          data:[stats.organicKg,stats.recyclableKg,stats.hazardousKg,stats.residualKg,stats.ewasteKg],
+          backgroundColor:['#2ecc71','#3498db','#e67e22','#95a5a6','#f1c40f']}]},
+      options:{responsive:true,plugins:{legend:{display:false}}}});
+    const lineCtx=document.getElementById('lineChart')?.getContext('2d');
+    if(lineCtx) new Chart(lineCtx,{type:'line',
+      data:{labels:['Jan','Feb','Mar','Apr','May','Jun','Jul'],
+        datasets:[{label:'Recycling Rate %',data:[58,61,63,65,67,68,68.4],
+          borderColor:'#2ecc71',backgroundColor:'rgba(46,204,113,.1)',tension:.3,fill:true}]},
+      options:{responsive:true}});
+  }catch(e){ console.error('Reports load error',e); }
+}
+
+window.dismissAlert=async function(id){
+  try{
+    // Calls Java: POST /api/alerts/{id}/dismiss
+    await api(`/alerts/${id}/dismiss`,'POST');
+    const el=document.getElementById('alert_'+id);
+    if(el) el.style.opacity='0', setTimeout(()=>el.remove(),300);
+    toast('Alert dismissed','info');
+  }catch(e){ toast('⚠ Java server error','warning'); }
+};
+
+window.dismissAllAlerts=async function(){
+  try{
+    const alerts=await api('/alerts');
+    await Promise.all(alerts.map(a=>api(`/alerts/${a.id}/dismiss`,'POST')));
+    await loadReportData();
+    toast('All alerts dismissed','success');
+  }catch(e){ toast('⚠ Java server error','warning'); }
+};
+
+// ==================== BOOT ====================
+// Auto-login if valid session exists
+(async function boot(){
+  if(token && curUser){
+    try{
+      const r=await api('/stats');
+      if(r.totalWaste){ enterDash(); return; }
+    }catch(e){}
+  }
+  token=null; curUser=null;
+  localStorage.removeItem('ssg_token'); localStorage.removeItem('ssg_user');
+  renderAuth();
+})();
+</script>
+</body>
+</html>

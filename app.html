@@ -1,0 +1,903 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Smart Segregation | Login + Dashboard Unified</title>
+    <!-- Google Fonts & Font Awesome -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #ecfdf5;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        /* ========= LOGIN / AUTH PANEL (fullscreen overlay) ========= */
+        .auth-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(145deg, #0b2f2c 0%, #051f1d 100%);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.5s ease, visibility 0.5s;
+            backdrop-filter: blur(0px);
+        }
+        .auth-overlay.hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+        .login-container {
+            width: 100%;
+            max-width: 460px;
+            background: rgba(18, 32, 30, 0.85);
+            backdrop-filter: blur(12px);
+            border-radius: 2.5rem;
+            box-shadow: 0 25px 45px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(80, 210, 150, 0.2);
+            overflow: hidden;
+            transition: transform 0.3s;
+        }
+        .login-card {
+            padding: 2rem 2rem 2.5rem;
+        }
+        .brand {
+            text-align: center;
+            margin-bottom: 1.8rem;
+        }
+        .icon-circle {
+            background: linear-gradient(135deg, #2ecc71, #1f8a4c);
+            width: 70px;
+            height: 70px;
+            border-radius: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            box-shadow: 0 12px 18px -8px rgba(0,0,0,0.3);
+        }
+        .icon-circle i {
+            font-size: 2.8rem;
+            color: white;
+        }
+        h1 {
+            font-size: 1.9rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #EFFAF3, #B9F6CA);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+        .sub {
+            font-size: 0.85rem;
+            color: #9bc5b4;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .input-group {
+            margin-bottom: 1.5rem;
+        }
+        .input-group label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: #c6f0df;
+            margin-bottom: 0.6rem;
+        }
+        .input-field {
+            width: 100%;
+            padding: 0.9rem 1rem;
+            background: rgba(10, 22, 20, 0.7);
+            border: 1px solid rgba(70, 170, 120, 0.5);
+            border-radius: 1.2rem;
+            font-size: 1rem;
+            color: #f0f7f3;
+            outline: none;
+        }
+        .input-field:focus {
+            border-color: #2ecc71;
+            box-shadow: 0 0 0 3px rgba(46, 204, 113, 0.3);
+        }
+        .login-btn {
+            width: 100%;
+            background: linear-gradient(105deg, #27ae60, #1e874b);
+            border: none;
+            padding: 0.9rem;
+            border-radius: 2rem;
+            font-size: 1rem;
+            font-weight: 700;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            cursor: pointer;
+            transition: all 0.25s;
+        }
+        .login-btn:hover {
+            background: linear-gradient(105deg, #2ecc71, #229954);
+            transform: translateY(-2px);
+        }
+        .toggle-link {
+            text-align: center;
+            margin-top: 1.5rem;
+            color: #9bc5b4;
+            cursor: pointer;
+        }
+        .toggle-link span {
+            color: #2ecc71;
+            font-weight: 600;
+        }
+        .demo-badge {
+            margin-top: 1.5rem;
+            background: rgba(46, 204, 113, 0.12);
+            border-radius: 1.2rem;
+            padding: 0.8rem;
+            text-align: center;
+            font-size: 0.75rem;
+            color: #bbe5d3;
+        }
+        .message-area {
+            margin-top: 1rem;
+            font-size: 0.8rem;
+            text-align: center;
+            min-height: 44px;
+            color: #f5bc70;
+        }
+        .error-msg { color: #ffb47b; background: rgba(220,80,40,0.15); padding: 0.5rem; border-radius: 1rem; }
+        .success-msg { color: #b0ffcf; background: rgba(46,204,113,0.2); }
+
+        /* ========= DASHBOARD SIDEBAR & MAIN (shown after login) ========= */
+        .dashboard-wrapper {
+            display: none;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+        .dashboard-wrapper.visible {
+            display: block;
+            opacity: 1;
+        }
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 280px;
+            height: 100vh;
+            background: linear-gradient(180deg, #0a2f2a 0%, #051f1c 100%);
+            color: white;
+            z-index: 100;
+            box-shadow: 2px 0 20px rgba(0,0,0,0.1);
+            overflow-y: auto;
+        }
+        .logo-area {
+            padding: 2rem 1.5rem 1.5rem;
+            border-bottom: 1px solid rgba(70, 170, 120, 0.3);
+            margin-bottom: 2rem;
+            cursor: pointer;
+        }
+        .logo-area h2 {
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .nav-menu {
+            padding: 0 1rem;
+        }
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 0.85rem 1rem;
+            margin: 0.4rem 0;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: #d0e6dd;
+            font-weight: 500;
+        }
+        .nav-item.active {
+            background: linear-gradient(90deg, #2ecc71, #27ae60);
+            box-shadow: 0 2px 8px rgba(46,204,113,0.3);
+            color: white;
+        }
+        .main-content {
+            margin-left: 280px;
+            padding: 1.5rem 2rem;
+            min-height: 100vh;
+        }
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            background: white;
+            padding: 1rem 1.8rem;
+            border-radius: 24px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        .page-title h1 { font-size: 1.8rem; color: #1a3a33; }
+        .user-avatar {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: #f0f7f4;
+            padding: 0.5rem 1rem;
+            border-radius: 30px;
+            cursor: pointer;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        .stat-card {
+            background: white;
+            padding: 1.3rem;
+            border-radius: 24px;
+            border-left: 4px solid #2ecc71;
+            cursor: pointer;
+        }
+        .dashboard-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 1.8rem;
+            margin-bottom: 1.8rem;
+        }
+        .card {
+            background: white;
+            border-radius: 24px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+        }
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+            border-bottom: 2px solid #ecfdf5;
+            padding-bottom: 0.5rem;
+        }
+        .bin-item, .alert-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.8rem;
+            border-bottom: 1px solid #eef3ef;
+        }
+        .progress-bar-bg {
+            width: 100px;
+            height: 6px;
+            background: #e2e8f0;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .progress-fill { height: 100%; border-radius: 10px; }
+        .btn-sm {
+            background: #2ecc71;
+            border: none;
+            padding: 0.2rem 0.8rem;
+            border-radius: 20px;
+            color: white;
+            cursor: pointer;
+            font-size: 0.7rem;
+        }
+        canvas { max-height: 240px; width: 100%; }
+        @media (max-width: 768px) {
+            .sidebar { transform: translateX(-100%); }
+            .main-content { margin-left: 0; }
+        }
+        .logout-footer {
+            margin-top: 2rem;
+            text-align: center;
+        }
+        .logout-btn {
+            background: #2c3e2b;
+            border: none;
+            padding: 0.6rem 1.5rem;
+            border-radius: 40px;
+            color: white;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+<!-- AUTH OVERLAY (Login / Signup combined) -->
+<div class="auth-overlay" id="authOverlay">
+    <div class="login-container" id="authContainer">
+        <!-- dynamic content injected by JS: login or signup form -->
+    </div>
+</div>
+
+<!-- MAIN DASHBOARD (hidden until login) -->
+<div class="dashboard-wrapper" id="dashboardWrapper">
+    <div class="sidebar">
+        <div class="logo-area" id="dashLogo">
+            <h2><i class="fas fa-leaf"></i> SmartSeg</h2>
+            <p>AI-Powered Waste Management</p>
+        </div>
+        <div class="nav-menu">
+            <div class="nav-item" data-page="dashboard"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></div>
+            <div class="nav-item" data-page="waste-monitoring"><i class="fas fa-video"></i><span>Waste Monitoring</span></div>
+            <div class="nav-item" data-page="bin-management"><i class="fas fa-trash-alt"></i><span>Bin Management</span></div>
+            <div class="nav-item" data-page="ai-training"><i class="fas fa-robot"></i><span>AI Training</span></div>
+            <div class="nav-item" data-page="reports"><i class="fas fa-chart-line"></i><span>Reports & Alerts</span></div>
+        </div>
+        <div class="logout-footer" style="margin-top: 2rem; padding: 1rem;">
+            <button id="logoutSidebarBtn" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</button>
+        </div>
+    </div>
+    <div class="main-content">
+        <div class="top-bar">
+            <div class="page-title" id="dashPageTitle"><h1>Smart Segregation Dashboard</h1><p>Real-time analytics</p></div>
+            <div class="user-avatar" id="userMenuBtn"><div class="avatar-icon"><i class="fas fa-user-check"></i></div><div class="user-name" id="userNameDisplay">Operator</div></div>
+        </div>
+        <div id="dynamicPageContainer" class="page-container">Loading...</div>
+    </div>
+</div>
+
+<script>
+    // ---------- USER DATABASE (demo) ----------
+    let users = [
+        { username: "admin", password: "segregate2025", role: "System Administrator" },
+        { username: "operator", password: "greenbin", role: "Waste Operator" },
+        { username: "supervisor", password: "eco123", role: "Site Supervisor" }
+    ];
+    let currentUser = null;
+
+    // ---------- Dashboard Shared Data ----------
+    let activePage = "dashboard";
+    let detectionInterval = null;
+    let isDetecting = true;
+    let currentDetection = null;
+    let detectionHistory = [];
+    let performanceChart = null;
+    
+    const bins = [
+        { name: "Organic Waste", location: "Zone A - Kitchen", fill: 78 },
+        { name: "Recyclables", location: "Zone B - Paper/Plastic", fill: 92 },
+        { name: "Hazardous Waste", location: "Zone C - Lab", fill: 45 },
+        { name: "Residual Waste", location: "Zone D - Landfill", fill: 63 },
+        { name: "E-Waste", location: "Zone E - Electronics", fill: 31 }
+    ];
+    const alertsList = [
+        { title: "Recyclables bin at 92% - Schedule pickup", time: "2 hours ago", icon: "fas fa-truck", type: "warning" },
+        { title: "AI model update available (v2.4.1)", time: "5 hours ago", icon: "fas fa-download", type: "info" },
+        { title: "Sensor #B3 offline", time: "Yesterday", icon: "fas fa-wifi", type: "danger" }
+    ];
+
+    // ---------- AUTH LOGIC (Login / Signup) ----------
+    const authOverlay = document.getElementById('authOverlay');
+    const dashboardWrapper = document.getElementById('dashboardWrapper');
+    let currentAuthMode = 'login'; // 'login' or 'signup'
+
+    function renderAuthForm() {
+        const container = document.getElementById('authContainer');
+        if (currentAuthMode === 'login') {
+            container.innerHTML = `
+                <div class="login-card">
+                    <div class="brand"><div class="icon-circle"><i class="fas fa-leaf"></i></div><h1>Smart Segregation</h1><div class="sub"><i class="fas fa-recycle"></i><span>AI-Powered Waste Management</span></div></div>
+                    <form id="loginFormAuth">
+                        <div class="input-group"><label><i class="fas fa-user"></i> Username</label><input type="text" id="authUsername" class="input-field" placeholder="admin / operator"></div>
+                        <div class="input-group"><label><i class="fas fa-lock"></i> Password</label><input type="password" id="authPassword" class="input-field" placeholder="••••••"></div>
+                        <button type="submit" class="login-btn"><i class="fas fa-sign-in-alt"></i> Login to Dashboard</button>
+                    </form>
+                    <div class="toggle-link" id="toggleAuthLink">Don't have an account? <span>Sign up</span></div>
+                    <div class="demo-badge"><i class="fas fa-flask"></i> Demo: admin / segregate2025 &nbsp;|&nbsp; operator / greenbin</div>
+                    <div id="authMessage" class="message-area"></div>
+                </div>
+            `;
+        } else {
+            container.innerHTML = `
+                <div class="login-card">
+                    <div class="brand"><div class="icon-circle"><i class="fas fa-user-plus"></i></div><h1>Create Account</h1><div class="sub"><i class="fas fa-recycle"></i><span>Join Smart Segregation</span></div></div>
+                    <form id="signupFormAuth">
+                        <div class="input-group"><label><i class="fas fa-user"></i> Username</label><input type="text" id="signupUsername" class="input-field" placeholder="choose username"></div>
+                        <div class="input-group"><label><i class="fas fa-lock"></i> Password</label><input type="password" id="signupPassword" class="input-field" placeholder="create password"></div>
+                        <div class="input-group"><label><i class="fas fa-badge-check"></i> Role</label><input type="text" id="signupRole" class="input-field" placeholder="e.g., Waste Manager" value="Waste Manager"></div>
+                        <button type="submit" class="login-btn"><i class="fas fa-user-plus"></i> Sign Up & Continue</button>
+                    </form>
+                    <div class="toggle-link" id="toggleAuthLink">Already have an account? <span>Login</span></div>
+                    <div id="authMessage" class="message-area"></div>
+                </div>
+            `;
+        }
+        document.getElementById('toggleAuthLink')?.addEventListener('click', () => {
+            currentAuthMode = currentAuthMode === 'login' ? 'signup' : 'login';
+            renderAuthForm();
+        });
+        if (currentAuthMode === 'login') {
+            document.getElementById('loginFormAuth')?.addEventListener('submit', handleLogin);
+        } else {
+            document.getElementById('signupFormAuth')?.addEventListener('submit', handleSignup);
+        }
+    }
+
+    function showAuthMessage(msg, isError = true) {
+        const msgDiv = document.getElementById('authMessage');
+        if(msgDiv) {
+            msgDiv.innerHTML = `<div class="${isError ? 'error-msg' : 'success-msg'}">${msg}</div>`;
+            setTimeout(() => { if(msgDiv) msgDiv.innerHTML = ''; }, 3000);
+        }
+    }
+
+    function handleLogin(e) {
+        e.preventDefault();
+        const username = document.getElementById('authUsername').value.trim();
+        const password = document.getElementById('authPassword').value;
+        const user = users.find(u => u.username === username && u.password === password);
+        if(user) {
+            currentUser = user;
+            showAuthMessage(`✅ Welcome ${user.role}! Redirecting...`, false);
+            setTimeout(() => {
+                authOverlay.classList.add('hidden');
+                dashboardWrapper.classList.add('visible');
+                document.getElementById('userNameDisplay').innerText = user.username;
+                initDashboard();
+            }, 800);
+        } else {
+            showAuthMessage('❌ Invalid credentials. Try admin/segregate2025', true);
+        }
+    }
+
+    function handleSignup(e) {
+        e.preventDefault();
+        const newUser = document.getElementById('signupUsername').value.trim();
+        const newPass = document.getElementById('signupPassword').value;
+        const newRole = document.getElementById('signupRole').value.trim() || "New User";
+        if(!newUser || !newPass) {
+            showAuthMessage('Please fill all fields', true);
+            return;
+        }
+        if(users.find(u => u.username === newUser)) {
+            showAuthMessage('Username already exists! Try login.', true);
+            return;
+        }
+        const newUserObj = { username: newUser, password: newPass, role: newRole };
+        users.push(newUserObj);
+        currentUser = newUserObj;
+        showAuthMessage(`🎉 Account created! Welcome ${newRole}. Redirecting...`, false);
+        setTimeout(() => {
+            authOverlay.classList.add('hidden');
+            dashboardWrapper.classList.add('visible');
+            document.getElementById('userNameDisplay').innerText = newUser;
+            initDashboard();
+        }, 800);
+    }
+
+    // ---------- DASHBOARD MODULES (unified) ----------
+    function setActiveNav(pageId) {
+        document.querySelectorAll('.nav-item').forEach(item => {
+            if(item.getAttribute('data-page') === pageId) item.classList.add('active');
+            else item.classList.remove('active');
+        });
+    }
+
+    function renderDashboardPage() {
+        const container = document.getElementById('dynamicPageContainer');
+        container.innerHTML = `
+            <div class="stats-grid">
+                <div class="stat-card"><h3>Total Waste Processed</h3><div class="stat-value">12,876 kg</div><div>↑ 12% this week</div></div>
+                <div class="stat-card"><h3>Recycling Rate</h3><div class="stat-value">68.4%</div><div>↑ 5.2% vs last month</div></div>
+                <div class="stat-card"><h3>Active Bins</h3><div class="stat-value">24 / 28</div><div>${bins.filter(b=>b.fill>=85).length} bins near capacity</div></div>
+                <div class="stat-card"><h3>CO₂ Saved</h3><div class="stat-value">3.2 tons</div><div>🌳 140 trees</div></div>
+            </div>
+            <div class="dashboard-row">
+                <div class="card"><div class="card-header"><h3><i class="fas fa-chart-pie"></i> Waste Composition</h3></div><canvas id="compChart" height="200"></canvas><div class="flex-between"><span>AI Accuracy: 94.7%</span></div></div>
+                <div class="card"><div class="card-header"><h3><i class="fas fa-chart-line"></i> Weekly Trend</h3></div><canvas id="trendChart" height="200"></canvas></div>
+            </div>
+            <div class="dashboard-row">
+                <div class="card"><div class="card-header"><h3><i class="fas fa-dumpster"></i> Bin Status</h3></div><div id="binListHome"></div></div>
+                <div class="card"><div class="card-header"><h3><i class="fas fa-bell"></i> Recent Alerts</h3></div><div id="alertListHome"></div><div class="ai-insight" style="margin-top:1rem;background:#eefaf3;padding:0.8rem;border-radius:20px;"><i class="fas fa-brain"></i> <strong>AI Insight:</strong> Optimize organic sorting at Zone A.</div></div>
+            </div>
+        `;
+        // bins list
+        const binDiv = document.getElementById('binListHome');
+        if(binDiv) binDiv.innerHTML = bins.map(b => `<div class="bin-item"><div><b>${b.name}</b><br/><small>${b.location}</small></div><div>${b.fill}%<div class="progress-bar-bg"><div class="progress-fill" style="width:${b.fill}%; background:${b.fill>85?'#e74c3c':'#2ecc71'}"></div></div></div></div>`).join('');
+        const alertDiv = document.getElementById('alertListHome');
+        if(alertDiv) alertDiv.innerHTML = alertsList.slice(0,3).map(a => `<div class="alert-item"><i class="${a.icon}"></i> <span>${a.title}</span><small>${a.time}</small></div>`).join('');
+        // charts
+        const pieCtx = document.getElementById('compChart')?.getContext('2d');
+        if(pieCtx) new Chart(pieCtx, { type:'pie', data:{ labels:['Organic','Recyclable','Hazardous','Residual','E-Waste'], datasets:[{ data:[42,28,8,15,7], backgroundColor:['#2ecc71','#3498db','#e67e22','#95a5a6','#f1c40f'] }] } });
+        const lineCtx = document.getElementById('trendChart')?.getContext('2d');
+        if(lineCtx) new Chart(lineCtx, { type:'line', data:{ labels:['Mon','Tue','Wed','Thu','Fri','Sat','Sun'], datasets:[{ label:'Organic (kg)', data:[420,480,450,520,580,610,550], borderColor:'#2ecc71' },{ label:'Recyclable', data:[310,345,370,390,410,445,430], borderColor:'#3498db' }] } });
+    }
+
+    function renderWasteMonitoring() {
+        const container = document.getElementById('dynamicPageContainer');
+        container.innerHTML = `
+            <div style="display:grid; grid-template-columns:1fr 320px; gap:1.5rem; align-items:start;">
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-camera"></i> Live Camera Feed</h3>
+                        <span id="livebadge" style="background:#e74c3c; color:white; padding:2px 12px; border-radius:20px; font-size:0.75rem; font-weight:700;">● LIVE</span>
+                    </div>
+
+                    <!-- Camera video element (real webcam) -->
+                    <div style="position:relative; background:#0d1f1a; border-radius:16px; overflow:hidden; min-height:320px;">
+                        <video id="webcamVideo" autoplay playsinline muted
+                            style="width:100%; border-radius:16px; display:block; max-height:380px; object-fit:cover;"></video>
+                        <!-- overlay bounding box canvas drawn on top of video -->
+                        <canvas id="overlayCanvas"
+                            style="position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; border-radius:16px;"></canvas>
+                        <!-- shown when camera is off -->
+                        <div id="camOffMsg" style="display:none; position:absolute; inset:0; align-items:center; justify-content:center; flex-direction:column; gap:1rem; color:#9bc5b4; text-align:center; padding:2rem;">
+                            <i class="fas fa-video-slash" style="font-size:3rem; color:#2ecc71;"></i>
+                            <p style="font-size:1rem; font-weight:500;">Camera is off or permission denied</p>
+                            <p style="font-size:0.8rem;">Click <strong>Start Camera</strong> below or use <strong>Upload Image</strong> to test detection</p>
+                        </div>
+                    </div>
+
+                    <!-- Controls row -->
+                    <div style="display:flex; flex-wrap:wrap; gap:0.8rem; margin-top:1rem; align-items:center;">
+                        <button id="startCamBtn" class="btn-sm" style="background:#2ecc71; padding:0.45rem 1rem; font-size:0.85rem;">
+                            <i class="fas fa-video"></i> Start Camera
+                        </button>
+                        <button id="stopCamBtn" class="btn-sm" style="background:#c0392b; padding:0.45rem 1rem; font-size:0.85rem;" disabled>
+                            <i class="fas fa-stop"></i> Stop Camera
+                        </button>
+                        <button id="captureBtn" class="btn-sm" style="background:#27ae60; padding:0.45rem 1rem; font-size:0.85rem;" disabled>
+                            <i class="fas fa-camera"></i> Capture & Detect
+                        </button>
+                        <label style="cursor:pointer;">
+                            <span class="btn-sm" style="background:#6c8b81; padding:0.45rem 1rem; font-size:0.85rem; display:inline-block;">
+                                <i class="fas fa-upload"></i> Upload Image
+                            </span>
+                            <input type="file" id="uploadImgInput" accept="image/*" style="display:none;">
+                        </label>
+                        <button id="autoDetectToggle" class="btn-sm" style="background:#1a6b4a; padding:0.45rem 1rem; font-size:0.85rem;">
+                            <i class="fas fa-robot"></i> Auto: ON
+                        </button>
+                        <button id="clearHistoryBtn" class="btn-sm" style="background:#95a5a6; padding:0.45rem 1rem; font-size:0.85rem;">
+                            <i class="fas fa-trash"></i> Clear Log
+                        </button>
+                    </div>
+
+                    <!-- Camera permission tip -->
+                    <p id="camStatusTip" style="font-size:0.75rem; color:#6c8b81; margin-top:0.6rem;">
+                        <i class="fas fa-info-circle"></i> Click <strong>Start Camera</strong> — your browser will ask for camera permission. Allow it.
+                    </p>
+                </div>
+
+                <!-- Detection panel -->
+                <div class="card" style="position:sticky; top:1rem;">
+                    <h3 style="margin-bottom:1rem; color:#1a3a33;"><i class="fas fa-microchip"></i> AI Detection</h3>
+
+                    <div id="detectionResult" style="background:#f0faf4; border-radius:16px; padding:1rem; margin-bottom:1rem; min-height:120px; display:flex; flex-direction:column; gap:0.5rem; justify-content:center; align-items:center; text-align:center; color:#6c8b81;">
+                        <i class="fas fa-search" style="font-size:2rem; color:#b2dfdb;"></i>
+                        <span style="font-size:0.85rem;">Waiting for detection...</span>
+                    </div>
+
+                    <div style="margin-bottom:1rem;">
+                        <div style="display:flex; justify-content:space-between; font-size:0.8rem; color:#6c8b81; margin-bottom:4px;">
+                            <span>Confidence</span><span id="detectConf">0%</span>
+                        </div>
+                        <div class="progress-bar-bg" style="width:100%; height:8px;">
+                            <div id="confFill" style="width:0%; height:8px; background:#2ecc71; border-radius:10px; transition:width 0.4s;"></div>
+                        </div>
+                    </div>
+
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.5rem; margin-bottom:1rem; font-size:0.82rem;">
+                        <div style="background:#ecfdf5; padding:0.6rem; border-radius:12px;"><div style="color:#6c8b81;">Item</div><strong id="detectItem">—</strong></div>
+                        <div style="background:#ecfdf5; padding:0.6rem; border-radius:12px;"><div style="color:#6c8b81;">Category</div><strong id="detectCat">—</strong></div>
+                        <div style="background:#ecfdf5; padding:0.6rem; border-radius:12px; grid-column:span 2;"><div style="color:#6c8b81;">Recommended Bin</div><strong id="detectBin">—</strong></div>
+                    </div>
+
+                    <h4 style="margin-bottom:0.5rem; font-size:0.85rem; color:#1a3a33;"><i class="fas fa-history"></i> Detection Log</h4>
+                    <div id="historyListMonitor" style="max-height:260px; overflow-y:auto; font-size:0.8rem;"></div>
+                </div>
+            </div>
+        `;
+
+        initRealCamera();
+    }
+
+    function initRealCamera() {
+        let stream = null;
+        let autoDetectOn = true;
+
+        const video        = document.getElementById('webcamVideo');
+        const overlay      = document.getElementById('overlayCanvas');
+        const camOffMsg    = document.getElementById('camOffMsg');
+        const startBtn     = document.getElementById('startCamBtn');
+        const stopBtn      = document.getElementById('stopCamBtn');
+        const captureBtn   = document.getElementById('captureBtn');
+        const uploadInput  = document.getElementById('uploadImgInput');
+        const autoBtn      = document.getElementById('autoDetectToggle');
+        const clearBtn     = document.getElementById('clearHistoryBtn');
+        const statusTip    = document.getElementById('camStatusTip');
+
+        // Waste items for simulated AI classification
+        const wasteItems = [
+            { name:'Plastic Bottle',  category:'Recyclable', bin:'Recyclables Bin',  color:'#3498db', conf:[88,97] },
+            { name:'Apple Core',      category:'Organic',    bin:'Organic Bin',       color:'#2ecc71', conf:[91,99] },
+            { name:'AA Battery',      category:'Hazardous',  bin:'Hazardous Bin',     color:'#e67e22', conf:[85,95] },
+            { name:'Cardboard Box',   category:'Recyclable', bin:'Recyclables Bin',   color:'#3498db', conf:[89,96] },
+            { name:'Old Phone',       category:'E-Waste',    bin:'E-Waste Bin',       color:'#f1c40f', conf:[82,94] },
+            { name:'Food Wrapper',    category:'Residual',   bin:'Residual Bin',      color:'#95a5a6', conf:[75,90] },
+            { name:'Glass Bottle',    category:'Recyclable', bin:'Recyclables Bin',   color:'#3498db', conf:[90,98] },
+            { name:'Banana Peel',     category:'Organic',    bin:'Organic Bin',       color:'#2ecc71', conf:[93,99] },
+        ];
+
+        const catColors = { Recyclable:'#3498db', Organic:'#2ecc71', Hazardous:'#e67e22', 'E-Waste':'#f1c40f', Residual:'#95a5a6' };
+
+        // ---------- Start Camera ----------
+        startBtn.addEventListener('click', async () => {
+            try {
+                statusTip.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Requesting camera permission...';
+                stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode:'environment', width:{ideal:1280}, height:{ideal:720} }, audio:false });
+                video.srcObject = stream;
+                video.style.display = 'block';
+                camOffMsg.style.display = 'none';
+                startBtn.disabled = true;
+                stopBtn.disabled = false;
+                captureBtn.disabled = false;
+                document.getElementById('livebage') && (document.getElementById('livebadge').style.background = '#e74c3c');
+                statusTip.innerHTML = '<i class="fas fa-check-circle" style="color:#2ecc71"></i> Camera active — <strong>Capture & Detect</strong> or wait for auto-detection every 3 seconds.';
+
+                // Start auto-detection loop
+                if(detectionInterval) clearInterval(detectionInterval);
+                detectionInterval = setInterval(() => {
+                    if(autoDetectOn && stream) runDetection();
+                }, 3000);
+
+            } catch(err) {
+                video.style.display = 'none';
+                camOffMsg.style.display = 'flex';
+                if(err.name === 'NotAllowedError') {
+                    statusTip.innerHTML = '<i class="fas fa-exclamation-triangle" style="color:#e74c3c"></i> <strong>Permission denied.</strong> Click the camera/lock icon in your browser address bar and allow camera access, then try again.';
+                } else if(err.name === 'NotFoundError') {
+                    statusTip.innerHTML = '<i class="fas fa-exclamation-triangle" style="color:#e74c3c"></i> <strong>No camera found.</strong> Use <strong>Upload Image</strong> instead.';
+                } else {
+                    statusTip.innerHTML = `<i class="fas fa-exclamation-triangle" style="color:#e74c3c"></i> Error: ${err.message}. Try <strong>Upload Image</strong>.`;
+                }
+            }
+        });
+
+        // ---------- Stop Camera ----------
+        stopBtn.addEventListener('click', () => {
+            if(stream) { stream.getTracks().forEach(t => t.stop()); stream = null; }
+            if(detectionInterval) { clearInterval(detectionInterval); detectionInterval = null; }
+            video.srcObject = null;
+            video.style.display = 'none';
+            camOffMsg.style.display = 'flex';
+            startBtn.disabled = false;
+            stopBtn.disabled = true;
+            captureBtn.disabled = true;
+            statusTip.innerHTML = '<i class="fas fa-info-circle"></i> Camera stopped. Click <strong>Start Camera</strong> to resume.';
+        });
+
+        // ---------- Capture & Detect (manual) ----------
+        captureBtn.addEventListener('click', () => { runDetection(true); });
+
+        // ---------- Auto-detect toggle ----------
+        autoBtn.addEventListener('click', () => {
+            autoDetectOn = !autoDetectOn;
+            autoBtn.innerHTML = `<i class="fas fa-robot"></i> Auto: ${autoDetectOn ? 'ON' : 'OFF'}`;
+            autoBtn.style.background = autoDetectOn ? '#1a6b4a' : '#6c8b81';
+        });
+
+        // ---------- Upload Image ----------
+        uploadInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if(!file) return;
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                const img = new Image();
+                img.onload = () => {
+                    // Draw uploaded image on the video area via overlay
+                    video.style.display = 'none';
+                    overlay.style.position = 'relative';
+                    overlay.style.width = '100%';
+                    overlay.style.height = 'auto';
+                    const tempCanvas = document.createElement('canvas');
+                    tempCanvas.width  = img.naturalWidth;
+                    tempCanvas.height = img.naturalHeight;
+                    tempCanvas.getContext('2d').drawImage(img, 0, 0);
+                    // Show image as preview replacing video
+                    video.style.display = 'none';
+                    const previewDiv = document.querySelector('#dynamicPageContainer .card video')?.parentElement;
+                    // Use a dedicated preview img tag
+                    let previewImg = document.getElementById('uploadPreviewImg');
+                    if(!previewImg) {
+                        previewImg = document.createElement('img');
+                        previewImg.id = 'uploadPreviewImg';
+                        previewImg.style.cssText = 'width:100%; border-radius:16px; display:block; max-height:380px; object-fit:cover;';
+                        video.parentElement.insertBefore(previewImg, video);
+                    }
+                    previewImg.src = ev.target.result;
+                    statusTip.innerHTML = '<i class="fas fa-check-circle" style="color:#2ecc71"></i> Image loaded — running AI detection...';
+                    setTimeout(() => runDetection(true, tempCanvas), 600);
+                };
+                img.src = ev.target.result;
+            };
+            reader.readAsDataURL(file);
+            // reset so same file can be uploaded again
+            e.target.value = '';
+        });
+
+        // ---------- Clear log ----------
+        clearBtn.addEventListener('click', () => {
+            detectionHistory = [];
+            document.getElementById('historyListMonitor').innerHTML = '<div style="color:#aaa; text-align:center; padding:1rem;">Log cleared</div>';
+        });
+
+        // ---------- Core detection function ----------
+        function runDetection(manual = false, sourceCanvas = null) {
+            // Pick a random waste item (simulates ML model response)
+            const item = wasteItems[Math.floor(Math.random() * wasteItems.length)];
+            const [lo, hi] = item.conf;
+            const conf = Math.round(lo + Math.random() * (hi - lo));
+
+            // Draw bounding box overlay on the video
+            drawBoundingBox(item, conf);
+
+            // Update detection panel
+            const resultDiv = document.getElementById('detectionResult');
+            const catColor  = catColors[item.category] || '#2ecc71';
+            resultDiv.innerHTML = `
+                <div style="width:48px; height:48px; background:${catColor}22; border-radius:12px; display:flex; align-items:center; justify-content:center; margin-bottom:0.3rem;">
+                    <i class="fas ${getCatIcon(item.category)}" style="font-size:1.5rem; color:${catColor};"></i>
+                </div>
+                <strong style="font-size:1rem; color:#1a3a33;">${item.name}</strong>
+                <span style="background:${catColor}22; color:${catColor}; padding:2px 10px; border-radius:20px; font-size:0.75rem; font-weight:600;">${item.category}</span>
+            `;
+            document.getElementById('detectItem').textContent  = item.name;
+            document.getElementById('detectCat').textContent   = item.category;
+            document.getElementById('detectCat').style.color   = catColor;
+            document.getElementById('detectBin').textContent   = item.bin;
+            document.getElementById('detectConf').textContent  = conf + '%';
+            document.getElementById('confFill').style.width    = conf + '%';
+            document.getElementById('confFill').style.background = conf >= 90 ? '#2ecc71' : conf >= 75 ? '#f39c12' : '#e74c3c';
+
+            // Update bin fill level
+            const binMap = { Recyclable:1, Organic:0, Hazardous:2, 'E-Waste':4, Residual:3 };
+            const binIdx = binMap[item.category];
+            if(binIdx !== undefined) bins[binIdx].fill = Math.min(100, bins[binIdx].fill + 1);
+
+            // Log to history
+            const entry = { ...item, confidence: conf, timestamp: new Date() };
+            detectionHistory.unshift(entry);
+            if(detectionHistory.length > 20) detectionHistory.pop();
+
+            const histDiv = document.getElementById('historyListMonitor');
+            if(histDiv) {
+                histDiv.innerHTML = detectionHistory.map(d => `
+                    <div style="display:flex; justify-content:space-between; align-items:center; padding:6px 8px; border-bottom:1px solid #eef3ef;">
+                        <span><i class="fas ${getCatIcon(d.category)}" style="color:${catColors[d.category]}; margin-right:5px;"></i><b>${d.name}</b></span>
+                        <span style="color:${catColors[d.category]}; font-weight:600; font-size:0.75rem;">${d.confidence}%</span>
+                        <small style="color:#aaa;">${new Date(d.timestamp).toLocaleTimeString()}</small>
+                    </div>`).join('');
+            }
+        }
+
+        // ---------- Bounding box overlay ----------
+        function drawBoundingBox(item, conf) {
+            const videoEl = video;
+            const cvs     = overlay;
+            if(!cvs) return;
+            const w = videoEl.videoWidth  || videoEl.offsetWidth  || 640;
+            const h = videoEl.videoHeight || videoEl.offsetHeight || 360;
+            cvs.width  = w;
+            cvs.height = h;
+            const ctx = cvs.getContext('2d');
+            ctx.clearRect(0, 0, w, h);
+
+            const bx = w * 0.3, by = h * 0.25, bw = w * 0.4, bh = h * 0.5;
+            const color = catColors[item.category] || '#2ecc71';
+
+            // box
+            ctx.strokeStyle = color;
+            ctx.lineWidth   = 3;
+            ctx.strokeRect(bx, by, bw, bh);
+
+            // corner accents
+            const cs = 16;
+            ctx.lineWidth = 4;
+            [[bx,by],[bx+bw,by],[bx,by+bh],[bx+bw,by+bh]].forEach(([cx,cy], i) => {
+                ctx.beginPath();
+                ctx.moveTo(cx + (i%2===0?cs:-cs), cy);
+                ctx.lineTo(cx, cy);
+                ctx.lineTo(cx, cy + (i<2?cs:-cs));
+                ctx.stroke();
+            });
+
+            // label pill
+            ctx.fillStyle = color;
+            ctx.roundRect(bx, by - 28, bw, 26, 6);
+            ctx.fill();
+            ctx.fillStyle = 'white';
+            ctx.font = 'bold 13px Inter, sans-serif';
+            ctx.fillText(`${item.name}  ${conf}%`, bx + 8, by - 10);
+
+            // fade box after 2.5s
+            setTimeout(() => { if(cvs) cvs.getContext('2d').clearRect(0,0,cvs.width,cvs.height); }, 2500);
+        }
+
+        // ---------- Category icon helper ----------
+        function getCatIcon(cat) {
+            return { Organic:'fa-apple-alt', Recyclable:'fa-recycle', Hazardous:'fa-biohazard', 'E-Waste':'fa-microchip', Residual:'fa-trash' }[cat] || 'fa-trash';
+        }
+
+        // Show camera-off message initially
+        video.style.display = 'none';
+        camOffMsg.style.display = 'flex';
+    }
+
+    function renderBinManagement() {
+        const container = document.getElementById('dynamicPageContainer');
+        container.innerHTML = `<div class="card"><div class="card-header"><h3>All Bins</h3><button class="btn-sm" id="refreshBinBtn">Refresh</button></div><div id="fullBinList"></div></div>`;
+        function refresh() { const listDiv=document.getElementById('fullBinList'); if(listDiv) listDiv.innerHTML=bins.map(b=>`<div class="bin-item"><div><b>${b.name}</b><br/>${b.location}</div><div>${b.fill}%<div class="progress-bar-bg"><div class="progress-fill" style="width:${b.fill}%; background:${b.fill>85?'#e74c3c':'#2ecc71'}"></div></div><button class="btn-sm" onclick="alert('Schedule pickup for ${b.name}')">Notify</button></div></div>`).join(''); }
+        refresh();
+        document.getElementById('refreshBinBtn')?.addEventListener('click',()=>{ bins.forEach(b=>{ let change=(Math.random()-0.5)*8; b.fill=Math.min(100,Math.max(0,Math.round(b.fill+change))); }); refresh(); });
+    }
+
+    function renderAITraining() {
+        const container = document.getElementById('dynamicPageContainer');
+        container.innerHTML = `<div class="stats-grid"><div class="stat-card"><h3>Total Images</h3><div class="stat-value">9,797</div></div><div class="stat-card"><h3>Model Accuracy</h3><div class="stat-value" id="modelAcc">94.7%</div></div></div><div class="card"><div class="card-header"><h3>Training Controls</h3></div><button class="btn-sm" id="trainAiBtn">Start Training (50 epochs)</button><div id="trainProgressArea" style="display:none; margin-top:1rem;"><div class="progress-bar-bg" style="width:100%"><div id="trainFillBar" style="width:0%; height:8px;"></div></div><span id="epochStatus">Epoch 0/50</span></div></div><div class="card"><canvas id="perfLineChart" height="180"></canvas></div>`;
+        const ctxPerf = document.getElementById('perfLineChart')?.getContext('2d');
+        if(ctxPerf) new Chart(ctxPerf, { type:'line', data:{ labels:['W1','W2','W3','W4','W5','W6'], datasets:[{ label:'Accuracy', data:[88,90,92,93.5,94.2,94.7], borderColor:'#2ecc71' }] } });
+        let training=false, intervalId;
+        document.getElementById('trainAiBtn')?.addEventListener('click',()=>{
+            if(training) return; training=true; const btn=document.getElementById('trainAiBtn'); btn.disabled=true; btn.innerText='Training...'; const progDiv=document.getElementById('trainProgressArea'); if(progDiv) progDiv.style.display='block'; let epoch=0, epochs=50; intervalId=setInterval(()=>{ epoch++; const percent=(epoch/epochs)*100; document.getElementById('trainFillBar').style.width=percent+'%'; document.getElementById('epochStatus').innerHTML=`Epoch ${epoch}/${epochs} | Loss: ${(0.4*(1-epoch/epochs)).toFixed(3)}`; if(epoch>=epochs){ clearInterval(intervalId); const newAcc=(92+Math.random()*5).toFixed(1); document.getElementById('modelAcc').innerHTML=newAcc+'%'; alert(`Training complete! Accuracy: ${newAcc}%`); btn.disabled=false; btn.innerText='Start Training'; training=false; setTimeout(()=>{ if(progDiv) progDiv.style.display='none'; },1500); } },200);
+        });
+    }
+
+    function renderReports() {
+        const container = document.getElementById('dynamicPageContainer');
+        container.innerHTML = `<div class="card"><div class="card-header"><h3>All Alerts</h3></div><div id="allAlertsFull"></div></div><div class="card"><canvas id="reportBarChart" height="200"></canvas></div>`;
+        const alertFull=document.getElementById('allAlertsFull'); if(alertFull) alertFull.innerHTML=alertsList.map(a=>`<div class="alert-item"><i class="${a.icon}"></i><strong>${a.title}</strong><small>${a.time}</small></div>`).join('');
+        const barCtx=document.getElementById('reportBarChart')?.getContext('2d'); if(barCtx) new Chart(barCtx,{ type:'bar', data:{ labels:['Organic','Recyclable','Hazardous'], datasets:[{ label:'Weekly (kg)', data:[1250,980,240], backgroundColor:'#2ecc71' }] } });
+    }
+
+    function navigateToPage(pageId) {
+        activePage = pageId;
+        setActiveNav(pageId);
+        if(pageId === 'dashboard') renderDashboardPage();
+        else if(pageId === 'waste-monitoring') renderWasteMonitoring();
+        else if(pageId === 'bin-management') renderBinManagement();
+        else if(pageId === 'ai-training') renderAITraining();
+        else if(pageId === 'reports') renderReports();
+        document.getElementById('dashPageTitle').innerHTML = `<h1>${pageId.replace('-',' ').toUpperCase()}</h1><p>Smart Segregation Module</p>`;
+    }
+
+    function initDashboard() {
+        navigateToPage('dashboard');
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', (e) => { const pg = item.getAttribute('data-page'); navigateToPage(pg); });
+        });
+        document.getElementById('dashLogo')?.addEventListener('click',()=>navigateToPage('dashboard'));
+        document.getElementById('logoutSidebarBtn')?.addEventListener('click',()=>{
+            if(detectionInterval) clearInterval(detectionInterval);
+            dashboardWrapper.classList.remove('visible');
+            authOverlay.classList.remove('hidden');
+            currentUser=null;
+            currentAuthMode='login';
+            renderAuthForm();
+        });
+    }
+
+    // start: show auth
+    renderAuthForm();
+</script>
+</body>
+</html>

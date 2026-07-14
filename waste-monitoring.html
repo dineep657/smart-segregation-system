@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Smart Segregation | AI Waste Monitoring</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #ecfdf5;
+            overflow-x: hidden;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 280px;
+            height: 100vh;
+            background: linear-gradient(180deg, #0a2f2a 0%, #051f1c 100%);
+            color: white;
+            z-index: 100;
+            transition: all 0.3s;
+            box-shadow: 2px 0 20px rgba(0,0,0,0.1);
+            overflow-y: auto;
+        }
+
+        .logo-area {
+            padding: 2rem 1.5rem 1.5rem;
+            border-bottom: 1px solid rgba(70, 170, 120, 0.3);
+            margin-bottom: 2rem;
+            cursor: pointer;
+        }
+        .logo-area h2 {
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 700;
+        }
+        .logo-area h2 i {
+            color: #2ecc71;
+            font-size: 1.8rem;
+        }
+        .logo-area p {
+            font-size: 0.7rem;
+            color: #9bc5b4;
+            margin-top: 0.5rem;
+        }
+
+        .nav-menu {
+            padding: 0 1rem;
+        }
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 0.85rem 1rem;
+            margin: 0.4rem 0;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: #d0e6dd;
+            font-weight: 500;
+        }
+        .nav-item:hover, .nav-item.active {
+            background: rgba(46, 204, 113, 0.2);
+            color: white;
+        }
+        .nav-item.active {
+            background: linear-gradient(90deg, #2ecc71, #27ae60);
+            box-shadow: 0 2px 8px rgba(46,204,113,0.3);
+        }
+        .nav-item i {
+            width: 24px;
+            font-size: 1.2rem;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 280px;
+            padding: 1.5rem 2rem;
+            min-height: 100vh;
+        }
+
+        /* Top Bar */
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            background: white;
+            padding: 1rem 1.8rem;
+            border-radius: 24px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        .page-title h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #1a3a33;
+        }
+        .page-title p {
+            color: #6c8b81;
+            font-size: 0.85rem;
+            margin-top: 0.2rem;
+        }
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        .notification-badge {
+            position: relative;
+            cursor: pointer;
+        }
+        .notification-badge i {
+            font-size: 1.4rem;
+            color: #2c6e55;
+        }
+        .badge {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: #e74c3c;
+            color: white;
+            border-radius: 50%;
+            padding: 2px 6px;
+            font-size: 0.7rem;
+            font-weight: bold;
+        }
+        .user-avatar {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: #f0f7f4;
+            padding: 0.5rem 1rem;
+            border-radius: 30px;
+            cursor: pointer;
+        }
+        .avatar-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .avatar-icon i {
+            font-size: 1.3rem;
+            color: white;
+        }
+        .user-name {
+            font-weight: 600;
+            color: #1e4a3b;
+        }
+
+        /* Camera Feed Section */
+        .camera-section {
+            display: grid;
+            grid-template-columns: 1fr 380px;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .camera-feed {
+            background: white;
+            border-radius: 28px;
+            overflow: hidden;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+        }
+
+        .feed-header {
+            padding: 1.2rem 1.5rem;
+            background: linear-gradient(135deg, #1a3a33, #0e2c26);
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .feed-header h3 {
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .live-badge {
+            background: #e74c3c;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+
+        .video-container {
+            position: relative;
+            background: #000;
+            min-height: 480px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        #cameraCanvas {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        /* Stats Panel */
+        .stats-panel {
+            background: white;
+            border-radius: 28px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+        }
+        .stat-item {
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #ecfdf5;
+        }
+        .stat-label {
+            font-size: 0.8rem;
+            color: #6c8b81;
+            margin-bottom: 0.5rem;
+        }
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: #1a3a33;
+        }
+        .confidence-bar {
+            margin-top: 0.5rem;
+            height: 8px;
+            background: #e2e8f0;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .confidence-fill {
+            height: 100%;
+            background: #2ecc71;
+            border-radius: 10px;
+            transition: width 0.3s;
+        }
+
+        /* Detection History */
+        .detection-history {
+            background: white;
+            border-radius: 28px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+        }
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        .history-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .history-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 0.8rem;
+            border-bottom: 1px solid #ecfdf5;
+            animation: slideIn 0.3s;
+        }
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        .history-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+        .history-icon.organic { background: #e9f9f0; color: #2ecc71; }
+        .history-icon.recyclable { background: #e8f0fe; color: #3498db; }
+        .history-icon.hazardous { background: #fee8e8; color: #e67e22; }
+        .history-details {
+            flex: 1;
+        }
+        .history-type {
+            font-weight: 700;
+            color: #1e4a3b;
+        }
+        .history-time {
+            font-size: 0.7rem;
+            color: #8ba89a;
+        }
+        .history-confidence {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #2ecc71;
+        }
+
+        /* Control Buttons */
+        .control-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+            padding: 1rem;
+        }
+        .btn {
+            flex: 1;
+            padding: 0.8rem;
+            border: none;
+            border-radius: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: 'Inter', sans-serif;
+        }
+        .btn-primary {
+            background: #2ecc71;
+            color: white;
+        }
+        .btn-primary:hover {
+            background: #27ae60;
+            transform: translateY(-2px);
+        }
+        .btn-secondary {
+            background: #ecfdf5;
+            color: #1e4a3b;
+        }
+        .btn-secondary:hover {
+            background: #d4f4e8;
+        }
+
+        @media (max-width: 1024px) {
+            .camera-section {
+                grid-template-columns: 1fr;
+            }
+            .main-content {
+                margin-left: 0;
+            }
+            .sidebar {
+                transform: translateX(-100%);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="logo-area" onclick="location.href='dashboard.html'">
+            <h2><i class="fas fa-leaf"></i> SmartSeg</h2>
+            <p>AI-Powered Waste Management</p>
+        </div>
+        <div class="nav-menu">
+            <div class="nav-item" onclick="location.href='dashboard.html'">
+                <i class="fas fa-tachometer-alt"></i>
+                <span>Dashboard</span>
+            </div>
+            <div class="nav-item active">
+                <i class="fas fa-video"></i>
+                <span>Waste Monitoring</span>
+            </div>
+            <div class="nav-item" onclick="location.href='bin-management.html'">
+                <i class="fas fa-trash-alt"></i>
+                <span>Bin Management</span>
+            </div>
+            <div class="nav-item" onclick="location.href='ai-training.html'">
+                <i class="fas fa-robot"></i>
+                <span>AI Training</span>
+            </div>
+            <div class="nav-item" onclick="location.href='reports.html'">
+                <i class="fas fa-chart-line"></i>
+                <span>Reports</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div class="top-bar">
+            <div class="page-title">
+                <h1><i class="fas fa-eye"></i> AI Waste Monitoring</h1>
+                <p><i class="fas fa-microchip"></i> Real-time object detection & segregation analysis</p>
+            </div>
+            <div class="user-info">
+                <div class="notification-badge">
+                    <i class="fas fa-bell"></i>
+                    <span class="badge" id="notificationBadge">3</span>
+                </div>
+                <div class="user-avatar">
+                    <div class="avatar-icon"><i class="fas fa-user-check"></i></div>
+                    <div class="user-name">Operator</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="camera-section">
+            <div class="camera-feed">
+                <div class="feed-header">
+                    <h3><i class="fas fa-camera"></i> Live Camera Feed | Conveyor Belt A</h3>
+                    <span class="live-badge"><i class="fas fa-circle"></i> LIVE</span>
+                </div>
+                <div class="video-container">
+                    <canvas id="cameraCanvas" width="800" height="480" style="width:100%; height:auto; background: #1a1a2e;"></canvas>
+                </div>
+                <div class="control-buttons">
+                    <button class="btn btn-primary" id="toggleDetectionBtn">
+                        <i class="fas fa-pause"></i> Pause Detection
+                    </button>
+                    <button class="btn btn-secondary" id="clearHistoryBtn">
+                        <i class="fas fa-trash"></i> Clear History
+                    </button>
+                </div>
+            </div>
+
+            <div class="stats-panel">
+                <h3 style="margin-bottom: 1rem; color: #1a3a33;">
+                    <i class="fas fa-chart-simple"></i> Current Detection
+                </h3>
+                <div class="stat-item">
+                    <div class="stat-label">Detected Item</div>
+                    <div class="stat-value" id="currentItem">—</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Confidence Score</div>
+                    <div class="stat-value" id="confidenceValue">0%</div>
+                    <div class="confidence-bar">
+                        <div class="confidence-fill" id="confidenceFill" style="width: 0%"></div>
+                    </div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Waste Category</div>
+                    <div class="stat-value" id="wasteCategory">—</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Recommended Bin</div>
+                    <div class="stat-value" id="recommendedBin">—</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="detection-history">
+            <div class="history-header">
+                <h3><i class="fas fa-history"></i> Recent Detections</h3>
+                <span class="badge-light" id="historyCount" style="background: #ecfdf5; padding: 4px 12px; border-radius: 20px;">0 items</span>
+            </div>
+            <div class="history-list" id="historyList">
+                <div style="text-align: center; color: #8ba89a; padding: 2rem;">
+                    <i class="fas fa-camera"></i> Waiting for detections...
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Waste categories
+        const wasteCategories = [
+            { name: "Plastic Bottle", category: "recyclable", bin: "Recyclables (Blue)", icon: "fas fa-recycle", color: "#3498db" },
+            { name: "Glass Bottle", category: "recyclable", bin: "Recyclables (Blue)", icon: "fas fa-wine-bottle", color: "#3498db" },
+            { name: "Aluminum Can", category: "recyclable", bin: "Recyclables (Blue)", icon: "fas fa-beer", color: "#3498db" },
+            { name: "Apple Core", category: "organic", bin: "Organic (Green)", icon: "fas fa-apple-alt", color: "#2ecc71" },
+            { name: "Banana Peel", category: "organic", bin: "Organic (Green)", icon: "fas fa-leaf", color: "#2ecc71" },
+            { name: "Battery", category: "hazardous", bin: "Hazardous (Red)", icon: "fas fa-battery-full", color: "#e67e22" },
+            { name: "Cardboard", category: "recyclable", bin: "Recyclables (Blue)", icon: "fas fa-box", color: "#3498db" },
+            { name: "Electronics", category: "ewaste", bin: "E-Waste (Yellow)", icon: "fas fa-mobile-alt", color: "#f1c40f" }
+        ];
+
+        let detectionInterval;
+        let isDetecting = true;
+        let detectionHistory = [];
+        let canvas = document.getElementById('cameraCanvas');
+        let ctx = canvas.getContext('2d');
+        let currentDetection = null;
+
+        function drawCameraFeed() {
+            const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+            gradient.addColorStop(0, '#1a2a2a');
+            gradient.addColorStop(1, '#0f1f1f');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            ctx.fillStyle = '#4a6b5e';
+            ctx.fillRect(0, canvas.height - 100, canvas.width, 100);
+            
+            ctx.strokeStyle = '#6c8b81';
+            ctx.lineWidth = 2;
+            for(let i = 0; i < 10; i++) {
+                ctx.beginPath();
+                ctx.moveTo(0, canvas.height - 60 + i * 8);
+                ctx.lineTo(canvas.width, canvas.height - 60 + i * 8);
+                ctx.stroke();
+            }
+
+            const time = Date.now() / 200;
+            for(let i = 0; i < 15; i++) {
+                ctx.fillStyle = '#2ecc71';
+                ctx.beginPath();
+                ctx.arc((time + i * 80) % canvas.width, canvas.height - 30, 4, 0, Math.PI * 2);
+                ctx.fill();
+            }
+
+            if(currentDetection && isDetecting) {
+                const x = canvas.width / 2 - 50;
+                const y = canvas.height / 2 - 60;
+                ctx.strokeStyle = '#2ecc71';
+                ctx.lineWidth = 4;
+                ctx.strokeRect(x, y, 100, 100);
+                ctx.fillStyle = currentDetection.color;
+                ctx.fillRect(x + 10, y + 10, 80, 80);
+                ctx.fillStyle = 'white';
+                ctx.font = 'bold 14px Inter';
+                ctx.fillText(currentDetection.name, x + 15, y - 10);
+                ctx.fillStyle = 'white';
+                ctx.font = '12px Inter';
+                ctx.fillText(`${Math.round(currentDetection.confidence)}%`, x + 65, y + 85);
+            }
+        }
+
+        function simulateDetection() {
+            if(!isDetecting) return;
+            const randomIndex = Math.floor(Math.random() * wasteCategories.length);
+            const detectedItem = { ...wasteCategories[randomIndex] };
+            detectedItem.confidence = 75 + Math.random() * 24;
+            detectedItem.timestamp = new Date();
+            currentDetection = detectedItem;
+            updateDetectionUI(detectedItem);
+            addToHistory(detectedItem);
+            drawCameraFeed();
+            setTimeout(() => {
+                if(currentDetection === detectedItem) currentDetection = null;
+                drawCameraFeed();
+            }, 2000);
+        }
+
+        function updateDetectionUI(detection) {
+            const categoryMap = {
+                'recyclable': '♻️ Recyclable',
+                'organic': '🌱 Organic',
+                'hazardous': '⚠️ Hazardous',
+                'ewaste': '💻 E-Waste'
+            };
+            document.getElementById('currentItem').innerHTML = `<i class="${detection.icon}"></i> ${detection.name}`;
+            document.getElementById('confidenceValue').innerHTML = `${Math.round(detection.confidence)}%`;
+            document.getElementById('confidenceFill').style.width = `${detection.confidence}%`;
+            document.getElementById('wasteCategory').innerHTML = categoryMap[detection.category] || detection.category;
+            document.getElementById('recommendedBin').innerHTML = `<i class="fas fa-trash"></i> ${detection.bin}`;
+        }
+
+        function addToHistory(detection) {
+            detectionHistory.unshift(detection);
+            if(detectionHistory.length > 10) detectionHistory.pop();
+            renderHistory();
+        }
+
+        function renderHistory() {
+            const historyContainer = document.getElementById('historyList');
+            const historyCount = document.getElementById('historyCount');
+            if(detectionHistory.length === 0) {
+                historyContainer.innerHTML = '<div style="text-align: center; color: #8ba89a; padding: 2rem;"><i class="fas fa-camera"></i> No detections yet</div>';
+                historyCount.textContent = '0 items';
+                return;
+            }
+            historyCount.textContent = `${detectionHistory.length} items`;
+            historyContainer.innerHTML = detectionHistory.map(item => {
+                const timeAgo = Math.floor((new Date() - item.timestamp) / 1000);
+                const timeText = timeAgo < 60 ? `${timeAgo} sec ago` : `${Math.floor(timeAgo / 60)} min ago`;
+                return `
+                    <div class="history-item">
+                        <div class="history-icon ${item.category}">
+                            <i class="${item.icon}"></i>
+                        </div>
+                        <div class="history-details">
+                            <div class="history-type">${item.name}</div>
+                            <div class="history-time"><i class="far fa-clock"></i> ${timeText}</div>
+                        </div>
+                        <div class="history-confidence">${Math.round(item.confidence)}%</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function clearHistory() {
+            detectionHistory = [];
+            renderHistory();
+        }
+
+        function toggleDetection() {
+            isDetecting = !isDetecting;
+            const btn = document.getElementById('toggleDetectionBtn');
+            if(isDetecting) {
+                btn.innerHTML = '<i class="fas fa-pause"></i> Pause Detection';
+                btn.classList.remove('btn-secondary');
+                btn.classList.add('btn-primary');
+                startDetection();
+            } else {
+                btn.innerHTML = '<i class="fas fa-play"></i> Start Detection';
+                btn.classList.remove('btn-primary');
+                btn.classList.add('btn-secondary');
+                if(detectionInterval) clearInterval(detectionInterval);
+            }
+        }
+
+        function startDetection() {
+            if(detectionInterval) clearInterval(detectionInterval);
+            detectionInterval = setInterval(simulateDetection, 3000);
+        }
+
+        function animateCamera() {
+            drawCameraFeed();
+            requestAnimationFrame(animateCamera);
+        }
+
+        function init() {
+            canvas.width = 800;
+            canvas.height = 480;
+            animateCamera();
+            startDetection();
+            document.getElementById('toggleDetectionBtn').addEventListener('click', toggleDetection);
+            document.getElementById('clearHistoryBtn').addEventListener('click', clearHistory);
+            setTimeout(() => simulateDetection(), 1000);
+        }
+
+        init();
+    </script>
+</body>
+</html>

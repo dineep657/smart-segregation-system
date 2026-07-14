@@ -1,0 +1,3525 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Smart Segregation System | Intelligent Waste Management Login</title>
+    <!-- Google Fonts & Font Awesome Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(145deg, #0b2f2c 0%, #051f1d 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow-x: hidden;
+            padding: 1.5rem;
+        }
+
+        /* animated particles / eco background elements */
+        .bg-smart {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        .bg-smart .leaf {
+            position: absolute;
+            background: rgba(110, 210, 150, 0.08);
+            border-radius: 80% 0 80% 0;
+            transform: rotate(45deg);
+            width: 80px;
+            height: 80px;
+            animation: floatLeaf 18s infinite ease-in-out;
+        }
+
+        .bg-smart .bubble {
+            position: absolute;
+            background: radial-gradient(circle, rgba(80, 200, 140, 0.2), rgba(40, 140, 100, 0.05));
+            border-radius: 50%;
+            backdrop-filter: blur(2px);
+            animation: floatBubble 25s infinite alternate;
+        }
+
+        @keyframes floatLeaf {
+            0% { transform: translateY(0vh) rotate(0deg); opacity: 0.2; }
+            50% { transform: translateY(15vh) rotate(10deg); opacity: 0.5; }
+            100% { transform: translateY(-5vh) rotate(20deg); opacity: 0.2; }
+        }
+
+        @keyframes floatBubble {
+            0% { transform: translateY(100vh) scale(0.5); opacity: 0; }
+            30% { opacity: 0.3; }
+            100% { transform: translateY(-20vh) scale(1.2); opacity: 0; }
+        }
+
+        /* Main card container */
+        .login-container {
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            max-width: 460px;
+            background: rgba(18, 32, 30, 0.75);
+            backdrop-filter: blur(12px);
+            border-radius: 2.5rem;
+            box-shadow: 0 25px 45px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(80, 210, 150, 0.2);
+            transition: transform 0.3s ease;
+            overflow: hidden;
+        }
+
+        .login-card {
+            padding: 2rem 2rem 2.5rem;
+        }
+
+        /* Brand header */
+        .brand {
+            text-align: center;
+            margin-bottom: 1.8rem;
+        }
+        .icon-circle {
+            background: linear-gradient(135deg, #2ecc71, #1f8a4c);
+            width: 70px;
+            height: 70px;
+            border-radius: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            box-shadow: 0 12px 18px -8px rgba(0,0,0,0.3);
+        }
+        .icon-circle i {
+            font-size: 2.8rem;
+            color: white;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+        }
+        h1 {
+            font-size: 1.9rem;
+            font-weight: 700;
+            letter-spacing: -0.3px;
+            background: linear-gradient(135deg, #EFFAF3, #B9F6CA);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            margin-bottom: 0.3rem;
+        }
+        .sub {
+            font-size: 0.85rem;
+            color: #9bc5b4;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .sub i {
+            font-size: 0.7rem;
+            color: #2ecc71;
+        }
+
+        /* form group styling */
+        .input-group {
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+        .input-group label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: #c6f0df;
+            margin-bottom: 0.6rem;
+            letter-spacing: 0.3px;
+        }
+        .input-group label i {
+            font-size: 0.9rem;
+            color: #2ecc71;
+        }
+        .input-field {
+            width: 100%;
+            padding: 0.9rem 1rem;
+            background: rgba(10, 22, 20, 0.7);
+            border: 1px solid rgba(70, 170, 120, 0.5);
+            border-radius: 1.2rem;
+            font-size: 1rem;
+            font-weight: 500;
+            color: #f0f7f3;
+            outline: none;
+            transition: all 0.2s ease;
+            font-family: 'Inter', monospace;
+        }
+        .input-field:focus {
+            border-color: #2ecc71;
+            box-shadow: 0 0 0 3px rgba(46, 204, 113, 0.3);
+            background: rgba(20, 40, 35, 0.9);
+        }
+        .input-field::placeholder {
+            color: #6b9787;
+            font-weight: 400;
+            font-size: 0.9rem;
+        }
+
+        /* password wrapper */
+        .password-wrapper {
+            position: relative;
+        }
+        .toggle-password {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: transparent;
+            border: none;
+            color: #9bc5b4;
+            cursor: pointer;
+            font-size: 1.1rem;
+            transition: color 0.2s;
+        }
+        .toggle-password:hover {
+            color: #2ecc71;
+        }
+
+        /* additional row (remember & forgot) */
+        .form-options {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 1rem 0 1.8rem;
+            font-size: 0.85rem;
+        }
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #cbe9de;
+            cursor: pointer;
+        }
+        .checkbox-label input {
+            width: 17px;
+            height: 17px;
+            accent-color: #2ecc71;
+            cursor: pointer;
+        }
+        .forgot-link {
+            color: #b0e0c8;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s;
+            border-bottom: 1px dashed transparent;
+        }
+        .forgot-link:hover {
+            color: #2ecc71;
+            border-bottom-color: #2ecc71;
+        }
+
+        /* login button */
+        .login-btn {
+            width: 100%;
+            background: linear-gradient(105deg, #27ae60, #1e874b);
+            border: none;
+            padding: 0.9rem;
+            border-radius: 2rem;
+            font-size: 1rem;
+            font-weight: 700;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            cursor: pointer;
+            transition: all 0.25s;
+            box-shadow: 0 6px 14px rgba(0, 0, 0, 0.3);
+            letter-spacing: 0.5px;
+        }
+        .login-btn i {
+            font-size: 1.1rem;
+            transition: transform 0.2s;
+        }
+        .login-btn:hover {
+            background: linear-gradient(105deg, #2ecc71, #229954);
+            transform: translateY(-2px);
+            box-shadow: 0 12px 22px rgba(0, 0, 0, 0.4);
+        }
+        .login-btn:active {
+            transform: translateY(1px);
+        }
+
+        /* demo credentials hint */
+        .demo-badge {
+            margin-top: 2rem;
+            background: rgba(46, 204, 113, 0.12);
+            border-radius: 1.2rem;
+            padding: 0.8rem 1rem;
+            text-align: center;
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(46, 204, 113, 0.3);
+        }
+        .demo-badge p {
+            font-size: 0.75rem;
+            color: #bbe5d3;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .demo-badge strong {
+            background: #1f5e46;
+            padding: 0.2rem 0.5rem;
+            border-radius: 20px;
+            font-family: monospace;
+            color: #e6ffed;
+            font-weight: 600;
+        }
+        .demo-badge i {
+            color: #f5b042;
+        }
+
+        /* message alert */
+        .message-area {
+            margin-top: 1rem;
+            font-size: 0.8rem;
+            text-align: center;
+            min-height: 44px;
+            color: #f5bc70;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+        .error-msg {
+            color: #ffb47b;
+            background: rgba(220, 80, 40, 0.15);
+            padding: 0.5rem;
+            border-radius: 1rem;
+        }
+        .success-msg {
+            color: #b0ffcf;
+            background: rgba(46, 204, 113, 0.2);
+        }
+
+        /* footer */
+        .footer-note {
+            text-align: center;
+            margin-top: 1.5rem;
+            font-size: 0.7rem;
+            color: #598d78;
+        }
+
+        @media (max-width: 500px) {
+            .login-card {
+                padding: 1.5rem;
+            }
+            h1 {
+                font-size: 1.6rem;
+            }
+            .icon-circle {
+                width: 60px;
+                height: 60px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="bg-smart">
+    <!-- random eco particles -->
+    <div class="leaf" style="top: 10%; left: 5%; width: 55px; height: 55px; animation-duration: 22s;"></div>
+    <div class="leaf" style="top: 70%; left: 85%; width: 70px; height: 70px; animation-duration: 19s; animation-delay: -3s;"></div>
+    <div class="leaf" style="top: 40%; left: 20%; width: 40px; height: 40px; animation-duration: 26s;"></div>
+    <div class="bubble" style="width: 140px; height: 140px; bottom: -40px; left: -30px; animation-duration: 28s;"></div>
+    <div class="bubble" style="width: 210px; height: 210px; top: -80px; right: -60px; animation-duration: 34s; opacity: 0.2;"></div>
+    <div class="bubble" style="width: 70px; height: 70px; bottom: 20%; right: 10%; animation-duration: 19s;"></div>
+</div>
+
+<div class="login-container">
+    <div class="login-card">
+        <div class="brand">
+            <div class="icon-circle">
+                <i class="fas fa-leaf"></i>
+            </div>
+            <h1>Smart Segregation</h1>
+            <div class="sub">
+                <i class="fas fa-recycle"></i>
+                <span>AI-Powered Waste Management</span>
+                <i class="fas fa-microchip"></i>
+            </div>
+        </div>
+
+        <form id="loginForm" action="#" method="POST">
+            <div class="input-group">
+                <label><i class="fas fa-user-astronaut"></i> Username / Employee ID</label>
+                <input type="text" id="username" class="input-field" placeholder="operator@segregation | admin" autocomplete="username">
+            </div>
+
+            <div class="input-group">
+                <label><i class="fas fa-lock"></i> Password</label>
+                <div class="password-wrapper">
+                    <input type="password" id="password" class="input-field" placeholder="••••••••" autocomplete="current-password">
+                    <button type="button" class="toggle-password" id="togglePwdBtn" aria-label="Show password">
+                        <i class="far fa-eye-slash"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="form-options">
+                <label class="checkbox-label">
+                    <input type="checkbox" id="rememberCheck"> <span>Keep me signed in</span>
+                </label>
+                <a href="#" id="forgotLink" class="forgot-link">Forgot access?</a>
+            </div>
+
+            <button type="submit" class="login-btn" id="loginButton">
+                <i class="fas fa-sign-in-alt"></i> Access Dashboard
+            </button>
+        </form>
+
+        <div class="message-area" id="messageArea">
+            <i class="fas fa-shield-alt"></i> Secure login · Eco credentials
+        </div>
+
+        <div class="demo-badge">
+            <p><i class="fas fa-flask"></i> Demo credentials: 
+            <strong>admin</strong> / <strong>segregate2025</strong>   |   
+            <strong>operator</strong> / <strong>greenbin</strong>
+            </p>
+        </div>
+        <div class="footer-note">
+            <i class="fas fa-charging-station"></i> Smart Segregation v2.0 · Zero Waste Initiative
+        </div>
+    </div>
+</div>
+
+<script>
+    (function() {
+        // DOM Elements
+        const usernameInput = document.getElementById('username');
+        const passwordInput = document.getElementById('password');
+        const loginForm = document.getElementById('loginForm');
+        const messageArea = document.getElementById('messageArea');
+        const togglePwdBtn = document.getElementById('togglePwdBtn');
+        const rememberCheck = document.getElementById('rememberCheck');
+        const forgotLink = document.getElementById('forgotLink');
+
+        // ---------- Demo user database (simulated) ----------
+        const VALID_CREDENTIALS = [
+            { username: 'admin', password: 'segregate2025', role: 'System Administrator' },
+            { username: 'operator', password: 'greenbin', role: 'Waste Operator' },
+            { username: 'supervisor', password: 'eco123', role: 'Site Supervisor' },
+            { username: 'tech', password: 'smartbin', role: 'IoT Technician' }
+        ];
+
+        // Helper: show message (error, success, info)
+        function showMessage(text, isError = false, isSuccess = false) {
+            messageArea.innerHTML = '';
+            const icon = document.createElement('i');
+            const span = document.createElement('span');
+            if (isError) {
+                icon.className = 'fas fa-exclamation-triangle';
+                messageArea.classList.add('error-msg');
+                messageArea.classList.remove('success-msg');
+            } else if (isSuccess) {
+                icon.className = 'fas fa-check-circle';
+                messageArea.classList.add('success-msg');
+                messageArea.classList.remove('error-msg');
+            } else {
+                icon.className = 'fas fa-info-circle';
+                messageArea.classList.remove('error-msg', 'success-msg');
+            }
+            span.innerText = text;
+            messageArea.appendChild(icon);
+            messageArea.appendChild(span);
+            // auto clear after 4 seconds if it's not persistent but fine
+            setTimeout(() => {
+                if (messageArea.innerHTML.includes(text)) {
+                    if (!isSuccess) {
+                        // keep success maybe longer? but reset to default message after 5s
+                        if (!isSuccess) {
+                            messageArea.innerHTML = '<i class="fas fa-shield-alt"></i> Secure login · Eco credentials';
+                            messageArea.classList.remove('error-msg', 'success-msg');
+                        } else {
+                            // for success we may keep but after 4sec revert to default neutral
+                            setTimeout(() => {
+                                if (messageArea.classList.contains('success-msg')) {
+                                    messageArea.innerHTML = '<i class="fas fa-shield-alt"></i> Secure login · Eco credentials';
+                                    messageArea.classList.remove('success-msg');
+                                }
+                            }, 3000);
+                        }
+                    } else {
+                        // do nothing extra, already handled
+                    }
+                }
+            }, 4000);
+        }
+
+        // Clear error style on input focus
+        function clearMessageOnInput() {
+            if (messageArea.classList.contains('error-msg')) {
+                messageArea.innerHTML = '<i class="fas fa-shield-alt"></i> Secure login · Eco credentials';
+                messageArea.classList.remove('error-msg', 'success-msg');
+            }
+        }
+        usernameInput.addEventListener('focus', clearMessageOnInput);
+        passwordInput.addEventListener('focus', clearMessageOnInput);
+
+        // Toggle password visibility
+        if (togglePwdBtn) {
+            togglePwdBtn.addEventListener('click', function() {
+                const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                passwordInput.setAttribute('type', type);
+                const icon = this.querySelector('i');
+                if (type === 'text') {
+                    icon.classList.remove('fa-eye-slash');
+                    icon.classList.add('fa-eye');
+                } else {
+                    icon.classList.remove('fa-eye');
+                    icon.classList.add('fa-eye-slash');
+                }
+            });
+        }
+
+        // Remember Me functionality (store username in localStorage, just front-end demo)
+        function loadRememberedUser() {
+            const savedUser = localStorage.getItem('smartSeg_rememberUser');
+            if (savedUser) {
+                usernameInput.value = savedUser;
+                rememberCheck.checked = true;
+            }
+        }
+        function saveRememberedUser(username) {
+            if (rememberCheck.checked) {
+                localStorage.setItem('smartSeg_rememberUser', username);
+            } else {
+                localStorage.removeItem('smartSeg_rememberUser');
+            }
+        }
+
+        // Login validation and simulation
+        function performLogin(event) {
+            event.preventDefault();
+
+            const username = usernameInput.value.trim();
+            const password = passwordInput.value;  // do not trim password strictly, but no leading/trailing spaces matter
+            if (!username) {
+                showMessage('⚠️ Please enter username / Employee ID', true);
+                usernameInput.focus();
+                return false;
+            }
+            if (!password) {
+                showMessage('🔒 Password cannot be empty', true);
+                passwordInput.focus();
+                return false;
+            }
+
+            // Find matching user
+            const matchedUser = VALID_CREDENTIALS.find(cred => 
+                cred.username.toLowerCase() === username.toLowerCase() && cred.password === password
+            );
+
+            if (matchedUser) {
+                // Success: save remember option if checked
+                saveRememberedUser(username);
+                // Display success with role info
+                showMessage(`✅ Access granted! Welcome ${matchedUser.role}. Redirecting to Smart Segregation Hub...`, false, true);
+                // Disable button and show loading state
+                const loginBtn = document.getElementById('loginButton');
+                const originalBtnHtml = loginBtn.innerHTML;
+                loginBtn.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> Authorizing...';
+                loginBtn.disabled = true;
+                
+                // Simulate redirect after 1.8 seconds (demo dashboard simulation)
+                setTimeout(() => {
+                    // In a real system, redirect to dashboard. For this demo, we show a sweet modal-like console and page update.
+                    // But to mimic real smart segregation system, we replace page content with a minimal dashboard preview
+                    // This demonstrates successful login while staying on the same page but with full system simulation.
+                    // Since it's a login page requirement, we build an elegant "dashboard preview" overlay but fully functional
+                    // respecting the spirit: after login, show main segregation system greeting.
+                    createDashboardPreview(matchedUser);
+                }, 1600);
+                return true;
+            } else {
+                // Wrong credentials
+                showMessage('❌ Invalid credentials. Access denied. Please check username/password.', true);
+                passwordInput.value = '';  // clear password field for security
+                passwordInput.focus();
+                return false;
+            }
+        }
+
+        // Demo dashboard preview after successful login (without losing context)
+        function createDashboardPreview(user) {
+            // Remove the login container and replace with a smart segregation dashboard simulation
+            const container = document.querySelector('.login-container');
+            const bgElements = document.querySelector('.bg-smart');
+            
+            // Fade out and replace
+            container.style.transition = 'opacity 0.4s ease, transform 0.3s';
+            container.style.opacity = '0';
+            container.style.transform = 'scale(0.96)';
+            
+            setTimeout(() => {
+                // Build new dashboard interface inside the same wrapper
+                const newDashboard = document.createElement('div');
+                newDashboard.className = 'login-container';  // reuse same card style but new content
+                newDashboard.style.opacity = '0';
+                newDashboard.style.transform = 'scale(0.98)';
+                newDashboard.style.transition = 'all 0.5s cubic-bezier(0.2, 0.9, 0.4, 1.1)';
+                
+                newDashboard.innerHTML = `
+                    <div class="login-card" style="text-align: center;">
+                        <div class="icon-circle" style="background: linear-gradient(145deg, #1f9a5a, #0f6e3f);">
+                            <i class="fas fa-charging-station"></i>
+                        </div>
+                        <h1 style="font-size: 1.8rem;">Smart Segregation Core</h1>
+                        <div class="sub" style="margin-bottom: 1.5rem;">
+                            <i class="fas fa-user-check"></i> Welcome, ${user.role}
+                        </div>
+                        <div style="background: rgba(0, 0, 0, 0.3); border-radius: 2rem; padding: 1.2rem; margin: 1rem 0;">
+                            <p style="display: flex; align-items: center; justify-content: center; gap: 12px; font-weight: 500;">
+                                <i class="fas fa-trash-alt" style="color:#2ecc71;"></i> 
+                                Real-time segregation metrics: <strong style="color:#bef5cf;">ACTIVE</strong>
+                            </p>
+                            <div style="display: flex; gap: 1rem; justify-content: center; margin: 1rem 0; flex-wrap: wrap;">
+                                <span style="background: #1b4d3e; padding: 0.3rem 1rem; border-radius: 30px;"><i class="fas fa-apple-alt"></i> Organic: 68%</span>
+                                <span style="background: #1b4d3e; padding: 0.3rem 1rem; border-radius: 30px;"><i class="fas fa-box-open"></i> Recyclable: 24%</span>
+                                <span style="background: #1b4d3e; padding: 0.3rem 1rem; border-radius: 30px;"><i class="fas fa-dumpster"></i> Residual: 8%</span>
+                            </div>
+                            <hr style="border-color: #2c6e55; margin: 0.9rem 0;">
+                            <p style="font-size: 0.9rem;"><i class="fas fa-microchip"></i> AI Vision: Bin status OPTIMAL | Load 42%</p>
+                        </div>
+                        <button id="logoutBtn" class="login-btn" style="background: #2c3e2b; margin-top: 0.5rem;">
+                            <i class="fas fa-sign-out-alt"></i> Logout & Return
+                        </button>
+                        <div class="footer-note" style="margin-top: 1rem;">
+                            <i class="fas fa-chart-line"></i> Smart Segregation System · Real-time analytics
+                        </div>
+                    </div>
+                `;
+                container.parentNode.replaceChild(newDashboard, container);
+                newDashboard.style.opacity = '1';
+                newDashboard.style.transform = 'scale(1)';
+                
+                // Attach logout event
+                const logoutBtn = newDashboard.querySelector('#logoutBtn');
+                if (logoutBtn) {
+                    logoutBtn.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        // Reload to initial login page (simulate logout)
+                        window.location.reload();
+                    });
+                }
+            }, 350);
+        }
+
+        // Forgot password demo interaction (informative)
+        function handleForgot(e) {
+            e.preventDefault();
+            showMessage('📧 Contact system admin or use demo creds: admin/segregate2025 | operator/greenbin', false);
+        }
+
+        // Attach event listeners
+        loginForm.addEventListener('submit', performLogin);
+        forgotLink.addEventListener('click', handleForgot);
+        
+        // load remembered username on page load
+        loadRememberedUser();
+
+        // Optional: add simple client-side validation for leading/trailing spaces warning
+        usernameInput.addEventListener('blur', function() {
+            if (this.value.trim() === '' && this.value.length > 0) {
+                showMessage('Username cannot be just spaces', true);
+            }
+        });
+    })();
+</script>
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Smart Segregation System | Main Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #ecfdf5;
+            overflow-x: hidden;
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #e2ede7;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #2ecc71;
+            border-radius: 10px;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 280px;
+            height: 100vh;
+            background: linear-gradient(180deg, #0a2f2a 0%, #051f1c 100%);
+            color: white;
+            z-index: 100;
+            transition: all 0.3s;
+            box-shadow: 2px 0 20px rgba(0,0,0,0.1);
+            overflow-y: auto;
+        }
+
+        .logo-area {
+            padding: 2rem 1.5rem 1.5rem;
+            border-bottom: 1px solid rgba(70, 170, 120, 0.3);
+            margin-bottom: 2rem;
+            cursor: pointer;
+        }
+        .logo-area h2 {
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 700;
+        }
+        .logo-area h2 i {
+            color: #2ecc71;
+            font-size: 1.8rem;
+        }
+        .logo-area p {
+            font-size: 0.7rem;
+            color: #9bc5b4;
+            margin-top: 0.5rem;
+        }
+
+        .nav-menu {
+            padding: 0 1rem;
+        }
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 0.85rem 1rem;
+            margin: 0.4rem 0;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: #d0e6dd;
+            font-weight: 500;
+        }
+        .nav-item:hover, .nav-item.active {
+            background: rgba(46, 204, 113, 0.2);
+            color: white;
+        }
+        .nav-item.active {
+            background: linear-gradient(90deg, #2ecc71, #27ae60);
+            box-shadow: 0 2px 8px rgba(46,204,113,0.3);
+        }
+        .nav-item i {
+            width: 24px;
+            font-size: 1.2rem;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 280px;
+            padding: 1.5rem 2rem;
+            min-height: 100vh;
+        }
+
+        /* Top Bar */
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            background: white;
+            padding: 1rem 1.8rem;
+            border-radius: 24px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        .page-title h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #1a3a33;
+        }
+        .page-title p {
+            color: #6c8b81;
+            font-size: 0.85rem;
+            margin-top: 0.2rem;
+        }
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        .notification-badge {
+            position: relative;
+            cursor: pointer;
+        }
+        .notification-badge i {
+            font-size: 1.4rem;
+            color: #2c6e55;
+        }
+        .badge {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: #e74c3c;
+            color: white;
+            border-radius: 50%;
+            padding: 2px 6px;
+            font-size: 0.7rem;
+            font-weight: bold;
+        }
+        .user-avatar {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: #f0f7f4;
+            padding: 0.5rem 1rem;
+            border-radius: 30px;
+            cursor: pointer;
+        }
+        .avatar-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .avatar-icon i {
+            font-size: 1.3rem;
+            color: white;
+        }
+        .user-name {
+            font-weight: 600;
+            color: #1e4a3b;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        .stat-card {
+            background: white;
+            padding: 1.3rem 1.5rem;
+            border-radius: 24px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+            transition: transform 0.2s, box-shadow 0.2s;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-left: 4px solid #2ecc71;
+            cursor: pointer;
+        }
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        }
+        .stat-left h3 {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #6b8b7e;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+        .stat-value {
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: #1e3a32;
+        }
+        .stat-unit {
+            font-size: 0.85rem;
+            color: #8fbcab;
+            margin-left: 4px;
+        }
+        .stat-trend {
+            font-size: 0.7rem;
+            margin-top: 5px;
+        }
+        .trend-up { color: #2ecc71; }
+        .trend-down { color: #e74c3c; }
+        .stat-icon {
+            width: 52px;
+            height: 52px;
+            background: #e9f9f0;
+            border-radius: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .stat-icon i {
+            font-size: 1.8rem;
+            color: #2ecc71;
+        }
+
+        /* Dashboard Row */
+        .dashboard-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+            gap: 1.8rem;
+            margin-bottom: 1.8rem;
+        }
+        .card {
+            background: white;
+            border-radius: 24px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+            transition: all 0.2s;
+        }
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.2rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #ecfdf5;
+        }
+        .card-header h3 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #1f4d3f;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .badge-light {
+            background: #eefaf3;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: #2ecc71;
+            cursor: pointer;
+        }
+
+        /* Bin List */
+        .bin-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            max-height: 320px;
+            overflow-y: auto;
+        }
+        .bin-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.8rem 0;
+            border-bottom: 1px solid #eef3ef;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .bin-item:hover {
+            background: #f9fffc;
+            padding-left: 5px;
+        }
+        .bin-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex: 1;
+        }
+        .bin-color {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+        }
+        .bin-color.organic { background: #2ecc71; }
+        .bin-color.recyclable { background: #3498db; }
+        .bin-color.hazardous { background: #e67e22; }
+        .bin-color.residual { background: #95a5a6; }
+        .bin-color.ewaste { background: #f1c40f; }
+        .bin-details {
+            flex: 1;
+        }
+        .bin-name {
+            font-weight: 700;
+            color: #2c5a4b;
+            margin-bottom: 4px;
+        }
+        .bin-location {
+            font-size: 0.7rem;
+            color: #8ba89a;
+        }
+        .fill-stats {
+            min-width: 140px;
+            text-align: right;
+        }
+        .fill-level {
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: #1e4a3b;
+            margin-bottom: 5px;
+        }
+        .progress-bar-bg {
+            width: 100px;
+            height: 6px;
+            background: #e2e8f0;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            background: #2ecc71;
+            border-radius: 10px;
+            transition: width 0.3s;
+        }
+
+        /* Alert Items */
+        .alert-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+            max-height: 280px;
+            overflow-y: auto;
+        }
+        .alert-item {
+            display: flex;
+            gap: 12px;
+            padding: 0.8rem;
+            background: #fef9e8;
+            border-radius: 16px;
+            border-left: 3px solid #f39c12;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .alert-item:hover {
+            transform: translateX(5px);
+        }
+        .alert-item.warning {
+            background: #ffe8e8;
+            border-left-color: #e74c3c;
+        }
+        .alert-item.success {
+            background: #e8f5e9;
+            border-left-color: #2ecc71;
+        }
+        .alert-icon {
+            width: 36px;
+            height: 36px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .alert-icon i {
+            font-size: 1rem;
+        }
+        .alert-content {
+            flex: 1;
+        }
+        .alert-title {
+            font-weight: 700;
+            color: #2c3e2f;
+            font-size: 0.85rem;
+        }
+        .alert-time {
+            font-size: 0.7rem;
+            color: #8ba89a;
+            margin-top: 4px;
+        }
+
+        /* AI Insights */
+        .ai-insight {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1.2rem;
+            border-radius: 20px;
+            margin-top: 1rem;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .ai-insight:hover {
+            transform: scale(1.02);
+        }
+        .ai-insight p {
+            font-size: 0.85rem;
+            line-height: 1.4;
+            margin-top: 0.5rem;
+        }
+
+        canvas {
+            max-height: 280px;
+            width: 100%;
+            cursor: pointer;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            .main-content {
+                margin-left: 0;
+            }
+            .dashboard-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Loading overlay for smooth transitions */
+        .page-transition {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(10, 47, 42, 0.95);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+        }
+        .page-transition.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(46, 204, 113, 0.3);
+            border-top-color: #2ecc71;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="page-transition" id="pageTransition">
+        <div class="spinner"></div>
+    </div>
+
+    <div class="sidebar">
+        <div class="logo-area" onclick="navigateTo('dashboard.html')">
+            <h2>
+                <i class="fas fa-leaf"></i>
+                SmartSeg
+            </h2>
+            <p>AI-Powered Waste Management</p>
+        </div>
+        <div class="nav-menu">
+            <div class="nav-item active" data-page="dashboard">
+                <i class="fas fa-tachometer-alt"></i>
+                <span>Dashboard</span>
+            </div>
+            <div class="nav-item" data-page="waste-monitoring">
+                <i class="fas fa-video"></i>
+                <span>Waste Monitoring</span>
+            </div>
+            <div class="nav-item" data-page="bin-management">
+                <i class="fas fa-trash-alt"></i>
+                <span>Bin Management</span>
+            </div>
+            <div class="nav-item" data-page="ai-training">
+                <i class="fas fa-robot"></i>
+                <span>AI Training</span>
+            </div>
+            <div class="nav-item" data-page="reports">
+                <i class="fas fa-chart-line"></i>
+                <span>Reports</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div class="top-bar">
+            <div class="page-title">
+                <h1>Smart Segregation Dashboard</h1>
+                <p><i class="fas fa-chart-simple"></i> Real-time waste analytics & AI monitoring</p>
+            </div>
+            <div class="user-info">
+                <div class="notification-badge" id="notificationBtn">
+                    <i class="fas fa-bell"></i>
+                    <span class="badge" id="notificationBadge">4</span>
+                </div>
+                <div class="user-avatar" onclick="showUserMenu()">
+                    <div class="avatar-icon">
+                        <i class="fas fa-user-check"></i>
+                    </div>
+                    <div class="user-name">System Operator</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="stats-grid" id="statsGrid">
+            <!-- Dynamic stats via JS -->
+        </div>
+
+        <div class="dashboard-row">
+            <div class="card">
+                <div class="card-header">
+                    <h3><i class="fas fa-chart-pie"></i> Waste Composition</h3>
+                    <span class="badge-light" onclick="navigateTo('reports.html')">View Details →</span>
+                </div>
+                <canvas id="wasteCompositionChart" width="400" height="280" onclick="navigateTo('reports.html')"></canvas>
+                <div style="margin-top: 1rem; text-align: center; font-size: 0.75rem; color: #6c8b81;">
+                    <i class="fas fa-microchip"></i> AI classification accuracy: <span id="aiAccuracy">94.7</span>%
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-header">
+                    <h3><i class="fas fa-chart-line"></i> Weekly Segregation Trend</h3>
+                    <span class="badge-light" onclick="navigateTo('reports.html')">Last 7 days →</span>
+                </div>
+                <canvas id="weeklyTrendChart" width="400" height="280" onclick="navigateTo('reports.html')"></canvas>
+            </div>
+        </div>
+
+        <div class="dashboard-row">
+            <div class="card">
+                <div class="card-header">
+                    <h3><i class="fas fa-dumpster"></i> Bin Status & Fill Levels</h3>
+                    <span class="badge-light" onclick="navigateTo('bin-management.html')">Manage Bins →</span>
+                </div>
+                <div class="bin-list" id="binList">
+                    <!-- Dynamic bin data -->
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-header">
+                    <h3><i class="fas fa-exclamation-triangle"></i> Recent Alerts</h3>
+                    <span class="badge-light" onclick="navigateTo('alerts.html')">View All →</span>
+                </div>
+                <div class="alert-list" id="alertList">
+                    <!-- Dynamic alerts -->
+                </div>
+                <div class="ai-insight" id="aiInsight" onclick="navigateTo('ai-training.html')">
+                    <i class="fas fa-brain"></i> <strong>AI Insight:</strong>
+                    <p id="insightText">Analyzing waste patterns...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Navigation function - actual page redirects
+        function navigateTo(page) {
+            const transition = document.getElementById('pageTransition');
+            transition.classList.add('active');
+            
+            // Map page names to actual HTML files
+            const pageMap = {
+                'dashboard.html': 'dashboard.html',
+                'waste-monitoring.html': 'waste-monitoring.html',
+                'bin-management.html': 'bin-management.html',
+                'ai-training.html': 'ai-training.html',
+                'reports.html': 'reports.html',
+                'alerts.html': 'alerts.html'
+            };
+            
+            const targetPage = pageMap[page] || page;
+            
+            setTimeout(() => {
+                window.location.href = targetPage;
+            }, 300);
+        }
+        
+        // Function to show that modules are ready
+        function showModuleReady(moduleName) {
+            alert(`📱 ${moduleName} module is ready!\n\nClick OK to navigate to ${moduleName}.`);
+        }
+        
+        // Bin Data
+        const bins = [
+            { id: "B-101", name: "Organic Waste", location: "Zone A - Kitchen", fill: 78, color: "organic", type: "organic", weight: 342 },
+            { id: "B-102", name: "Recyclables", location: "Zone B - Paper/Plastic", fill: 92, color: "recyclable", type: "recyclable", weight: 512 },
+            { id: "B-103", name: "Hazardous Waste", location: "Zone C - Lab/Chemical", fill: 45, color: "hazardous", type: "hazardous", weight: 78 },
+            { id: "B-104", name: "Residual Waste", location: "Zone D - Landfill", fill: 63, color: "residual", type: "residual", weight: 289 },
+            { id: "B-105", name: "E-Waste", location: "Zone E - Electronics", fill: 31, color: "ewaste", type: "ewaste", weight: 156 },
+            { id: "B-106", name: "Glass & Metal", location: "Zone F - Sorting", fill: 57, color: "recyclable", type: "recyclable", weight: 423 }
+        ];
+
+        // Alert Data
+        let alerts = [
+            { title: "Recyclables bin at 92% - Schedule pickup", time: "2 hours ago", type: "warning", icon: "fas fa-truck" },
+            { title: "AI model update available (v2.4.1)", time: "5 hours ago", type: "info", icon: "fas fa-download" },
+            { title: "Sensor #B3 offline - Maintenance required", time: "Yesterday", type: "danger", icon: "fas fa-wifi" },
+            { title: "Peak waste hour detected: 2-4 PM", time: "Yesterday", type: "info", icon: "fas fa-chart-line" }
+        ];
+
+        // Stats data
+        let stats = {
+            totalWaste: 12876,
+            recyclingRate: 68.4,
+            activeBins: 24,
+            co2Saved: 3.2,
+            totalBins: 28,
+            weeklyIncrease: 12,
+            monthlyIncrease: 5.2
+        };
+
+        // Charts
+        let wasteChart, trendChart;
+
+        // Render Stats with click navigation
+        function renderStats() {
+            const statsHtml = `
+                <div class="stat-card" onclick="navigateTo('reports.html')">
+                    <div class="stat-left">
+                        <h3>Total Waste Processed</h3>
+                        <div class="stat-value">${stats.totalWaste.toLocaleString()} <span class="stat-unit">kg</span></div>
+                        <div class="stat-trend trend-up"><i class="fas fa-arrow-up"></i> ${stats.weeklyIncrease}% this week</div>
+                    </div>
+                    <div class="stat-icon">
+                        <i class="fas fa-charging-station"></i>
+                    </div>
+                </div>
+                <div class="stat-card" onclick="navigateTo('reports.html')">
+                    <div class="stat-left">
+                        <h3>Recycling Rate</h3>
+                        <div class="stat-value">${stats.recyclingRate}<span class="stat-unit">%</span></div>
+                        <div class="stat-trend trend-up"><i class="fas fa-arrow-up"></i> ${stats.monthlyIncrease}% vs last month</div>
+                    </div>
+                    <div class="stat-icon">
+                        <i class="fas fa-recycle"></i>
+                    </div>
+                </div>
+                <div class="stat-card" onclick="navigateTo('bin-management.html')">
+                    <div class="stat-left">
+                        <h3>Active Bins</h3>
+                        <div class="stat-value">${stats.activeBins} <span class="stat-unit">/ ${stats.totalBins}</span></div>
+                        <div class="stat-trend trend-down" id="criticalBinsTrend">${bins.filter(b => b.fill >= 85).length} bins near capacity</div>
+                    </div>
+                    <div class="stat-icon">
+                        <i class="fas fa-trash-alt"></i>
+                    </div>
+                </div>
+                <div class="stat-card" onclick="navigateTo('reports.html')">
+                    <div class="stat-left">
+                        <h3>CO₂ Saved</h3>
+                        <div class="stat-value">${stats.co2Saved} <span class="stat-unit">tons</span></div>
+                        <div class="stat-trend trend-up">Equivalent to ${Math.floor(stats.co2Saved * 44)} trees</div>
+                    </div>
+                    <div class="stat-icon">
+                        <i class="fas fa-cloud-sun"></i>
+                    </div>
+                </div>
+            `;
+            document.getElementById('statsGrid').innerHTML = statsHtml;
+        }
+
+        // Render Bin List with click navigation
+        function renderBins() {
+            const binContainer = document.getElementById('binList');
+            binContainer.innerHTML = bins.map(bin => `
+                <div class="bin-item" onclick="navigateTo('bin-management.html')">
+                    <div class="bin-info">
+                        <div class="bin-color ${bin.color}"></div>
+                        <div class="bin-details">
+                            <div class="bin-name">${bin.name}</div>
+                            <div class="bin-location"><i class="fas fa-map-marker-alt"></i> ${bin.location}</div>
+                        </div>
+                    </div>
+                    <div class="fill-stats">
+                        <div class="fill-level">${bin.fill}% full</div>
+                        <div class="progress-bar-bg">
+                            <div class="progress-fill" style="width: ${bin.fill}%; background: ${bin.fill > 85 ? '#e74c3c' : bin.fill > 70 ? '#f39c12' : '#2ecc71'}"></div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Render Alerts with click navigation
+        function renderAlerts() {
+            const alertContainer = document.getElementById('alertList');
+            alertContainer.innerHTML = alerts.slice(0, 4).map(alert => `
+                <div class="alert-item ${alert.type === 'danger' ? 'warning' : alert.type === 'success' ? 'success' : ''}" onclick="navigateTo('alerts.html')">
+                    <div class="alert-icon">
+                        <i class="${alert.icon}" style="color: ${alert.type === 'danger' ? '#e74c3c' : alert.type === 'success' ? '#2ecc71' : '#f39c12'}"></i>
+                    </div>
+                    <div class="alert-content">
+                        <div class="alert-title">${alert.title}</div>
+                        <div class="alert-time"><i class="far fa-clock"></i> ${alert.time}</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Initialize Waste Composition Chart
+        function initWasteChart() {
+            const ctx = document.getElementById('wasteCompositionChart').getContext('2d');
+            wasteChart = new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: ['Organic (42%)', 'Recyclable (28%)', 'Hazardous (8%)', 'Residual (15%)', 'E-Waste (7%)'],
+                    datasets: [{
+                        data: [42, 28, 8, 15, 7],
+                        backgroundColor: ['#2ecc71', '#3498db', '#e67e22', '#95a5a6', '#f1c40f'],
+                        borderWidth: 0,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    onClick: () => navigateTo('reports.html'),
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: { font: { size: 11 }, color: '#2c5a4b' }
+                        },
+                        tooltip: { callbacks: { label: (ctx) => `${ctx.label}: ${ctx.raw}%` } }
+                    }
+                }
+            });
+        }
+
+        // Initialize Weekly Trend Chart
+        function initTrendChart() {
+            const ctx = document.getElementById('weeklyTrendChart').getContext('2d');
+            trendChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                    datasets: [
+                        {
+                            label: 'Organic (kg)',
+                            data: [420, 480, 450, 520, 580, 610, 550],
+                            borderColor: '#2ecc71',
+                            backgroundColor: 'rgba(46, 204, 113, 0.05)',
+                            tension: 0.3,
+                            fill: true
+                        },
+                        {
+                            label: 'Recyclable (kg)',
+                            data: [310, 345, 370, 390, 410, 445, 430],
+                            borderColor: '#3498db',
+                            backgroundColor: 'rgba(52, 152, 219, 0.05)',
+                            tension: 0.3,
+                            fill: true
+                        },
+                        {
+                            label: 'Residual (kg)',
+                            data: [280, 265, 255, 248, 240, 235, 230],
+                            borderColor: '#95a5a6',
+                            backgroundColor: 'rgba(149, 165, 166, 0.05)',
+                            tension: 0.3,
+                            fill: true
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    onClick: () => navigateTo('reports.html'),
+                    plugins: {
+                        legend: { position: 'top', labels: { font: { size: 11 } } },
+                        tooltip: { mode: 'index', intersect: false }
+                    },
+                    scales: {
+                        y: { title: { display: true, text: 'Waste (kg)', color: '#6c8b81' }, grid: { color: '#ecfdf5' } },
+                        x: { grid: { display: false } }
+                    }
+                }
+            });
+        }
+
+        // Update AI Insight
+        function updateAIInsight() {
+            const insights = [
+                "Recyclable contamination rate decreased by 8% this week. Optimize organic sorting at Zone A for better efficiency.",
+                "Peak waste generation detected between 2-4 PM. Consider additional collection during these hours.",
+                "AI model suggests adding glass category to improve sorting accuracy by 5.2%.",
+                "Organic waste composting efficiency up 12% this month. Great progress!",
+                "Plastic waste identification accuracy improved to 96.3% after recent model update."
+            ];
+            const randomInsight = insights[Math.floor(Math.random() * insights.length)];
+            document.getElementById('insightText').textContent = randomInsight;
+        }
+
+        // Setup navigation for all clickable elements
+        function setupNavigation() {
+            // Sidebar navigation
+            const navItems = document.querySelectorAll('.nav-item');
+            navItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    const page = this.getAttribute('data-page');
+                    const pageMap = {
+                        'dashboard': 'dashboard.html',
+                        'waste-monitoring': 'waste-monitoring.html',
+                        'bin-management': 'bin-management.html',
+                        'ai-training': 'ai-training.html',
+                        'reports': 'reports.html'
+                    };
+                    navigateTo(pageMap[page]);
+                });
+            });
+        }
+
+        // Notification click handler
+        function setupNotifications() {
+            const notificationBtn = document.getElementById('notificationBtn');
+            notificationBtn.addEventListener('click', () => {
+                navigateTo('alerts.html');
+            });
+        }
+
+        // Show user menu
+        function showUserMenu() {
+            alert("👤 System Operator\n\nRole: Administrator\nLast Login: Today at 09:32 AM\n\nAll modules are fully functional and ready for use.");
+        }
+
+        // Make functions global for onclick handlers
+        window.navigateTo = navigateTo;
+        window.showUserMenu = showUserMenu;
+
+        // Simulate real-time updates
+        let updateInterval;
+        function startRealTimeUpdates() {
+            updateInterval = setInterval(() => {
+                // Update bin fill levels randomly
+                bins.forEach(bin => {
+                    let change = (Math.random() - 0.5) * 6;
+                    let newFill = bin.fill + change;
+                    newFill = Math.min(100, Math.max(0, Math.round(newFill)));
+                    bin.fill = newFill;
+                });
+                renderBins();
+                
+                // Update stats
+                const newTotalWaste = stats.totalWaste + Math.floor(Math.random() * 30);
+                const newRecyclingRate = (stats.recyclingRate + (Math.random() - 0.5) * 0.5).toFixed(1);
+                stats.totalWaste = newTotalWaste;
+                stats.recyclingRate = parseFloat(newRecyclingRate);
+                stats.activeBins = bins.filter(b => b.fill < 95).length;
+                stats.co2Saved = parseFloat((stats.co2Saved + (Math.random() - 0.5) * 0.1).toFixed(1));
+                
+                renderStats();
+                
+                // Update AI insight periodically
+                if (Math.random() > 0.9) {
+                    updateAIInsight();
+                }
+                
+                // Update AI accuracy display
+                const accuracy = (92 + Math.random() * 5).toFixed(1);
+                document.getElementById('aiAccuracy').textContent = accuracy;
+                
+            }, 10000);
+        }
+
+        // Initialize dashboard
+        function init() {
+            renderStats();
+            renderBins();
+            renderAlerts();
+            initWasteChart();
+            initTrendChart();
+            updateAIInsight();
+            startRealTimeUpdates();
+            setupNavigation();
+            setupNotifications();
+        }
+        
+        // Start the dashboard
+        init();
+    </script>
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Smart Segregation | AI Waste Monitoring</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #ecfdf5;
+            overflow-x: hidden;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 280px;
+            height: 100vh;
+            background: linear-gradient(180deg, #0a2f2a 0%, #051f1c 100%);
+            color: white;
+            z-index: 100;
+            transition: all 0.3s;
+            box-shadow: 2px 0 20px rgba(0,0,0,0.1);
+            overflow-y: auto;
+        }
+
+        .logo-area {
+            padding: 2rem 1.5rem 1.5rem;
+            border-bottom: 1px solid rgba(70, 170, 120, 0.3);
+            margin-bottom: 2rem;
+            cursor: pointer;
+        }
+        .logo-area h2 {
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 700;
+        }
+        .logo-area h2 i {
+            color: #2ecc71;
+            font-size: 1.8rem;
+        }
+        .logo-area p {
+            font-size: 0.7rem;
+            color: #9bc5b4;
+            margin-top: 0.5rem;
+        }
+
+        .nav-menu {
+            padding: 0 1rem;
+        }
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 0.85rem 1rem;
+            margin: 0.4rem 0;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: #d0e6dd;
+            font-weight: 500;
+        }
+        .nav-item:hover, .nav-item.active {
+            background: rgba(46, 204, 113, 0.2);
+            color: white;
+        }
+        .nav-item.active {
+            background: linear-gradient(90deg, #2ecc71, #27ae60);
+            box-shadow: 0 2px 8px rgba(46,204,113,0.3);
+        }
+        .nav-item i {
+            width: 24px;
+            font-size: 1.2rem;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 280px;
+            padding: 1.5rem 2rem;
+            min-height: 100vh;
+        }
+
+        /* Top Bar */
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            background: white;
+            padding: 1rem 1.8rem;
+            border-radius: 24px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        .page-title h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #1a3a33;
+        }
+        .page-title p {
+            color: #6c8b81;
+            font-size: 0.85rem;
+            margin-top: 0.2rem;
+        }
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        .notification-badge {
+            position: relative;
+            cursor: pointer;
+        }
+        .notification-badge i {
+            font-size: 1.4rem;
+            color: #2c6e55;
+        }
+        .badge {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: #e74c3c;
+            color: white;
+            border-radius: 50%;
+            padding: 2px 6px;
+            font-size: 0.7rem;
+            font-weight: bold;
+        }
+        .user-avatar {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: #f0f7f4;
+            padding: 0.5rem 1rem;
+            border-radius: 30px;
+            cursor: pointer;
+        }
+        .avatar-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .avatar-icon i {
+            font-size: 1.3rem;
+            color: white;
+        }
+        .user-name {
+            font-weight: 600;
+            color: #1e4a3b;
+        }
+
+        /* Camera Feed Section */
+        .camera-section {
+            display: grid;
+            grid-template-columns: 1fr 380px;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .camera-feed {
+            background: white;
+            border-radius: 28px;
+            overflow: hidden;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+        }
+
+        .feed-header {
+            padding: 1.2rem 1.5rem;
+            background: linear-gradient(135deg, #1a3a33, #0e2c26);
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .feed-header h3 {
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .live-badge {
+            background: #e74c3c;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+
+        .video-container {
+            position: relative;
+            background: #000;
+            min-height: 480px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        #cameraCanvas {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        /* Stats Panel */
+        .stats-panel {
+            background: white;
+            border-radius: 28px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+        }
+        .stat-item {
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #ecfdf5;
+        }
+        .stat-label {
+            font-size: 0.8rem;
+            color: #6c8b81;
+            margin-bottom: 0.5rem;
+        }
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: #1a3a33;
+        }
+        .confidence-bar {
+            margin-top: 0.5rem;
+            height: 8px;
+            background: #e2e8f0;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .confidence-fill {
+            height: 100%;
+            background: #2ecc71;
+            border-radius: 10px;
+            transition: width 0.3s;
+        }
+
+        /* Detection History */
+        .detection-history {
+            background: white;
+            border-radius: 28px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+        }
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        .history-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .history-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 0.8rem;
+            border-bottom: 1px solid #ecfdf5;
+            animation: slideIn 0.3s;
+        }
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        .history-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+        .history-icon.organic { background: #e9f9f0; color: #2ecc71; }
+        .history-icon.recyclable { background: #e8f0fe; color: #3498db; }
+        .history-icon.hazardous { background: #fee8e8; color: #e67e22; }
+        .history-details {
+            flex: 1;
+        }
+        .history-type {
+            font-weight: 700;
+            color: #1e4a3b;
+        }
+        .history-time {
+            font-size: 0.7rem;
+            color: #8ba89a;
+        }
+        .history-confidence {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #2ecc71;
+        }
+
+        /* Control Buttons */
+        .control-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+            padding: 1rem;
+        }
+        .btn {
+            flex: 1;
+            padding: 0.8rem;
+            border: none;
+            border-radius: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: 'Inter', sans-serif;
+        }
+        .btn-primary {
+            background: #2ecc71;
+            color: white;
+        }
+        .btn-primary:hover {
+            background: #27ae60;
+            transform: translateY(-2px);
+        }
+        .btn-secondary {
+            background: #ecfdf5;
+            color: #1e4a3b;
+        }
+        .btn-secondary:hover {
+            background: #d4f4e8;
+        }
+
+        @media (max-width: 1024px) {
+            .camera-section {
+                grid-template-columns: 1fr;
+            }
+            .main-content {
+                margin-left: 0;
+            }
+            .sidebar {
+                transform: translateX(-100%);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="logo-area" onclick="location.href='dashboard.html'">
+            <h2><i class="fas fa-leaf"></i> SmartSeg</h2>
+            <p>AI-Powered Waste Management</p>
+        </div>
+        <div class="nav-menu">
+            <div class="nav-item" onclick="location.href='dashboard.html'">
+                <i class="fas fa-tachometer-alt"></i>
+                <span>Dashboard</span>
+            </div>
+            <div class="nav-item active">
+                <i class="fas fa-video"></i>
+                <span>Waste Monitoring</span>
+            </div>
+            <div class="nav-item" onclick="location.href='bin-management.html'">
+                <i class="fas fa-trash-alt"></i>
+                <span>Bin Management</span>
+            </div>
+            <div class="nav-item" onclick="location.href='ai-training.html'">
+                <i class="fas fa-robot"></i>
+                <span>AI Training</span>
+            </div>
+            <div class="nav-item" onclick="location.href='reports.html'">
+                <i class="fas fa-chart-line"></i>
+                <span>Reports</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div class="top-bar">
+            <div class="page-title">
+                <h1><i class="fas fa-eye"></i> AI Waste Monitoring</h1>
+                <p><i class="fas fa-microchip"></i> Real-time object detection & segregation analysis</p>
+            </div>
+            <div class="user-info">
+                <div class="notification-badge">
+                    <i class="fas fa-bell"></i>
+                    <span class="badge" id="notificationBadge">3</span>
+                </div>
+                <div class="user-avatar">
+                    <div class="avatar-icon"><i class="fas fa-user-check"></i></div>
+                    <div class="user-name">Operator</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="camera-section">
+            <div class="camera-feed">
+                <div class="feed-header">
+                    <h3><i class="fas fa-camera"></i> Live Camera Feed | Conveyor Belt A</h3>
+                    <span class="live-badge"><i class="fas fa-circle"></i> LIVE</span>
+                </div>
+                <div class="video-container">
+                    <canvas id="cameraCanvas" width="800" height="480" style="width:100%; height:auto; background: #1a1a2e;"></canvas>
+                </div>
+                <div class="control-buttons">
+                    <button class="btn btn-primary" id="toggleDetectionBtn">
+                        <i class="fas fa-pause"></i> Pause Detection
+                    </button>
+                    <button class="btn btn-secondary" id="clearHistoryBtn">
+                        <i class="fas fa-trash"></i> Clear History
+                    </button>
+                </div>
+            </div>
+
+            <div class="stats-panel">
+                <h3 style="margin-bottom: 1rem; color: #1a3a33;">
+                    <i class="fas fa-chart-simple"></i> Current Detection
+                </h3>
+                <div class="stat-item">
+                    <div class="stat-label">Detected Item</div>
+                    <div class="stat-value" id="currentItem">—</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Confidence Score</div>
+                    <div class="stat-value" id="confidenceValue">0%</div>
+                    <div class="confidence-bar">
+                        <div class="confidence-fill" id="confidenceFill" style="width: 0%"></div>
+                    </div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Waste Category</div>
+                    <div class="stat-value" id="wasteCategory">—</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Recommended Bin</div>
+                    <div class="stat-value" id="recommendedBin">—</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="detection-history">
+            <div class="history-header">
+                <h3><i class="fas fa-history"></i> Recent Detections</h3>
+                <span class="badge-light" id="historyCount" style="background: #ecfdf5; padding: 4px 12px; border-radius: 20px;">0 items</span>
+            </div>
+            <div class="history-list" id="historyList">
+                <div style="text-align: center; color: #8ba89a; padding: 2rem;">
+                    <i class="fas fa-camera"></i> Waiting for detections...
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Waste categories
+        const wasteCategories = [
+            { name: "Plastic Bottle", category: "recyclable", bin: "Recyclables (Blue)", icon: "fas fa-recycle", color: "#3498db" },
+            { name: "Glass Bottle", category: "recyclable", bin: "Recyclables (Blue)", icon: "fas fa-wine-bottle", color: "#3498db" },
+            { name: "Aluminum Can", category: "recyclable", bin: "Recyclables (Blue)", icon: "fas fa-beer", color: "#3498db" },
+            { name: "Apple Core", category: "organic", bin: "Organic (Green)", icon: "fas fa-apple-alt", color: "#2ecc71" },
+            { name: "Banana Peel", category: "organic", bin: "Organic (Green)", icon: "fas fa-leaf", color: "#2ecc71" },
+            { name: "Battery", category: "hazardous", bin: "Hazardous (Red)", icon: "fas fa-battery-full", color: "#e67e22" },
+            { name: "Cardboard", category: "recyclable", bin: "Recyclables (Blue)", icon: "fas fa-box", color: "#3498db" },
+            { name: "Electronics", category: "ewaste", bin: "E-Waste (Yellow)", icon: "fas fa-mobile-alt", color: "#f1c40f" }
+        ];
+
+        let detectionInterval;
+        let isDetecting = true;
+        let detectionHistory = [];
+        let canvas = document.getElementById('cameraCanvas');
+        let ctx = canvas.getContext('2d');
+        let currentDetection = null;
+
+        function drawCameraFeed() {
+            const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+            gradient.addColorStop(0, '#1a2a2a');
+            gradient.addColorStop(1, '#0f1f1f');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            ctx.fillStyle = '#4a6b5e';
+            ctx.fillRect(0, canvas.height - 100, canvas.width, 100);
+            
+            ctx.strokeStyle = '#6c8b81';
+            ctx.lineWidth = 2;
+            for(let i = 0; i < 10; i++) {
+                ctx.beginPath();
+                ctx.moveTo(0, canvas.height - 60 + i * 8);
+                ctx.lineTo(canvas.width, canvas.height - 60 + i * 8);
+                ctx.stroke();
+            }
+
+            const time = Date.now() / 200;
+            for(let i = 0; i < 15; i++) {
+                ctx.fillStyle = '#2ecc71';
+                ctx.beginPath();
+                ctx.arc((time + i * 80) % canvas.width, canvas.height - 30, 4, 0, Math.PI * 2);
+                ctx.fill();
+            }
+
+            if(currentDetection && isDetecting) {
+                const x = canvas.width / 2 - 50;
+                const y = canvas.height / 2 - 60;
+                ctx.strokeStyle = '#2ecc71';
+                ctx.lineWidth = 4;
+                ctx.strokeRect(x, y, 100, 100);
+                ctx.fillStyle = currentDetection.color;
+                ctx.fillRect(x + 10, y + 10, 80, 80);
+                ctx.fillStyle = 'white';
+                ctx.font = 'bold 14px Inter';
+                ctx.fillText(currentDetection.name, x + 15, y - 10);
+                ctx.fillStyle = 'white';
+                ctx.font = '12px Inter';
+                ctx.fillText(`${Math.round(currentDetection.confidence)}%`, x + 65, y + 85);
+            }
+        }
+
+        function simulateDetection() {
+            if(!isDetecting) return;
+            const randomIndex = Math.floor(Math.random() * wasteCategories.length);
+            const detectedItem = { ...wasteCategories[randomIndex] };
+            detectedItem.confidence = 75 + Math.random() * 24;
+            detectedItem.timestamp = new Date();
+            currentDetection = detectedItem;
+            updateDetectionUI(detectedItem);
+            addToHistory(detectedItem);
+            drawCameraFeed();
+            setTimeout(() => {
+                if(currentDetection === detectedItem) currentDetection = null;
+                drawCameraFeed();
+            }, 2000);
+        }
+
+        function updateDetectionUI(detection) {
+            const categoryMap = {
+                'recyclable': '♻️ Recyclable',
+                'organic': '🌱 Organic',
+                'hazardous': '⚠️ Hazardous',
+                'ewaste': '💻 E-Waste'
+            };
+            document.getElementById('currentItem').innerHTML = `<i class="${detection.icon}"></i> ${detection.name}`;
+            document.getElementById('confidenceValue').innerHTML = `${Math.round(detection.confidence)}%`;
+            document.getElementById('confidenceFill').style.width = `${detection.confidence}%`;
+            document.getElementById('wasteCategory').innerHTML = categoryMap[detection.category] || detection.category;
+            document.getElementById('recommendedBin').innerHTML = `<i class="fas fa-trash"></i> ${detection.bin}`;
+        }
+
+        function addToHistory(detection) {
+            detectionHistory.unshift(detection);
+            if(detectionHistory.length > 10) detectionHistory.pop();
+            renderHistory();
+        }
+
+        function renderHistory() {
+            const historyContainer = document.getElementById('historyList');
+            const historyCount = document.getElementById('historyCount');
+            if(detectionHistory.length === 0) {
+                historyContainer.innerHTML = '<div style="text-align: center; color: #8ba89a; padding: 2rem;"><i class="fas fa-camera"></i> No detections yet</div>';
+                historyCount.textContent = '0 items';
+                return;
+            }
+            historyCount.textContent = `${detectionHistory.length} items`;
+            historyContainer.innerHTML = detectionHistory.map(item => {
+                const timeAgo = Math.floor((new Date() - item.timestamp) / 1000);
+                const timeText = timeAgo < 60 ? `${timeAgo} sec ago` : `${Math.floor(timeAgo / 60)} min ago`;
+                return `
+                    <div class="history-item">
+                        <div class="history-icon ${item.category}">
+                            <i class="${item.icon}"></i>
+                        </div>
+                        <div class="history-details">
+                            <div class="history-type">${item.name}</div>
+                            <div class="history-time"><i class="far fa-clock"></i> ${timeText}</div>
+                        </div>
+                        <div class="history-confidence">${Math.round(item.confidence)}%</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function clearHistory() {
+            detectionHistory = [];
+            renderHistory();
+        }
+
+        function toggleDetection() {
+            isDetecting = !isDetecting;
+            const btn = document.getElementById('toggleDetectionBtn');
+            if(isDetecting) {
+                btn.innerHTML = '<i class="fas fa-pause"></i> Pause Detection';
+                btn.classList.remove('btn-secondary');
+                btn.classList.add('btn-primary');
+                startDetection();
+            } else {
+                btn.innerHTML = '<i class="fas fa-play"></i> Start Detection';
+                btn.classList.remove('btn-primary');
+                btn.classList.add('btn-secondary');
+                if(detectionInterval) clearInterval(detectionInterval);
+            }
+        }
+
+        function startDetection() {
+            if(detectionInterval) clearInterval(detectionInterval);
+            detectionInterval = setInterval(simulateDetection, 3000);
+        }
+
+        function animateCamera() {
+            drawCameraFeed();
+            requestAnimationFrame(animateCamera);
+        }
+
+        function init() {
+            canvas.width = 800;
+            canvas.height = 480;
+            animateCamera();
+            startDetection();
+            document.getElementById('toggleDetectionBtn').addEventListener('click', toggleDetection);
+            document.getElementById('clearHistoryBtn').addEventListener('click', clearHistory);
+            setTimeout(() => simulateDetection(), 1000);
+        }
+
+        init();
+    </script>
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Smart Segregation | AI Training & Model Management</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #ecfdf5;
+            overflow-x: hidden;
+        }
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 280px;
+            height: 100vh;
+            background: linear-gradient(180deg, #0a2f2a 0%, #051f1c 100%);
+            color: white;
+            z-index: 100;
+            transition: all 0.3s;
+            box-shadow: 2px 0 20px rgba(0,0,0,0.1);
+            overflow-y: auto;
+        }
+
+        .logo-area {
+            padding: 2rem 1.5rem 1.5rem;
+            border-bottom: 1px solid rgba(70, 170, 120, 0.3);
+            margin-bottom: 2rem;
+            cursor: pointer;
+        }
+        .logo-area h2 {
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 700;
+        }
+        .logo-area h2 i {
+            color: #2ecc71;
+            font-size: 1.8rem;
+        }
+        .logo-area p {
+            font-size: 0.7rem;
+            color: #9bc5b4;
+            margin-top: 0.5rem;
+        }
+
+        .nav-menu {
+            padding: 0 1rem;
+        }
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 0.85rem 1rem;
+            margin: 0.4rem 0;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: #d0e6dd;
+            font-weight: 500;
+        }
+        .nav-item:hover, .nav-item.active {
+            background: rgba(46, 204, 113, 0.2);
+            color: white;
+        }
+        .nav-item.active {
+            background: linear-gradient(90deg, #2ecc71, #27ae60);
+            box-shadow: 0 2px 8px rgba(46,204,113,0.3);
+        }
+        .nav-item i {
+            width: 24px;
+            font-size: 1.2rem;
+        }
+
+        .main-content {
+            margin-left: 280px;
+            padding: 1.5rem 2rem;
+            min-height: 100vh;
+        }
+
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            background: white;
+            padding: 1rem 1.8rem;
+            border-radius: 24px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        .page-title h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #1a3a33;
+        }
+        .page-title p {
+            color: #6c8b81;
+            font-size: 0.85rem;
+            margin-top: 0.2rem;
+        }
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        .notification-badge {
+            position: relative;
+            cursor: pointer;
+        }
+        .notification-badge i {
+            font-size: 1.4rem;
+            color: #2c6e55;
+        }
+        .badge {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: #2ecc71;
+            color: white;
+            border-radius: 50%;
+            padding: 2px 6px;
+            font-size: 0.7rem;
+            font-weight: bold;
+        }
+        .user-avatar {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: #f0f7f4;
+            padding: 0.5rem 1rem;
+            border-radius: 30px;
+            cursor: pointer;
+        }
+        .avatar-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .avatar-icon i {
+            font-size: 1.3rem;
+            color: white;
+        }
+        .user-name {
+            font-weight: 600;
+            color: #1e4a3b;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        .stat-card {
+            background: white;
+            padding: 1.3rem 1.5rem;
+            border-radius: 24px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+            border-left: 4px solid #2ecc71;
+        }
+        .stat-card h3 {
+            font-size: 0.85rem;
+            color: #6c8b81;
+            margin-bottom: 8px;
+        }
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 800;
+            color: #1a3a33;
+        }
+
+        .ai-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .card {
+            background: white;
+            border-radius: 24px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+        }
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.2rem;
+            padding-bottom: 0.8rem;
+            border-bottom: 2px solid #ecfdf5;
+        }
+        .card-header h3 {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #1a3a33;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .dataset-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .dataset-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.8rem;
+            border-bottom: 1px solid #ecfdf5;
+        }
+        .dataset-info h4 {
+            font-size: 0.9rem;
+            color: #1a3a33;
+        }
+        .dataset-info p {
+            font-size: 0.7rem;
+            color: #8ba89a;
+        }
+        .dataset-count {
+            font-weight: 700;
+            color: #2ecc71;
+        }
+
+        .upload-area {
+            border: 2px dashed #2ecc71;
+            border-radius: 16px;
+            padding: 2rem;
+            text-align: center;
+            background: #f9fffc;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: 1rem;
+        }
+        .upload-area:hover {
+            background: #f0fff4;
+            border-color: #27ae60;
+        }
+        .upload-area i {
+            font-size: 3rem;
+            color: #2ecc71;
+            margin-bottom: 1rem;
+        }
+
+        .progress-bar {
+            height: 10px;
+            background: #ecfdf5;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 1rem 0;
+        }
+        .progress-fill {
+            height: 100%;
+            background: #2ecc71;
+            width: 0%;
+            transition: width 0.3s;
+            border-radius: 10px;
+        }
+        .metric-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        .metric {
+            text-align: center;
+            padding: 0.8rem;
+            background: #f0fff4;
+            border-radius: 16px;
+        }
+        .metric-label {
+            font-size: 0.7rem;
+            color: #6c8b81;
+        }
+        .metric-value {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: #1a3a33;
+        }
+
+        .btn {
+            padding: 0.7rem 1.2rem;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: 'Inter', sans-serif;
+        }
+        .btn-primary {
+            background: #2ecc71;
+            color: white;
+            width: 100%;
+        }
+        .btn-primary:hover {
+            background: #27ae60;
+            transform: translateY(-2px);
+        }
+        .btn-primary:disabled {
+            background: #95a5a6;
+            cursor: not-allowed;
+        }
+        .btn-secondary {
+            background: #ecfdf5;
+            color: #1e4a3b;
+        }
+
+        @media (max-width: 1024px) {
+            .main-content {
+                margin-left: 0;
+            }
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            .ai-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="logo-area" onclick="location.href='dashboard.html'">
+            <h2><i class="fas fa-leaf"></i> SmartSeg</h2>
+            <p>AI-Powered Waste Management</p>
+        </div>
+        <div class="nav-menu">
+            <div class="nav-item" onclick="location.href='dashboard.html'">
+                <i class="fas fa-tachometer-alt"></i>
+                <span>Dashboard</span>
+            </div>
+            <div class="nav-item" onclick="location.href='waste-monitoring.html'">
+                <i class="fas fa-video"></i>
+                <span>Waste Monitoring</span>
+            </div>
+            <div class="nav-item" onclick="location.href='bin-management.html'">
+                <i class="fas fa-trash-alt"></i>
+                <span>Bin Management</span>
+            </div>
+            <div class="nav-item active">
+                <i class="fas fa-robot"></i>
+                <span>AI Training</span>
+            </div>
+            <div class="nav-item" onclick="location.href='reports.html'">
+                <i class="fas fa-chart-line"></i>
+                <span>Reports</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div class="top-bar">
+            <div class="page-title">
+                <h1><i class="fas fa-brain"></i> AI Model Training</h1>
+                <p><i class="fas fa-microchip"></i> Train & optimize waste classification models</p>
+            </div>
+            <div class="user-info">
+                <div class="notification-badge">
+                    <i class="fas fa-bell"></i>
+                    <span class="badge">1</span>
+                </div>
+                <div class="user-avatar">
+                    <div class="avatar-icon"><i class="fas fa-user-check"></i></div>
+                    <div class="user-name">ML Engineer</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3><i class="fas fa-database"></i> Total Images</h3>
+                <div class="stat-value" id="totalImages">9,797</div>
+            </div>
+            <div class="stat-card">
+                <h3><i class="fas fa-tag"></i> Categories</h3>
+                <div class="stat-value" id="totalCategories">5</div>
+            </div>
+            <div class="stat-card">
+                <h3><i class="fas fa-chart-line"></i> Model Accuracy</h3>
+                <div class="stat-value" id="modelAccuracy">94.7%</div>
+            </div>
+            <div class="stat-card">
+                <h3><i class="fas fa-clock"></i> Last Training</h3>
+                <div class="stat-value" style="font-size: 1.2rem;" id="lastTraining">Today, 10:32 AM</div>
+            </div>
+        </div>
+
+        <div class="ai-grid">
+            <div class="card">
+                <div class="card-header">
+                    <h3><i class="fas fa-database"></i> Training Dataset</h3>
+                </div>
+                <div class="dataset-list" id="datasetList">
+                    <div class="dataset-item">
+                        <div class="dataset-info">
+                            <h4>Organic Waste</h4>
+                            <p>Updated: 2024-01-15</p>
+                        </div>
+                        <div class="dataset-count">2,842 images</div>
+                    </div>
+                    <div class="dataset-item">
+                        <div class="dataset-info">
+                            <h4>Recyclable Materials</h4>
+                            <p>Updated: 2024-01-14</p>
+                        </div>
+                        <div class="dataset-count">3,156 images</div>
+                    </div>
+                    <div class="dataset-item">
+                        <div class="dataset-info">
+                            <h4>Hazardous Waste</h4>
+                            <p>Updated: 2024-01-13</p>
+                        </div>
+                        <div class="dataset-count">1,245 images</div>
+                    </div>
+                    <div class="dataset-item">
+                        <div class="dataset-info">
+                            <h4>E-Waste</h4>
+                            <p>Updated: 2024-01-12</p>
+                        </div>
+                        <div class="dataset-count">987 images</div>
+                    </div>
+                    <div class="dataset-item">
+                        <div class="dataset-info">
+                            <h4>Residual Waste</h4>
+                            <p>Updated: 2024-01-11</p>
+                        </div>
+                        <div class="dataset-count">1,567 images</div>
+                    </div>
+                </div>
+                <div class="upload-area" onclick="triggerFileUpload()">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    <p>Click to upload waste images</p>
+                    <small>Supports: JPG, PNG, WEBP</small>
+                    <input type="file" id="fileInput" multiple accept="image/*" style="display: none;">
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h3><i class="fas fa-chart-line"></i> Model Performance</h3>
+                </div>
+                <canvas id="performanceChart" height="200"></canvas>
+                <div class="metric-grid">
+                    <div class="metric">
+                        <div class="metric-label">Precision</div>
+                        <div class="metric-value">93.2%</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-label">Recall</div>
+                        <div class="metric-value">91.8%</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-label">F1 Score</div>
+                        <div class="metric-value">92.5%</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-label">Inference Time</div>
+                        <div class="metric-value">42ms</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h3><i class="fas fa-microchip"></i> Training Controls</h3>
+            </div>
+            <div style="margin-bottom: 1rem;">
+                <label style="display: block; margin-bottom: 0.5rem;">Model Architecture</label>
+                <select id="modelSelect" style="width: 100%; padding: 0.6rem; border-radius: 12px; border: 1px solid #ecfdf5;">
+                    <option value="mobilenet">MobileNetV3 (Balanced)</option>
+                    <option value="resnet50">ResNet-50 (High Accuracy)</option>
+                    <option value="efficientnet">EfficientNet-B0 (Fast)</option>
+                </select>
+            </div>
+            <div style="margin-bottom: 1rem;">
+                <label>Epochs: <span id="epochValue">50</span></label>
+                <input type="range" id="epochsSlider" min="10" max="200" value="50" step="10" style="width: 100%;">
+            </div>
+            <button class="btn btn-primary" id="trainBtn" onclick="startTraining()">
+                <i class="fas fa-play"></i> Start Training
+            </button>
+            <div id="trainingProgress" style="display: none; margin-top: 1rem;">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="trainingFill"></div>
+                </div>
+                <div style="display: flex; justify-content: space-between; font-size: 0.75rem;">
+                    <span id="currentEpoch">Epoch 0/50</span>
+                    <span id="trainingLoss">Loss: --</span>
+                    <span id="trainingAcc">Acc: --</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let isTraining = false;
+        let trainingInterval = null;
+        let performanceChart;
+
+        function initChart() {
+            const ctx = document.getElementById('performanceChart').getContext('2d');
+            performanceChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5', 'Week 6'],
+                    datasets: [{
+                        label: 'Accuracy (%)',
+                        data: [88.5, 90.2, 91.8, 93.1, 94.2, 94.7],
+                        borderColor: '#2ecc71',
+                        backgroundColor: 'rgba(46, 204, 113, 0.1)',
+                        tension: 0.3,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true
+                }
+            });
+        }
+
+        function triggerFileUpload() {
+            document.getElementById('fileInput').click();
+        }
+
+        document.getElementById('fileInput').addEventListener('change', function(e) {
+            const files = Array.from(e.target.files);
+            if(files.length > 0) {
+                alert(`📤 Uploaded ${files.length} images to dataset!`);
+            }
+        });
+
+        document.getElementById('epochsSlider').addEventListener('input', (e) => {
+            document.getElementById('epochValue').textContent = e.target.value;
+        });
+
+        function startTraining() {
+            if(isTraining) return;
+            
+            const epochs = parseInt(document.getElementById('epochsSlider').value);
+            isTraining = true;
+            document.getElementById('trainBtn').disabled = true;
+            document.getElementById('trainBtn').innerHTML = '<i class="fas fa-spinner fa-pulse"></i> Training...';
+            document.getElementById('trainingProgress').style.display = 'block';
+            
+            let currentEpoch = 0;
+            const progressFill = document.getElementById('trainingFill');
+            const currentEpochSpan = document.getElementById('currentEpoch');
+            const trainingLossSpan = document.getElementById('trainingLoss');
+            const trainingAccSpan = document.getElementById('trainingAcc');
+            
+            trainingInterval = setInterval(() => {
+                currentEpoch++;
+                const progress = (currentEpoch / epochs) * 100;
+                progressFill.style.width = `${progress}%`;
+                currentEpochSpan.textContent = `Epoch ${currentEpoch}/${epochs}`;
+                
+                const currentLoss = (0.5 * (1 - currentEpoch / epochs) + 0.05).toFixed(4);
+                const currentAcc = (70 + (currentEpoch / epochs) * 25).toFixed(1);
+                trainingLossSpan.textContent = `Loss: ${currentLoss}`;
+                trainingAccSpan.textContent = `Acc: ${currentAcc}%`;
+                
+                if(currentEpoch >= epochs) {
+                    clearInterval(trainingInterval);
+                    completeTraining();
+                }
+            }, 200);
+        }
+        
+        function completeTraining() {
+            isTraining = false;
+            const finalAccuracy = (92 + Math.random() * 5).toFixed(1);
+            document.getElementById('modelAccuracy').innerHTML = finalAccuracy + '%';
+            document.getElementById('lastTraining').textContent = new Date().toLocaleString();
+            document.getElementById('trainBtn').disabled = false;
+            document.getElementById('trainBtn').innerHTML = '<i class="fas fa-play"></i> Start Training';
+            alert(`✅ Training completed! New accuracy: ${finalAccuracy}%`);
+            setTimeout(() => {
+                document.getElementById('trainingProgress').style.display = 'none';
+            }, 2000);
+        }
+
+        initChart();
+    </script>
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Smart Segregation | AI Training & Model Management</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #ecfdf5;
+            overflow-x: hidden;
+        }
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 280px;
+            height: 100vh;
+            background: linear-gradient(180deg, #0a2f2a 0%, #051f1c 100%);
+            color: white;
+            z-index: 100;
+            transition: all 0.3s;
+            box-shadow: 2px 0 20px rgba(0,0,0,0.1);
+            overflow-y: auto;
+        }
+
+        .logo-area {
+            padding: 2rem 1.5rem 1.5rem;
+            border-bottom: 1px solid rgba(70, 170, 120, 0.3);
+            margin-bottom: 2rem;
+            cursor: pointer;
+        }
+        .logo-area h2 {
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 700;
+        }
+        .logo-area h2 i {
+            color: #2ecc71;
+            font-size: 1.8rem;
+        }
+        .logo-area p {
+            font-size: 0.7rem;
+            color: #9bc5b4;
+            margin-top: 0.5rem;
+        }
+
+        .nav-menu {
+            padding: 0 1rem;
+        }
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 0.85rem 1rem;
+            margin: 0.4rem 0;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: #d0e6dd;
+            font-weight: 500;
+        }
+        .nav-item:hover, .nav-item.active {
+            background: rgba(46, 204, 113, 0.2);
+            color: white;
+        }
+        .nav-item.active {
+            background: linear-gradient(90deg, #2ecc71, #27ae60);
+            box-shadow: 0 2px 8px rgba(46,204,113,0.3);
+        }
+        .nav-item i {
+            width: 24px;
+            font-size: 1.2rem;
+        }
+
+        .main-content {
+            margin-left: 280px;
+            padding: 1.5rem 2rem;
+            min-height: 100vh;
+        }
+
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            background: white;
+            padding: 1rem 1.8rem;
+            border-radius: 24px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        .page-title h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #1a3a33;
+        }
+        .page-title p {
+            color: #6c8b81;
+            font-size: 0.85rem;
+            margin-top: 0.2rem;
+        }
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        .notification-badge {
+            position: relative;
+            cursor: pointer;
+        }
+        .notification-badge i {
+            font-size: 1.4rem;
+            color: #2c6e55;
+        }
+        .badge {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: #2ecc71;
+            color: white;
+            border-radius: 50%;
+            padding: 2px 6px;
+            font-size: 0.7rem;
+            font-weight: bold;
+        }
+        .user-avatar {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: #f0f7f4;
+            padding: 0.5rem 1rem;
+            border-radius: 30px;
+            cursor: pointer;
+        }
+        .avatar-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .avatar-icon i {
+            font-size: 1.3rem;
+            color: white;
+        }
+        .user-name {
+            font-weight: 600;
+            color: #1e4a3b;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        .stat-card {
+            background: white;
+            padding: 1.3rem 1.5rem;
+            border-radius: 24px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+            border-left: 4px solid #2ecc71;
+        }
+        .stat-card h3 {
+            font-size: 0.85rem;
+            color: #6c8b81;
+            margin-bottom: 8px;
+        }
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 800;
+            color: #1a3a33;
+        }
+
+        .ai-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .card {
+            background: white;
+            border-radius: 24px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+        }
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.2rem;
+            padding-bottom: 0.8rem;
+            border-bottom: 2px solid #ecfdf5;
+        }
+        .card-header h3 {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #1a3a33;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .dataset-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .dataset-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.8rem;
+            border-bottom: 1px solid #ecfdf5;
+        }
+        .dataset-info h4 {
+            font-size: 0.9rem;
+            color: #1a3a33;
+        }
+        .dataset-info p {
+            font-size: 0.7rem;
+            color: #8ba89a;
+        }
+        .dataset-count {
+            font-weight: 700;
+            color: #2ecc71;
+        }
+
+        .upload-area {
+            border: 2px dashed #2ecc71;
+            border-radius: 16px;
+            padding: 2rem;
+            text-align: center;
+            background: #f9fffc;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: 1rem;
+        }
+        .upload-area:hover {
+            background: #f0fff4;
+            border-color: #27ae60;
+        }
+        .upload-area i {
+            font-size: 3rem;
+            color: #2ecc71;
+            margin-bottom: 1rem;
+        }
+
+        .progress-bar {
+            height: 10px;
+            background: #ecfdf5;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 1rem 0;
+        }
+        .progress-fill {
+            height: 100%;
+            background: #2ecc71;
+            width: 0%;
+            transition: width 0.3s;
+            border-radius: 10px;
+        }
+        .metric-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        .metric {
+            text-align: center;
+            padding: 0.8rem;
+            background: #f0fff4;
+            border-radius: 16px;
+        }
+        .metric-label {
+            font-size: 0.7rem;
+            color: #6c8b81;
+        }
+        .metric-value {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: #1a3a33;
+        }
+
+        .btn {
+            padding: 0.7rem 1.2rem;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: 'Inter', sans-serif;
+        }
+        .btn-primary {
+            background: #2ecc71;
+            color: white;
+            width: 100%;
+        }
+        .btn-primary:hover {
+            background: #27ae60;
+            transform: translateY(-2px);
+        }
+        .btn-primary:disabled {
+            background: #95a5a6;
+            cursor: not-allowed;
+        }
+        .btn-secondary {
+            background: #ecfdf5;
+            color: #1e4a3b;
+        }
+
+        @media (max-width: 1024px) {
+            .main-content {
+                margin-left: 0;
+            }
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            .ai-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="logo-area" onclick="location.href='dashboard.html'">
+            <h2><i class="fas fa-leaf"></i> SmartSeg</h2>
+            <p>AI-Powered Waste Management</p>
+        </div>
+        <div class="nav-menu">
+            <div class="nav-item" onclick="location.href='dashboard.html'">
+                <i class="fas fa-tachometer-alt"></i>
+                <span>Dashboard</span>
+            </div>
+            <div class="nav-item" onclick="location.href='waste-monitoring.html'">
+                <i class="fas fa-video"></i>
+                <span>Waste Monitoring</span>
+            </div>
+            <div class="nav-item" onclick="location.href='bin-management.html'">
+                <i class="fas fa-trash-alt"></i>
+                <span>Bin Management</span>
+            </div>
+            <div class="nav-item active">
+                <i class="fas fa-robot"></i>
+                <span>AI Training</span>
+            </div>
+            <div class="nav-item" onclick="location.href='reports.html'">
+                <i class="fas fa-chart-line"></i>
+                <span>Reports</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div class="top-bar">
+            <div class="page-title">
+                <h1><i class="fas fa-brain"></i> AI Model Training</h1>
+                <p><i class="fas fa-microchip"></i> Train & optimize waste classification models</p>
+            </div>
+            <div class="user-info">
+                <div class="notification-badge">
+                    <i class="fas fa-bell"></i>
+                    <span class="badge">1</span>
+                </div>
+                <div class="user-avatar">
+                    <div class="avatar-icon"><i class="fas fa-user-check"></i></div>
+                    <div class="user-name">ML Engineer</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3><i class="fas fa-database"></i> Total Images</h3>
+                <div class="stat-value" id="totalImages">9,797</div>
+            </div>
+            <div class="stat-card">
+                <h3><i class="fas fa-tag"></i> Categories</h3>
+                <div class="stat-value" id="totalCategories">5</div>
+            </div>
+            <div class="stat-card">
+                <h3><i class="fas fa-chart-line"></i> Model Accuracy</h3>
+                <div class="stat-value" id="modelAccuracy">94.7%</div>
+            </div>
+            <div class="stat-card">
+                <h3><i class="fas fa-clock"></i> Last Training</h3>
+                <div class="stat-value" style="font-size: 1.2rem;" id="lastTraining">Today, 10:32 AM</div>
+            </div>
+        </div>
+
+        <div class="ai-grid">
+            <div class="card">
+                <div class="card-header">
+                    <h3><i class="fas fa-database"></i> Training Dataset</h3>
+                </div>
+                <div class="dataset-list" id="datasetList">
+                    <div class="dataset-item">
+                        <div class="dataset-info">
+                            <h4>Organic Waste</h4>
+                            <p>Updated: 2024-01-15</p>
+                        </div>
+                        <div class="dataset-count">2,842 images</div>
+                    </div>
+                    <div class="dataset-item">
+                        <div class="dataset-info">
+                            <h4>Recyclable Materials</h4>
+                            <p>Updated: 2024-01-14</p>
+                        </div>
+                        <div class="dataset-count">3,156 images</div>
+                    </div>
+                    <div class="dataset-item">
+                        <div class="dataset-info">
+                            <h4>Hazardous Waste</h4>
+                            <p>Updated: 2024-01-13</p>
+                        </div>
+                        <div class="dataset-count">1,245 images</div>
+                    </div>
+                    <div class="dataset-item">
+                        <div class="dataset-info">
+                            <h4>E-Waste</h4>
+                            <p>Updated: 2024-01-12</p>
+                        </div>
+                        <div class="dataset-count">987 images</div>
+                    </div>
+                    <div class="dataset-item">
+                        <div class="dataset-info">
+                            <h4>Residual Waste</h4>
+                            <p>Updated: 2024-01-11</p>
+                        </div>
+                        <div class="dataset-count">1,567 images</div>
+                    </div>
+                </div>
+                <div class="upload-area" onclick="triggerFileUpload()">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    <p>Click to upload waste images</p>
+                    <small>Supports: JPG, PNG, WEBP</small>
+                    <input type="file" id="fileInput" multiple accept="image/*" style="display: none;">
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h3><i class="fas fa-chart-line"></i> Model Performance</h3>
+                </div>
+                <canvas id="performanceChart" height="200"></canvas>
+                <div class="metric-grid">
+                    <div class="metric">
+                        <div class="metric-label">Precision</div>
+                        <div class="metric-value">93.2%</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-label">Recall</div>
+                        <div class="metric-value">91.8%</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-label">F1 Score</div>
+                        <div class="metric-value">92.5%</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-label">Inference Time</div>
+                        <div class="metric-value">42ms</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h3><i class="fas fa-microchip"></i> Training Controls</h3>
+            </div>
+            <div style="margin-bottom: 1rem;">
+                <label style="display: block; margin-bottom: 0.5rem;">Model Architecture</label>
+                <select id="modelSelect" style="width: 100%; padding: 0.6rem; border-radius: 12px; border: 1px solid #ecfdf5;">
+                    <option value="mobilenet">MobileNetV3 (Balanced)</option>
+                    <option value="resnet50">ResNet-50 (High Accuracy)</option>
+                    <option value="efficientnet">EfficientNet-B0 (Fast)</option>
+                </select>
+            </div>
+            <div style="margin-bottom: 1rem;">
+                <label>Epochs: <span id="epochValue">50</span></label>
+                <input type="range" id="epochsSlider" min="10" max="200" value="50" step="10" style="width: 100%;">
+            </div>
+            <button class="btn btn-primary" id="trainBtn" onclick="startTraining()">
+                <i class="fas fa-play"></i> Start Training
+            </button>
+            <div id="trainingProgress" style="display: none; margin-top: 1rem;">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="trainingFill"></div>
+                </div>
+                <div style="display: flex; justify-content: space-between; font-size: 0.75rem;">
+                    <span id="currentEpoch">Epoch 0/50</span>
+                    <span id="trainingLoss">Loss: --</span>
+                    <span id="trainingAcc">Acc: --</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let isTraining = false;
+        let trainingInterval = null;
+        let performanceChart;
+
+        function initChart() {
+            const ctx = document.getElementById('performanceChart').getContext('2d');
+            performanceChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5', 'Week 6'],
+                    datasets: [{
+                        label: 'Accuracy (%)',
+                        data: [88.5, 90.2, 91.8, 93.1, 94.2, 94.7],
+                        borderColor: '#2ecc71',
+                        backgroundColor: 'rgba(46, 204, 113, 0.1)',
+                        tension: 0.3,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true
+                }
+            });
+        }
+
+        function triggerFileUpload() {
+            document.getElementById('fileInput').click();
+        }
+
+        document.getElementById('fileInput').addEventListener('change', function(e) {
+            const files = Array.from(e.target.files);
+            if(files.length > 0) {
+                alert(`📤 Uploaded ${files.length} images to dataset!`);
+            }
+        });
+
+        document.getElementById('epochsSlider').addEventListener('input', (e) => {
+            document.getElementById('epochValue').textContent = e.target.value;
+        });
+
+        function startTraining() {
+            if(isTraining) return;
+            
+            const epochs = parseInt(document.getElementById('epochsSlider').value);
+            isTraining = true;
+            document.getElementById('trainBtn').disabled = true;
+            document.getElementById('trainBtn').innerHTML = '<i class="fas fa-spinner fa-pulse"></i> Training...';
+            document.getElementById('trainingProgress').style.display = 'block';
+            
+            let currentEpoch = 0;
+            const progressFill = document.getElementById('trainingFill');
+            const currentEpochSpan = document.getElementById('currentEpoch');
+            const trainingLossSpan = document.getElementById('trainingLoss');
+            const trainingAccSpan = document.getElementById('trainingAcc');
+            
+            trainingInterval = setInterval(() => {
+                currentEpoch++;
+                const progress = (currentEpoch / epochs) * 100;
+                progressFill.style.width = `${progress}%`;
+                currentEpochSpan.textContent = `Epoch ${currentEpoch}/${epochs}`;
+                
+                const currentLoss = (0.5 * (1 - currentEpoch / epochs) + 0.05).toFixed(4);
+                const currentAcc = (70 + (currentEpoch / epochs) * 25).toFixed(1);
+                trainingLossSpan.textContent = `Loss: ${currentLoss}`;
+                trainingAccSpan.textContent = `Acc: ${currentAcc}%`;
+                
+                if(currentEpoch >= epochs) {
+                    clearInterval(trainingInterval);
+                    completeTraining();
+                }
+            }, 200);
+        }
+        
+        function completeTraining() {
+            isTraining = false;
+            const finalAccuracy = (92 + Math.random() * 5).toFixed(1);
+            document.getElementById('modelAccuracy').innerHTML = finalAccuracy + '%';
+            document.getElementById('lastTraining').textContent = new Date().toLocaleString();
+            document.getElementById('trainBtn').disabled = false;
+            document.getElementById('trainBtn').innerHTML = '<i class="fas fa-play"></i> Start Training';
+            alert(`✅ Training completed! New accuracy: ${finalAccuracy}%`);
+            setTimeout(() => {
+                document.getElementById('trainingProgress').style.display = 'none';
+            }, 2000);
+        }
+
+        initChart();
+    </script>
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Segregation | Alerts & Notifications</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #ecfdf5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            background: white;
+            padding: 1rem 2rem;
+            border-radius: 24px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        .back-btn {
+            background: #2ecc71;
+            color: white;
+            border: none;
+            padding: 0.7rem 1.5rem;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .alert-card {
+            background: white;
+            border-radius: 20px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            border-left: 4px solid #f39c12;
+            transition: transform 0.2s;
+        }
+        .alert-card.warning {
+            border-left-color: #e74c3c;
+            background: #fff5f5;
+        }
+        .alert-card.success {
+            border-left-color: #2ecc71;
+        }
+        h1 {
+            color: #1a3a33;
+        }
+        .back-link {
+            color: #2ecc71;
+            text-decoration: none;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-bell"></i> Alerts & Notifications</h1>
+            <a href="dashboard.html" class="back-btn"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
+        </div>
+        
+        <div class="alert-card warning">
+            <h3><i class="fas fa-exclamation-triangle"></i> Recyclables Bin at 92%</h3>
+            <p>Zone B - Schedule pickup immediately</p>
+            <small>2 hours ago</small>
+        </div>
+        
+        <div class="alert-card">
+            <h3><i class="fas fa-download"></i> AI Model Update Available</h3>
+            <p>Version 2.4.1 - Improved classification accuracy</p>
+            <small>5 hours ago</small>
+        </div>
+        
+        <div class="alert-card warning">
+            <h3><i class="fas fa-wifi"></i> Sensor #B3 Offline</h3>
+            <p>Maintenance required - Check connection</p>
+            <small>Yesterday</small>
+        </div>
+        
+        <div class="alert-card success">
+            <h3><i class="fas fa-chart-line"></i> Peak Waste Hour Detected</h3>
+            <p>2-4 PM shows highest waste generation</p>
+            <small>Yesterday</small>
+        </div>
+        
+        <div style="text-align: center; margin-top: 2rem;">
+            <a href="dashboard.html" class="back-link"><i class="fas fa-home"></i> Return to Dashboard</a>
+        </div>
+    </div>
+</body>
+</html>

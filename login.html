@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Smart Segregation System | Intelligent Waste Management Login</title>
+    <!-- Google Fonts & Font Awesome Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(145deg, #0b2f2c 0%, #051f1d 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow-x: hidden;
+            padding: 1.5rem;
+        }
+
+        /* animated particles / eco background elements */
+        .bg-smart {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        .bg-smart .leaf {
+            position: absolute;
+            background: rgba(110, 210, 150, 0.08);
+            border-radius: 80% 0 80% 0;
+            transform: rotate(45deg);
+            width: 80px;
+            height: 80px;
+            animation: floatLeaf 18s infinite ease-in-out;
+        }
+
+        .bg-smart .bubble {
+            position: absolute;
+            background: radial-gradient(circle, rgba(80, 200, 140, 0.2), rgba(40, 140, 100, 0.05));
+            border-radius: 50%;
+            backdrop-filter: blur(2px);
+            animation: floatBubble 25s infinite alternate;
+        }
+
+        @keyframes floatLeaf {
+            0% { transform: translateY(0vh) rotate(0deg); opacity: 0.2; }
+            50% { transform: translateY(15vh) rotate(10deg); opacity: 0.5; }
+            100% { transform: translateY(-5vh) rotate(20deg); opacity: 0.2; }
+        }
+
+        @keyframes floatBubble {
+            0% { transform: translateY(100vh) scale(0.5); opacity: 0; }
+            30% { opacity: 0.3; }
+            100% { transform: translateY(-20vh) scale(1.2); opacity: 0; }
+        }
+
+        /* Main card container */
+        .login-container {
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            max-width: 460px;
+            background: rgba(18, 32, 30, 0.75);
+            backdrop-filter: blur(12px);
+            border-radius: 2.5rem;
+            box-shadow: 0 25px 45px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(80, 210, 150, 0.2);
+            transition: transform 0.3s ease;
+            overflow: hidden;
+        }
+
+        .login-card {
+            padding: 2rem 2rem 2.5rem;
+        }
+
+        /* Brand header */
+        .brand {
+            text-align: center;
+            margin-bottom: 1.8rem;
+        }
+        .icon-circle {
+            background: linear-gradient(135deg, #2ecc71, #1f8a4c);
+            width: 70px;
+            height: 70px;
+            border-radius: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            box-shadow: 0 12px 18px -8px rgba(0,0,0,0.3);
+        }
+        .icon-circle i {
+            font-size: 2.8rem;
+            color: white;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+        }
+        h1 {
+            font-size: 1.9rem;
+            font-weight: 700;
+            letter-spacing: -0.3px;
+            background: linear-gradient(135deg, #EFFAF3, #B9F6CA);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            margin-bottom: 0.3rem;
+        }
+        .sub {
+            font-size: 0.85rem;
+            color: #9bc5b4;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .sub i {
+            font-size: 0.7rem;
+            color: #2ecc71;
+        }
+
+        /* form group styling */
+        .input-group {
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+        .input-group label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: #c6f0df;
+            margin-bottom: 0.6rem;
+            letter-spacing: 0.3px;
+        }
+        .input-group label i {
+            font-size: 0.9rem;
+            color: #2ecc71;
+        }
+        .input-field {
+            width: 100%;
+            padding: 0.9rem 1rem;
+            background: rgba(10, 22, 20, 0.7);
+            border: 1px solid rgba(70, 170, 120, 0.5);
+            border-radius: 1.2rem;
+            font-size: 1rem;
+            font-weight: 500;
+            color: #f0f7f3;
+            outline: none;
+            transition: all 0.2s ease;
+            font-family: 'Inter', monospace;
+        }
+        .input-field:focus {
+            border-color: #2ecc71;
+            box-shadow: 0 0 0 3px rgba(46, 204, 113, 0.3);
+            background: rgba(20, 40, 35, 0.9);
+        }
+        .input-field::placeholder {
+            color: #6b9787;
+            font-weight: 400;
+            font-size: 0.9rem;
+        }
+
+        /* password wrapper */
+        .password-wrapper {
+            position: relative;
+        }
+        .toggle-password {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: transparent;
+            border: none;
+            color: #9bc5b4;
+            cursor: pointer;
+            font-size: 1.1rem;
+            transition: color 0.2s;
+        }
+        .toggle-password:hover {
+            color: #2ecc71;
+        }
+
+        /* additional row (remember & forgot) */
+        .form-options {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 1rem 0 1.8rem;
+            font-size: 0.85rem;
+        }
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #cbe9de;
+            cursor: pointer;
+        }
+        .checkbox-label input {
+            width: 17px;
+            height: 17px;
+            accent-color: #2ecc71;
+            cursor: pointer;
+        }
+        .forgot-link {
+            color: #b0e0c8;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s;
+            border-bottom: 1px dashed transparent;
+        }
+        .forgot-link:hover {
+            color: #2ecc71;
+            border-bottom-color: #2ecc71;
+        }
+
+        /* login button */
+        .login-btn {
+            width: 100%;
+            background: linear-gradient(105deg, #27ae60, #1e874b);
+            border: none;
+            padding: 0.9rem;
+            border-radius: 2rem;
+            font-size: 1rem;
+            font-weight: 700;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            cursor: pointer;
+            transition: all 0.25s;
+            box-shadow: 0 6px 14px rgba(0, 0, 0, 0.3);
+            letter-spacing: 0.5px;
+        }
+        .login-btn i {
+            font-size: 1.1rem;
+            transition: transform 0.2s;
+        }
+        .login-btn:hover {
+            background: linear-gradient(105deg, #2ecc71, #229954);
+            transform: translateY(-2px);
+            box-shadow: 0 12px 22px rgba(0, 0, 0, 0.4);
+        }
+        .login-btn:active {
+            transform: translateY(1px);
+        }
+
+        /* demo credentials hint */
+        .demo-badge {
+            margin-top: 2rem;
+            background: rgba(46, 204, 113, 0.12);
+            border-radius: 1.2rem;
+            padding: 0.8rem 1rem;
+            text-align: center;
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(46, 204, 113, 0.3);
+        }
+        .demo-badge p {
+            font-size: 0.75rem;
+            color: #bbe5d3;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .demo-badge strong {
+            background: #1f5e46;
+            padding: 0.2rem 0.5rem;
+            border-radius: 20px;
+            font-family: monospace;
+            color: #e6ffed;
+            font-weight: 600;
+        }
+        .demo-badge i {
+            color: #f5b042;
+        }
+
+        /* message alert */
+        .message-area {
+            margin-top: 1rem;
+            font-size: 0.8rem;
+            text-align: center;
+            min-height: 44px;
+            color: #f5bc70;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+        .error-msg {
+            color: #ffb47b;
+            background: rgba(220, 80, 40, 0.15);
+            padding: 0.5rem;
+            border-radius: 1rem;
+        }
+        .success-msg {
+            color: #b0ffcf;
+            background: rgba(46, 204, 113, 0.2);
+        }
+
+        /* footer */
+        .footer-note {
+            text-align: center;
+            margin-top: 1.5rem;
+            font-size: 0.7rem;
+            color: #598d78;
+        }
+
+        @media (max-width: 500px) {
+            .login-card {
+                padding: 1.5rem;
+            }
+            h1 {
+                font-size: 1.6rem;
+            }
+            .icon-circle {
+                width: 60px;
+                height: 60px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="bg-smart">
+    <!-- random eco particles -->
+    <div class="leaf" style="top: 10%; left: 5%; width: 55px; height: 55px; animation-duration: 22s;"></div>
+    <div class="leaf" style="top: 70%; left: 85%; width: 70px; height: 70px; animation-duration: 19s; animation-delay: -3s;"></div>
+    <div class="leaf" style="top: 40%; left: 20%; width: 40px; height: 40px; animation-duration: 26s;"></div>
+    <div class="bubble" style="width: 140px; height: 140px; bottom: -40px; left: -30px; animation-duration: 28s;"></div>
+    <div class="bubble" style="width: 210px; height: 210px; top: -80px; right: -60px; animation-duration: 34s; opacity: 0.2;"></div>
+    <div class="bubble" style="width: 70px; height: 70px; bottom: 20%; right: 10%; animation-duration: 19s;"></div>
+</div>
+
+<div class="login-container">
+    <div class="login-card">
+        <div class="brand">
+            <div class="icon-circle">
+                <i class="fas fa-leaf"></i>
+            </div>
+            <h1>Smart Segregation</h1>
+            <div class="sub">
+                <i class="fas fa-recycle"></i>
+                <span>AI-Powered Waste Management</span>
+                <i class="fas fa-microchip"></i>
+            </div>
+        </div>
+
+        <form id="loginForm" action="#" method="POST">
+            <div class="input-group">
+                <label><i class="fas fa-user-astronaut"></i> Username / Employee ID</label>
+                <input type="text" id="username" class="input-field" placeholder="operator@segregation | admin" autocomplete="username">
+            </div>
+
+            <div class="input-group">
+                <label><i class="fas fa-lock"></i> Password</label>
+                <div class="password-wrapper">
+                    <input type="password" id="password" class="input-field" placeholder="••••••••" autocomplete="current-password">
+                    <button type="button" class="toggle-password" id="togglePwdBtn" aria-label="Show password">
+                        <i class="far fa-eye-slash"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="form-options">
+                <label class="checkbox-label">
+                    <input type="checkbox" id="rememberCheck"> <span>Keep me signed in</span>
+                </label>
+                <a href="#" id="forgotLink" class="forgot-link">Forgot access?</a>
+            </div>
+
+            <button type="submit" class="login-btn" id="loginButton">
+                <i class="fas fa-sign-in-alt"></i> Access Dashboard
+            </button>
+        </form>
+
+        <div class="message-area" id="messageArea">
+            <i class="fas fa-shield-alt"></i> Secure login · Eco credentials
+        </div>
+
+        <div class="demo-badge">
+            <p><i class="fas fa-flask"></i> Demo credentials: 
+            <strong>admin</strong> / <strong>segregate2025</strong>   |   
+            <strong>operator</strong> / <strong>greenbin</strong>
+            </p>
+        </div>
+        <div class="footer-note">
+            <i class="fas fa-charging-station"></i> Smart Segregation v2.0 · Zero Waste Initiative
+        </div>
+    </div>
+</div>
+
+<script>
+    (function() {
+        // DOM Elements
+        const usernameInput = document.getElementById('username');
+        const passwordInput = document.getElementById('password');
+        const loginForm = document.getElementById('loginForm');
+        const messageArea = document.getElementById('messageArea');
+        const togglePwdBtn = document.getElementById('togglePwdBtn');
+        const rememberCheck = document.getElementById('rememberCheck');
+        const forgotLink = document.getElementById('forgotLink');
+
+        // ---------- Demo user database (simulated) ----------
+        const VALID_CREDENTIALS = [
+            { username: 'admin', password: 'segregate2025', role: 'System Administrator' },
+            { username: 'operator', password: 'greenbin', role: 'Waste Operator' },
+            { username: 'supervisor', password: 'eco123', role: 'Site Supervisor' },
+            { username: 'tech', password: 'smartbin', role: 'IoT Technician' }
+        ];
+
+        // Helper: show message (error, success, info)
+        function showMessage(text, isError = false, isSuccess = false) {
+            messageArea.innerHTML = '';
+            const icon = document.createElement('i');
+            const span = document.createElement('span');
+            if (isError) {
+                icon.className = 'fas fa-exclamation-triangle';
+                messageArea.classList.add('error-msg');
+                messageArea.classList.remove('success-msg');
+            } else if (isSuccess) {
+                icon.className = 'fas fa-check-circle';
+                messageArea.classList.add('success-msg');
+                messageArea.classList.remove('error-msg');
+            } else {
+                icon.className = 'fas fa-info-circle';
+                messageArea.classList.remove('error-msg', 'success-msg');
+            }
+            span.innerText = text;
+            messageArea.appendChild(icon);
+            messageArea.appendChild(span);
+            // auto clear after 4 seconds if it's not persistent but fine
+            setTimeout(() => {
+                if (messageArea.innerHTML.includes(text)) {
+                    if (!isSuccess) {
+                        // keep success maybe longer? but reset to default message after 5s
+                        if (!isSuccess) {
+                            messageArea.innerHTML = '<i class="fas fa-shield-alt"></i> Secure login · Eco credentials';
+                            messageArea.classList.remove('error-msg', 'success-msg');
+                        } else {
+                            // for success we may keep but after 4sec revert to default neutral
+                            setTimeout(() => {
+                                if (messageArea.classList.contains('success-msg')) {
+                                    messageArea.innerHTML = '<i class="fas fa-shield-alt"></i> Secure login · Eco credentials';
+                                    messageArea.classList.remove('success-msg');
+                                }
+                            }, 3000);
+                        }
+                    } else {
+                        // do nothing extra, already handled
+                    }
+                }
+            }, 4000);
+        }
+
+        // Clear error style on input focus
+        function clearMessageOnInput() {
+            if (messageArea.classList.contains('error-msg')) {
+                messageArea.innerHTML = '<i class="fas fa-shield-alt"></i> Secure login · Eco credentials';
+                messageArea.classList.remove('error-msg', 'success-msg');
+            }
+        }
+        usernameInput.addEventListener('focus', clearMessageOnInput);
+        passwordInput.addEventListener('focus', clearMessageOnInput);
+
+        // Toggle password visibility
+        if (togglePwdBtn) {
+            togglePwdBtn.addEventListener('click', function() {
+                const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                passwordInput.setAttribute('type', type);
+                const icon = this.querySelector('i');
+                if (type === 'text') {
+                    icon.classList.remove('fa-eye-slash');
+                    icon.classList.add('fa-eye');
+                } else {
+                    icon.classList.remove('fa-eye');
+                    icon.classList.add('fa-eye-slash');
+                }
+            });
+        }
+
+        // Remember Me functionality (store username in localStorage, just front-end demo)
+        function loadRememberedUser() {
+            const savedUser = localStorage.getItem('smartSeg_rememberUser');
+            if (savedUser) {
+                usernameInput.value = savedUser;
+                rememberCheck.checked = true;
+            }
+        }
+        function saveRememberedUser(username) {
+            if (rememberCheck.checked) {
+                localStorage.setItem('smartSeg_rememberUser', username);
+            } else {
+                localStorage.removeItem('smartSeg_rememberUser');
+            }
+        }
+
+        // Login validation and simulation
+        function performLogin(event) {
+            event.preventDefault();
+
+            const username = usernameInput.value.trim();
+            const password = passwordInput.value;  // do not trim password strictly, but no leading/trailing spaces matter
+            if (!username) {
+                showMessage('⚠️ Please enter username / Employee ID', true);
+                usernameInput.focus();
+                return false;
+            }
+            if (!password) {
+                showMessage('🔒 Password cannot be empty', true);
+                passwordInput.focus();
+                return false;
+            }
+
+            // Find matching user
+            const matchedUser = VALID_CREDENTIALS.find(cred => 
+                cred.username.toLowerCase() === username.toLowerCase() && cred.password === password
+            );
+
+            if (matchedUser) {
+                // Success: save remember option if checked
+                saveRememberedUser(username);
+                // Display success with role info
+                showMessage(`✅ Access granted! Welcome ${matchedUser.role}. Redirecting to Smart Segregation Hub...`, false, true);
+                // Disable button and show loading state
+                const loginBtn = document.getElementById('loginButton');
+                const originalBtnHtml = loginBtn.innerHTML;
+                loginBtn.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> Authorizing...';
+                loginBtn.disabled = true;
+                
+                // Simulate redirect after 1.8 seconds (demo dashboard simulation)
+                setTimeout(() => {
+                    // In a real system, redirect to dashboard. For this demo, we show a sweet modal-like console and page update.
+                    // But to mimic real smart segregation system, we replace page content with a minimal dashboard preview
+                    // This demonstrates successful login while staying on the same page but with full system simulation.
+                    // Since it's a login page requirement, we build an elegant "dashboard preview" overlay but fully functional
+                    // respecting the spirit: after login, show main segregation system greeting.
+                    createDashboardPreview(matchedUser);
+                }, 1600);
+                return true;
+            } else {
+                // Wrong credentials
+                showMessage('❌ Invalid credentials. Access denied. Please check username/password.', true);
+                passwordInput.value = '';  // clear password field for security
+                passwordInput.focus();
+                return false;
+            }
+        }
+
+        // Demo dashboard preview after successful login (without losing context)
+        function createDashboardPreview(user) {
+            // Remove the login container and replace with a smart segregation dashboard simulation
+            const container = document.querySelector('.login-container');
+            const bgElements = document.querySelector('.bg-smart');
+            
+            // Fade out and replace
+            container.style.transition = 'opacity 0.4s ease, transform 0.3s';
+            container.style.opacity = '0';
+            container.style.transform = 'scale(0.96)';
+            
+            setTimeout(() => {
+                // Build new dashboard interface inside the same wrapper
+                const newDashboard = document.createElement('div');
+                newDashboard.className = 'login-container';  // reuse same card style but new content
+                newDashboard.style.opacity = '0';
+                newDashboard.style.transform = 'scale(0.98)';
+                newDashboard.style.transition = 'all 0.5s cubic-bezier(0.2, 0.9, 0.4, 1.1)';
+                
+                newDashboard.innerHTML = `
+                    <div class="login-card" style="text-align: center;">
+                        <div class="icon-circle" style="background: linear-gradient(145deg, #1f9a5a, #0f6e3f);">
+                            <i class="fas fa-charging-station"></i>
+                        </div>
+                        <h1 style="font-size: 1.8rem;">Smart Segregation Core</h1>
+                        <div class="sub" style="margin-bottom: 1.5rem;">
+                            <i class="fas fa-user-check"></i> Welcome, ${user.role}
+                        </div>
+                        <div style="background: rgba(0, 0, 0, 0.3); border-radius: 2rem; padding: 1.2rem; margin: 1rem 0;">
+                            <p style="display: flex; align-items: center; justify-content: center; gap: 12px; font-weight: 500;">
+                                <i class="fas fa-trash-alt" style="color:#2ecc71;"></i> 
+                                Real-time segregation metrics: <strong style="color:#bef5cf;">ACTIVE</strong>
+                            </p>
+                            <div style="display: flex; gap: 1rem; justify-content: center; margin: 1rem 0; flex-wrap: wrap;">
+                                <span style="background: #1b4d3e; padding: 0.3rem 1rem; border-radius: 30px;"><i class="fas fa-apple-alt"></i> Organic: 68%</span>
+                                <span style="background: #1b4d3e; padding: 0.3rem 1rem; border-radius: 30px;"><i class="fas fa-box-open"></i> Recyclable: 24%</span>
+                                <span style="background: #1b4d3e; padding: 0.3rem 1rem; border-radius: 30px;"><i class="fas fa-dumpster"></i> Residual: 8%</span>
+                            </div>
+                            <hr style="border-color: #2c6e55; margin: 0.9rem 0;">
+                            <p style="font-size: 0.9rem;"><i class="fas fa-microchip"></i> AI Vision: Bin status OPTIMAL | Load 42%</p>
+                        </div>
+                        <button id="logoutBtn" class="login-btn" style="background: #2c3e2b; margin-top: 0.5rem;">
+                            <i class="fas fa-sign-out-alt"></i> Logout & Return
+                        </button>
+                        <div class="footer-note" style="margin-top: 1rem;">
+                            <i class="fas fa-chart-line"></i> Smart Segregation System · Real-time analytics
+                        </div>
+                    </div>
+                `;
+                container.parentNode.replaceChild(newDashboard, container);
+                newDashboard.style.opacity = '1';
+                newDashboard.style.transform = 'scale(1)';
+                
+                // Attach logout event
+                const logoutBtn = newDashboard.querySelector('#logoutBtn');
+                if (logoutBtn) {
+                    logoutBtn.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        // Reload to initial login page (simulate logout)
+                        window.location.reload();
+                    });
+                }
+            }, 350);
+        }
+
+        // Forgot password demo interaction (informative)
+        function handleForgot(e) {
+            e.preventDefault();
+            showMessage('📧 Contact system admin or use demo creds: admin/segregate2025 | operator/greenbin', false);
+        }
+
+        // Attach event listeners
+        loginForm.addEventListener('submit', performLogin);
+        forgotLink.addEventListener('click', handleForgot);
+        
+        // load remembered username on page load
+        loadRememberedUser();
+
+        // Optional: add simple client-side validation for leading/trailing spaces warning
+        usernameInput.addEventListener('blur', function() {
+            if (this.value.trim() === '' && this.value.length > 0) {
+                showMessage('Username cannot be just spaces', true);
+            }
+        });
+    })();
+</script>
+</body>
+</html>

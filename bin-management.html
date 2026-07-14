@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Smart Segregation | Bin Management & IoT Sensors</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f0f9f5;
+            overflow-x: hidden;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 280px;
+            height: 100vh;
+            background: linear-gradient(180deg, #0a2f2a 0%, #051f1c 100%);
+            color: white;
+            z-index: 100;
+            transition: all 0.3s;
+            box-shadow: 2px 0 20px rgba(0,0,0,0.1);
+            overflow-y: auto;
+        }
+
+        .logo-area {
+            padding: 2rem 1.5rem 1.5rem;
+            border-bottom: 1px solid rgba(70, 170, 120, 0.3);
+            margin-bottom: 2rem;
+        }
+        .logo-area h2 {
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 700;
+        }
+        .logo-area h2 i {
+            color: #2ecc71;
+            font-size: 1.8rem;
+        }
+        .logo-area p {
+            font-size: 0.7rem;
+            color: #9bc5b4;
+            margin-top: 0.5rem;
+        }
+
+        .nav-menu {
+            padding: 0 1rem;
+        }
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 0.85rem 1rem;
+            margin: 0.4rem 0;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: #d0e6dd;
+            font-weight: 500;
+        }
+        .nav-item:hover, .nav-item.active {
+            background: rgba(46, 204, 113, 0.2);
+            color: white;
+        }
+        .nav-item.active {
+            background: linear-gradient(90deg, #2ecc71, #27ae60);
+            box-shadow: 0 2px 8px rgba(46,204,113,0.3);
+        }
+        .nav-item i {
+            width: 24px;
+            font-size: 1.2rem;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 280px;
+            padding: 1.5rem 2rem;
+            min-height: 100vh;
+        }
+
+        /* Top Bar */
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            background: white;
+            padding: 1rem 1.8rem;
+            border-radius: 24px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        .page-title h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #1a3a33;
+        }
+        .page-title p {
+            color: #6c8b81;
+            font-size: 0.85rem;
+            margin-top: 0.2rem;
+        }
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        .notification-badge {
+            position: relative;
+            cursor: pointer;
+        }
+        .notification-badge i {
+            font-size: 1.4rem;
+            color: #2c6e55;
+        }
+        .badge {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: #e74c3c;
+            color: white;
+            border-radius: 50%;
+            padding: 2px 6px;
+            font-size: 0.7rem;
+            font-weight: bold;
+        }
+        .user-avatar {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: #f0f7f4;
+            padding: 0.5rem 1rem;
+            border-radius: 30px;
+        }
+        .avatar-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .avatar-icon i {
+            font-size: 1.3rem;
+            color: white;
+        }
+        .user-name {
+            font-weight: 600;
+            color: #1e4a3b;
+        }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        .stat-card {
+            background: white;
+            padding: 1.3rem 1.5rem;
+            border-radius: 24px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+            transition: transform 0.2s;
+            border-left: 4px solid #2ecc71;
+        }
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        }
+        .stat-card h3 {
+            font-size: 0.85rem;
+            color: #6c8b81;
+            margin-bottom: 8px;
+        }
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 800;
+            color: #1a3a33;
+        }
+
+        /* Map & Bin Grid */
+        .map-section {
+            background: white;
+            border-radius: 28px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+        }
+        .map-container {
+            background: linear-gradient(135deg, #e8f5ef 0%, #d4ede3 100%);
+            border-radius: 20px;
+            padding: 1rem;
+            min-height: 400px;
+            position: relative;
+            overflow: hidden;
+        }
+        .map-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            position: relative;
+            z-index: 2;
+        }
+        .map-zone {
+            background: rgba(255,255,255,0.9);
+            border-radius: 16px;
+            padding: 1rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 2px solid transparent;
+        }
+        .map-zone:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        }
+        .map-zone.selected {
+            border-color: #2ecc71;
+            background: #f0fff4;
+        }
+        .zone-name {
+            font-weight: 700;
+            color: #1a3a33;
+            margin-bottom: 0.5rem;
+        }
+        .zone-stats {
+            font-size: 0.8rem;
+            color: #6c8b81;
+        }
+
+        /* Bin Cards Grid */
+        .bins-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+        .bin-card {
+            background: white;
+            border-radius: 24px;
+            padding: 1.2rem;
+            transition: all 0.3s;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            position: relative;
+            overflow: hidden;
+        }
+        .bin-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px rgba(0,0,0,0.1);
+        }
+        .bin-card.critical {
+            border-left: 4px solid #e74c3c;
+            background: #fff5f5;
+        }
+        .bin-card.warning {
+            border-left: 4px solid #f39c12;
+        }
+        .bin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        .bin-type {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .bin-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+        .bin-icon.organic { background: #e9f9f0; color: #2ecc71; }
+        .bin-icon.recyclable { background: #e8f0fe; color: #3498db; }
+        .bin-icon.hazardous { background: #fee8e8; color: #e67e22; }
+        .bin-icon.residual { background: #eceff1; color: #95a5a6; }
+        .bin-icon.ewaste { background: #fef5e8; color: #f1c40f; }
+        .bin-name {
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: #1a3a33;
+        }
+        .bin-id {
+            font-size: 0.7rem;
+            color: #8ba89a;
+        }
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+        .status-online { background: #e9f9f0; color: #2ecc71; }
+        .status-offline { background: #fee8e8; color: #e74c3c; }
+        .fill-level {
+            margin: 1rem 0;
+        }
+        .fill-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            margin-bottom: 0.3rem;
+            color: #6c8b81;
+        }
+        .progress-bar {
+            height: 10px;
+            background: #ecfdf5;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            transition: width 0.3s;
+            border-radius: 10px;
+        }
+        .sensor-data {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.8rem;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid #ecfdf5;
+        }
+        .sensor-item {
+            text-align: center;
+        }
+        .sensor-label {
+            font-size: 0.7rem;
+            color: #8ba89a;
+        }
+        .sensor-value {
+            font-weight: 700;
+            color: #1a3a33;
+            font-size: 0.9rem;
+        }
+        .action-buttons {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+        .btn-sm {
+            flex: 1;
+            padding: 0.5rem;
+            border: none;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-primary-sm {
+            background: #2ecc71;
+            color: white;
+        }
+        .btn-secondary-sm {
+            background: #ecfdf5;
+            color: #1e4a3b;
+        }
+
+        @media (max-width: 1024px) {
+            .main-content {
+                margin-left: 0;
+            }
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            .map-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="logo-area">
+            <h2><i class="fas fa-leaf"></i> SmartSeg</h2>
+            <p>AI-Powered Waste Management</p>
+        </div>
+        <div class="nav-menu">
+            <div class="nav-item">
+                <i class="fas fa-tachometer-alt"></i>
+                <span>Dashboard</span>
+            </div>
+            <div class="nav-item">
+                <i class="fas fa-video"></i>
+                <span>Waste Monitoring</span>
+            </div>
+            <div class="nav-item active">
+                <i class="fas fa-trash-alt"></i>
+                <span>Bin Management</span>
+            </div>
+            <div class="nav-item">
+                <i class="fas fa-robot"></i>
+                <span>AI Training</span>
+            </div>
+            <div class="nav-item">
+                <i class="fas fa-chart-line"></i>
+                <span>Analytics</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div class="top-bar">
+            <div class="page-title">
+                <h1><i class="fas fa-trash-alt"></i> Bin Management System</h1>
+                <p><i class="fas fa-microchip"></i> IoT Sensors | Real-time Monitoring | Smart Collection</p>
+            </div>
+            <div class="user-info">
+                <div class="notification-badge">
+                    <i class="fas fa-bell"></i>
+                    <span class="badge" id="alertBadge">0</span>
+                </div>
+                <div class="user-avatar">
+                    <div class="avatar-icon"><i class="fas fa-user-check"></i></div>
+                    <div class="user-name">Operator</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3><i class="fas fa-trash"></i> Total Bins</h3>
+                <div class="stat-value" id="totalBins">0</div>
+            </div>
+            <div class="stat-card">
+                <h3><i class="fas fa-check-circle"></i> Active Sensors</h3>
+                <div class="stat-value" id="activeSensors">0</div>
+            </div>
+            <div class="stat-card">
+                <h3><i class="fas fa-exclamation-triangle"></i> Critical Bins</h3>
+                <div class="stat-value" id="criticalBins">0</div>
+            </div>
+            <div class="stat-card">
+                <h3><i class="fas fa-truck"></i> Pickups Today</h3>
+                <div class="stat-value" id="pickupsToday">0</div>
+            </div>
+        </div>
+
+        <div class="map-section">
+            <h3 style="margin-bottom: 1rem;"><i class="fas fa-map-marker-alt"></i> Facility Zones</h3>
+            <div class="map-container">
+                <div class="map-grid" id="zoneGrid">
+                    <!-- Zones will be populated by JS -->
+                </div>
+            </div>
+        </div>
+
+        <div class="bins-grid" id="binsGrid">
+            <!-- Bin cards will be populated by JS -->
+        </div>
+    </div>
+
+    <script>
+        // Bin Data with IoT Sensors
+        let bins = [
+            { id: "B-101", name: "Organic Waste", type: "organic", zone: "Zone A", fill: 87, temperature: 24, weight: 342, lastMaintenance: "2024-01-15", status: "online", location: "Kitchen Area" },
+            { id: "B-102", name: "Recyclables", type: "recyclable", zone: "Zone A", fill: 94, temperature: 22, weight: 512, lastMaintenance: "2024-01-10", status: "online", location: "Cafeteria" },
+            { id: "B-103", name: "Hazardous Waste", type: "hazardous", zone: "Zone B", fill: 42, temperature: 26, weight: 78, lastMaintenance: "2024-01-05", status: "online", location: "Lab Area" },
+            { id: "B-104", name: "Residual Waste", type: "residual", zone: "Zone B", fill: 65, temperature: 23, weight: 289, lastMaintenance: "2024-01-12", status: "online", location: "Loading Dock" },
+            { id: "B-105", name: "E-Waste", type: "ewaste", zone: "Zone C", fill: 31, temperature: 21, weight: 156, lastMaintenance: "2024-01-08", status: "online", location: "IT Department" },
+            { id: "B-106", name: "Glass & Metal", type: "recyclable", zone: "Zone C", fill: 78, temperature: 24, weight: 423, lastMaintenance: "2024-01-14", status: "online", location: "Recycling Center" },
+            { id: "B-107", name: "Compost", type: "organic", zone: "Zone D", fill: 92, temperature: 28, weight: 567, lastMaintenance: "2024-01-09", status: "online", location: "Garden Area" },
+            { id: "B-108", name: "Medical Waste", type: "hazardous", zone: "Zone D", fill: 23, temperature: 19, weight: 45, lastMaintenance: "2024-01-11", status: "offline", location: "Clinic" },
+            { id: "B-109", name: "Plastics", type: "recyclable", zone: "Zone A", fill: 56, temperature: 22, weight: 298, lastMaintenance: "2024-01-13", status: "online", location: "Packaging Area" },
+            { id: "B-110", name: "Construction Waste", type: "residual", zone: "Zone E", fill: 44, temperature: 20, weight: 876, lastMaintenance: "2024-01-07", status: "online", location: "Workshop" }
+        ];
+
+        let selectedZone = "All";
+        let pickupsToday = 12;
+        let alertCount = 0;
+
+        // Zone definitions
+        const zones = ["All", "Zone A", "Zone B", "Zone C", "Zone D", "Zone E"];
+
+        // Helper functions
+        function getBinIcon(type) {
+            const icons = {
+                organic: '<i class="fas fa-leaf"></i>',
+                recyclable: '<i class="fas fa-recycle"></i>',
+                hazardous: '<i class="fas fa-skull-crossbones"></i>',
+                residual: '<i class="fas fa-trash"></i>',
+                ewaste: '<i class="fas fa-laptop"></i>'
+            };
+            return icons[type] || '<i class="fas fa-trash-alt"></i>';
+        }
+
+        function getFillColor(percentage) {
+            if(percentage >= 90) return '#e74c3c';
+            if(percentage >= 75) return '#f39c12';
+            return '#2ecc71';
+        }
+
+        function getStatusClass(status) {
+            return status === 'online' ? 'status-online' : 'status-offline';
+        }
+
+        function updateStats() {
+            const total = bins.length;
+            const active = bins.filter(b => b.status === 'online').length;
+            const critical = bins.filter(b => b.fill >= 90).length;
+            
+            document.getElementById('totalBins').textContent = total;
+            document.getElementById('activeSensors').textContent = active;
+            document.getElementById('criticalBins').textContent = critical;
+            document.getElementById('pickupsToday').textContent = pickupsToday;
+            
+            alertCount = critical;
+            document.getElementById('alertBadge').textContent = alertCount;
+        }
+
+        function renderZones() {
+            const zoneGrid = document.getElementById('zoneGrid');
+            zoneGrid.innerHTML = zones.map(zone => {
+                const zoneBins = zone === 'All' ? bins : bins.filter(b => b.zone === zone);
+                const avgFill = zoneBins.length ? Math.round(zoneBins.reduce((sum, b) => sum + b.fill, 0) / zoneBins.length) : 0;
+                const criticalCount = zoneBins.filter(b => b.fill >= 90).length;
+                
+                return `
+                    <div class="map-zone ${selectedZone === zone ? 'selected' : ''}" onclick="selectZone('${zone}')">
+                        <div class="zone-name">${zone}</div>
+                        <div class="zone-stats">
+                            <i class="fas fa-trash"></i> ${zoneBins.length} bins<br>
+                            <i class="fas fa-chart-line"></i> Avg ${avgFill}%<br>
+                            ${criticalCount > 0 ? `<span style="color: #e74c3c;"><i class="fas fa-exclamation-triangle"></i> ${criticalCount} critical</span>` : '<span style="color: #2ecc71;">✓ All good</span>'}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function renderBins() {
+            const filteredBins = selectedZone === 'All' ? bins : bins.filter(b => b.zone === selectedZone);
+            const binsGrid = document.getElementById('binsGrid');
+            
+            if(filteredBins.length === 0) {
+                binsGrid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 3rem; color: #8ba89a;"><i class="fas fa-box-open"></i> No bins in this zone</div>';
+                return;
+            }
+            
+            binsGrid.innerHTML = filteredBins.map(bin => {
+                const fillColor = getFillColor(bin.fill);
+                const isCritical = bin.fill >= 90;
+                const isWarning = bin.fill >= 75 && bin.fill < 90;
+                let cardClass = '';
+                if(isCritical) cardClass = 'critical';
+                else if(isWarning) cardClass = 'warning';
+                
+                return `
+                    <div class="bin-card ${cardClass}">
+                        <div class="bin-header">
+                            <div class="bin-type">
+                                <div class="bin-icon ${bin.type}">
+                                    ${getBinIcon(bin.type)}
+                                </div>
+                                <div>
+                                    <div class="bin-name">${bin.name}</div>
+                                    <div class="bin-id">${bin.id} • ${bin.location}</div>
+                                </div>
+                            </div>
+                            <div class="status-badge ${getStatusClass(bin.status)}">
+                                <i class="fas ${bin.status === 'online' ? 'fa-circle' : 'fa-circle-notch'}"></i> ${bin.status === 'online' ? 'Online' : 'Offline'}
+                            </div>
+                        </div>
+                        
+                        <div class="fill-level">
+                            <div class="fill-label">
+                                <span><i class="fas fa-charging-station"></i> Fill Level</span>
+                                <span><strong>${bin.fill}%</strong></span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: ${bin.fill}%; background: ${fillColor};"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="sensor-data">
+                            <div class="sensor-item">
+                                <div class="sensor-label"><i class="fas fa-thermometer-half"></i> Temperature</div>
+                                <div class="sensor-value">${bin.temperature}°C</div>
+                            </div>
+                            <div class="sensor-item">
+                                <div class="sensor-label"><i class="fas fa-weight-hanging"></i> Weight</div>
+                                <div class="sensor-value">${bin.weight} kg</div>
+                            </div>
+                            <div class="sensor-item">
+                                <div class="sensor-label"><i class="fas fa-calendar-alt"></i> Last Service</div>
+                                <div class="sensor-value">${bin.lastMaintenance}</div>
+                            </div>
+                            <div class="sensor-item">
+                                <div class="sensor-label"><i class="fas fa-map-marker-alt"></i> Zone</div>
+                                <div class="sensor-value">${bin.zone}</div>
+                            </div>
+                        </div>
+                        
+                        <div class="action-buttons">
+                            <button class="btn-sm btn-primary-sm" onclick="schedulePickup('${bin.id}')">
+                                <i class="fas fa-truck"></i> Schedule Pickup
+                            </button>
+                            <button class="btn-sm btn-secondary-sm" onclick="viewMaintenance('${bin.id}')">
+                                <i class="fas fa-tools"></i> Maintenance
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Simulate real-time sensor updates
+        function simulateRealTimeUpdates() {
+            setInterval(() => {
+                // Update fill levels randomly
+                bins = bins.map(bin => {
+                    if(bin.status === 'online') {
+                        let change = (Math.random() - 0.3) * 5;
+                        let newFill = bin.fill + change;
+                        newFill = Math.min(100, Math.max(0, Math.round(newFill)));
+                        
+                        // Update temperature slightly
+                        let tempChange = (Math.random() - 0.5) * 2;
+                        let newTemp = bin.temperature + tempChange;
+                        newTemp = Math.round(Math.min(40, Math.max(15, newTemp)));
+                        
+                        // Update weight based on fill change
+                        let weightChange = change * 5;
+                        let newWeight = bin.weight + weightChange;
+                        newWeight = Math.max(0, Math.round(newWeight));
+                        
+                        return {
+                            ...bin,
+                            fill: newFill,
+                            temperature: newTemp,
+                            weight: newWeight
+                        };
+                    }
+                    return bin;
+                });
+                
+                // Randomly toggle offline bins back online after some time
+                if(Math.random() > 0.95) {
+                    const offlineBin = bins.find(b => b.status === 'offline');
+                    if(offlineBin) {
+                        offlineBin.status = 'online';
+                        showToast(`Bin ${offlineBin.id} is back online`, 'success');
+                    }
+                }
+                
+                // Randomly mark a bin offline for maintenance simulation
+                if(Math.random() > 0.97 && bins.filter(b => b.status === 'offline').length < 2) {
+                    const randomBin = bins[Math.floor(Math.random() * bins.length)];
+                    if(randomBin.status === 'online') {
+                        randomBin.status = 'offline';
+                        showToast(`⚠️ Bin ${randomBin.id} (${randomBin.name}) is offline. Maintenance required.`, 'warning');
+                    }
+                }
+                
+                updateStats();
+                renderZones();
+                renderBins();
+                
+                // Check for new critical alerts
+                const criticalBins = bins.filter(b => b.fill >= 90 && b.status === 'online');
+                if(criticalBins.length > alertCount) {
+                    showToast(`🚨 ${criticalBins.length} bins are at critical fill level! Schedule pickup immediately.`, 'critical');
+                }
+                alertCount = criticalBins.length;
+                document.getElementById('alertBadge').textContent = alertCount;
+                
+            }, 8000);
+        }
+
+        // Zone selection
+        window.selectZone = function(zone) {
+            selectedZone = zone;
+            renderZones();
+            renderBins();
+        };
+
+        // Schedule pickup
+        window.schedulePickup = function(binId) {
+            const bin = bins.find(b => b.id === binId);
+            if(bin) {
+                pickupsToday++;
+                bin.fill = Math.max(0, bin.fill - 85);
+                updateStats();
+                renderBins();
+                showToast(`✅ Pickup scheduled for ${bin.name} (${bin.id}). Estimated arrival: 30 minutes.`, 'success');
+            }
+        };
+
+        // View maintenance
+        window.viewMaintenance = function(binId) {
+            const bin = bins.find(b => b.id === binId);
+            if(bin) {
+                showToast(`🔧 Maintenance log for ${bin.name}: Last service ${bin.lastMaintenance}. Sensor status: ${bin.status}.`, 'info');
+            }
+        };
+
+        // Toast notification
+        function showToast(message, type = 'info') {
+            const toast = document.createElement('div');
+            const colors = {
+                success: '#2ecc71',
+                warning: '#f39c12',
+                critical: '#e74c3c',
+                info: '#3498db'
+            };
+            toast.style.cssText = `
+                position: fixed;
+                bottom: 20px;
+                right: 20px;
+                background: ${colors[type]};
+                color: white;
+                padding: 0.8rem 1.2rem;
+                border-radius: 12px;
+                z-index: 1000;
+                animation: slideIn 0.3s;
+                font-weight: 500;
+                max-width: 350px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            `;
+            toast.innerHTML = `<i class="fas ${type === 'success' ? 'fa-check-circle' : type === 'warning' ? 'fa-exclamation-triangle' : type === 'critical' ? 'fa-bell' : 'fa-info-circle'}"></i> ${message}`;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 4000);
+        }
+
+        // Add CSS animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideIn {
+                from {
+                    transform: translateX(100%);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Initialize
+        function init() {
+            updateStats();
+            renderZones();
+            renderBins();
+            simulateRealTimeUpdates();
+            
+            // Notification click handler
+            document.querySelector('.notification-badge').addEventListener('click', () => {
+                const critical = bins.filter(b => b.fill >= 90);
+                if(critical.length > 0) {
+                    showToast(`📢 ${critical.length} bins require immediate attention!`, 'critical');
+                } else {
+                    showToast(`✅ All bins operating normally. ${pickupsToday} pickups completed today.`, 'success');
+                }
+            });
+        }
+        
+        init();
+    </script>
+</body>
+</html>
