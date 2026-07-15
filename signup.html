@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no">
+<title>Smart Segregation | Create Account</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Inter',sans-serif;background:linear-gradient(145deg,#0b2f2c,#051f1d);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:1.5rem;position:relative;overflow-x:hidden;}
+.bg{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:0;}
+.leaf{position:absolute;background:rgba(110,210,150,.08);border-radius:80% 0 80% 0;transform:rotate(45deg);animation:floatLeaf 20s infinite ease-in-out;}
+.bubble{position:absolute;background:radial-gradient(circle,rgba(80,200,140,.2),rgba(40,140,100,.05));border-radius:50%;animation:floatBubble 28s infinite alternate;}
+@keyframes floatLeaf{0%{transform:translateY(0)rotate(0);opacity:.2}50%{transform:translateY(15vh)rotate(10deg);opacity:.5}100%{transform:translateY(-5vh)rotate(20deg);opacity:.2}}
+@keyframes floatBubble{0%{transform:translateY(100vh)scale(.5);opacity:0}30%{opacity:.3}100%{transform:translateY(-20vh)scale(1.2);opacity:0}}
+.card{position:relative;z-index:10;width:100%;max-width:480px;background:rgba(18,32,30,.85);backdrop-filter:blur(12px);border-radius:2.5rem;box-shadow:0 25px 45px rgba(0,0,0,.4),0 0 0 1px rgba(80,210,150,.2);overflow:hidden;}
+.card-body{padding:2rem 2rem 2.5rem;}
+.brand{text-align:center;margin-bottom:1.8rem;}
+.icon-circle{background:linear-gradient(135deg,#2ecc71,#1f8a4c);width:70px;height:70px;border-radius:28px;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;box-shadow:0 12px 18px -8px rgba(0,0,0,.3);}
+.icon-circle i{font-size:2.8rem;color:#fff;}
+.brand h1{font-size:1.9rem;font-weight:700;background:linear-gradient(135deg,#EFFAF3,#B9F6CA);-webkit-background-clip:text;background-clip:text;color:transparent;margin-bottom:.3rem;}
+.brand .sub{font-size:.85rem;color:#9bc5b4;display:flex;align-items:center;justify-content:center;gap:8px;}
+.input-group{margin-bottom:1.2rem;}
+.input-group label{display:flex;align-items:center;gap:8px;font-size:.85rem;font-weight:500;color:#c6f0df;margin-bottom:.5rem;}
+.input-group label i{color:#2ecc71;}
+.input-field{width:100%;padding:.85rem 1rem;background:rgba(10,22,20,.7);border:1px solid rgba(70,170,120,.5);border-radius:1.2rem;font-size:.95rem;color:#f0f7f3;outline:none;transition:all .2s;font-family:'Inter',sans-serif;}
+.input-field:focus{border-color:#2ecc71;box-shadow:0 0 0 3px rgba(46,204,113,.3);}
+.input-field::placeholder{color:#6b9787;}
+.pwd-wrap{position:relative;}
+.eye-btn{position:absolute;right:14px;top:50%;transform:translateY(-50%);background:transparent;border:none;color:#9bc5b4;cursor:pointer;font-size:1.1rem;}
+/* Password strength */
+.strength-wrap{margin-top:.4rem;}
+.strength-bar{height:4px;background:#e2e8f0;border-radius:10px;overflow:hidden;}
+.strength-fill{height:100%;border-radius:10px;transition:all .3s;width:0%;}
+.strength-txt{font-size:.68rem;margin-top:2px;}
+/* Submit btn */
+.submit-btn{width:100%;background:linear-gradient(105deg,#27ae60,#1e874b);border:none;padding:.9rem;border-radius:2rem;font-size:1rem;font-weight:700;color:#fff;display:flex;align-items:center;justify-content:center;gap:12px;cursor:pointer;transition:all .25s;margin-top:.5rem;}
+.submit-btn:hover{background:linear-gradient(105deg,#2ecc71,#229954);transform:translateY(-2px);}
+.submit-btn:disabled{opacity:.6;cursor:not-allowed;transform:none;}
+/* Messages */
+.msg-area{margin-top:.8rem;min-height:38px;font-size:.82rem;text-align:center;}
+.error-msg{color:#ffb47b;background:rgba(220,80,40,.15);padding:.5rem .9rem;border-radius:1rem;display:block;}
+.success-msg{color:#b0ffcf;background:rgba(46,204,113,.2);padding:.5rem .9rem;border-radius:1rem;display:block;}
+/* Toggle link */
+.toggle-link{text-align:center;margin-top:1.2rem;color:#9bc5b4;font-size:.85rem;}
+.toggle-link a{color:#2ecc71;font-weight:600;text-decoration:none;}
+.toggle-link a:hover{text-decoration:underline;}
+/* shake */
+@keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-8px)}40%,80%{transform:translateX(8px)}}
+</style>
+</head>
+<body>
+<div class="bg">
+  <div class="leaf" style="top:10%;left:5%;width:55px;height:55px;animation-duration:22s"></div>
+  <div class="leaf" style="top:70%;left:85%;width:70px;height:70px;animation-duration:19s;animation-delay:-3s"></div>
+  <div class="leaf" style="top:40%;left:20%;width:40px;height:40px;animation-duration:26s"></div>
+  <div class="bubble" style="width:140px;height:140px;bottom:-40px;left:-30px;animation-duration:28s"></div>
+  <div class="bubble" style="width:200px;height:200px;top:-80px;right:-60px;animation-duration:34s;opacity:.2"></div>
+</div>
+
+<div class="card" id="mainCard">
+  <div class="card-body">
+    <div class="brand">
+      <div class="icon-circle"><i class="fas fa-user-plus"></i></div>
+      <h1>Create Account</h1>
+      <div class="sub"><i class="fas fa-recycle"></i><span>Join Smart Segregation System</span></div>
+    </div>
+
+    <form id="signupForm" autocomplete="off">
+      <div class="input-group">
+        <label><i class="fas fa-user"></i> Username <span style="color:#e74c3c">*</span></label>
+        <input id="sUsername" class="input-field" type="text" placeholder="choose a username" autocomplete="off">
+        <div id="usernameErr" style="font-size:.72rem;color:#e74c3c;margin-top:3px;display:none"><i class="fas fa-exclamation-circle"></i> Username is required</div>
+      </div>
+
+      <div class="input-group">
+        <label><i class="fas fa-envelope"></i> Email <span style="color:#9bc5b4;font-size:.75rem">(optional)</span></label>
+        <input id="sEmail" class="input-field" type="email" placeholder="your@email.com">
+      </div>
+
+      <div class="input-group">
+        <label><i class="fas fa-id-badge"></i> Role</label>
+        <select id="sRole" class="input-field" style="cursor:pointer">
+          <option value="Waste Operator">Waste Operator</option>
+          <option value="Waste Manager">Waste Manager</option>
+          <option value="Site Supervisor">Site Supervisor</option>
+          <option value="IoT Technician">IoT Technician</option>
+          <option value="System Administrator">System Administrator</option>
+          <option value="Analyst">Analyst</option>
+        </select>
+      </div>
+
+      <div class="input-group">
+        <label><i class="fas fa-lock"></i> Password <span style="color:#e74c3c">*</span></label>
+        <div class="pwd-wrap">
+          <input id="sPassword" class="input-field" type="password" placeholder="min 6 characters">
+          <button type="button" class="eye-btn" id="eyeBtn"><i class="far fa-eye-slash"></i></button>
+        </div>
+        <div class="strength-wrap">
+          <div class="strength-bar"><div class="strength-fill" id="strengthFill"></div></div>
+          <div class="strength-txt" id="strengthTxt"></div>
+        </div>
+        <div id="passErr" style="font-size:.72rem;color:#e74c3c;margin-top:3px;display:none"><i class="fas fa-exclamation-circle"></i> Password must be at least 6 characters</div>
+      </div>
+
+      <div class="input-group">
+        <label><i class="fas fa-lock"></i> Confirm Password <span style="color:#e74c3c">*</span></label>
+        <div class="pwd-wrap">
+          <input id="sConfirm" class="input-field" type="password" placeholder="repeat password">
+        </div>
+        <div id="confirmErr" style="font-size:.72rem;color:#e74c3c;margin-top:3px;display:none"><i class="fas fa-exclamation-circle"></i> Passwords do not match</div>
+      </div>
+
+      <button type="submit" class="submit-btn" id="signupBtn">
+        <i class="fas fa-user-plus"></i> Create Account
+      </button>
+    </form>
+
+    <div class="msg-area" id="msgArea"></div>
+    <div class="toggle-link">Already have an account? <a href="login.html">Login here</a></div>
+  </div>
+</div>
+
+<script>
+const API = 'http://localhost:3000/api';
+
+// Password show/hide
+document.getElementById('eyeBtn').addEventListener('click', function(){
+  const inp = document.getElementById('sPassword');
+  const ic  = this.querySelector('i');
+  inp.type = inp.type === 'password' ? 'text' : 'password';
+  ic.className = inp.type === 'text' ? 'far fa-eye' : 'far fa-eye-slash';
+});
+
+// Password strength meter
+document.getElementById('sPassword').addEventListener('input', function(){
+  const val = this.value;
+  const fill = document.getElementById('strengthFill');
+  const txt  = document.getElementById('strengthTxt');
+  let score = 0;
+  if (val.length >= 6)  score++;
+  if (val.length >= 10) score++;
+  if (/[A-Z]/.test(val)) score++;
+  if (/[0-9]/.test(val)) score++;
+  if (/[^A-Za-z0-9]/.test(val)) score++;
+  const levels = [
+    {w:'0%',  c:'transparent', t:''},
+    {w:'20%', c:'#e74c3c', t:'Weak'},
+    {w:'40%', c:'#f39c12', t:'Fair'},
+    {w:'60%', c:'#f1c40f', t:'Good'},
+    {w:'80%', c:'#2ecc71', t:'Strong'},
+    {w:'100%',c:'#27ae60', t:'Very Strong'}
+  ];
+  const l = levels[Math.min(score, 5)];
+  fill.style.width = l.w; fill.style.background = l.c;
+  txt.textContent = l.t; txt.style.color = l.c;
+});
+
+// Confirm password live check
+document.getElementById('sConfirm').addEventListener('input', function(){
+  const err = document.getElementById('confirmErr');
+  const pass = document.getElementById('sPassword').value;
+  if (this.value && this.value !== pass) {
+    err.style.display = 'block';
+    this.style.borderColor = '#e74c3c';
+  } else {
+    err.style.display = 'none';
+    this.style.borderColor = '';
+  }
+});
+
+function showMsg(msg, isErr){
+  const el = document.getElementById('msgArea');
+  el.innerHTML = `<span class="${isErr ? 'error-msg' : 'success-msg'}">${msg}</span>`;
+  if (isErr) setTimeout(()=>{ el.innerHTML=''; }, 4000);
+}
+
+// Signup form submit
+document.getElementById('signupForm').addEventListener('submit', async e => {
+  e.preventDefault();
+
+  const username = document.getElementById('sUsername').value.trim();
+  const email    = document.getElementById('sEmail').value.trim();
+  const role     = document.getElementById('sRole').value;
+  const password = document.getElementById('sPassword').value;
+  const confirm  = document.getElementById('sConfirm').value;
+
+  // Validate
+  let valid = true;
+  if (!username) { document.getElementById('usernameErr').style.display='block'; valid=false; }
+  else document.getElementById('usernameErr').style.display='none';
+  if (password.length < 6) { document.getElementById('passErr').style.display='block'; valid=false; }
+  else document.getElementById('passErr').style.display='none';
+  if (password !== confirm) { document.getElementById('confirmErr').style.display='block'; valid=false; }
+  else document.getElementById('confirmErr').style.display='none';
+  if (!valid) return;
+
+  const btn = document.getElementById('signupBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating account...';
+
+  try {
+    // POST to Java /api/signup → saves to MySQL auth_system.users
+    const res  = await fetch(`${API}/signup`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username, email, password, role })
+    });
+    const data = await res.json();
+
+    if (data.success) {
+      // Save session
+      localStorage.setItem('ssg_token', data.token);
+      localStorage.setItem('ssg_user', JSON.stringify({ username: data.username, role: data.role }));
+      showMsg(`🎉 Account created! Welcome, ${data.role}. Redirecting...`, false);
+      btn.innerHTML = '<i class="fas fa-check"></i> Account Created!';
+      setTimeout(() => { window.location.href = 'index.html'; }, 1200);
+    } else {
+      showMsg('❌ ' + (data.message || 'Signup failed. Username may already exist.'), true);
+      // Shake card on error
+      const card = document.getElementById('mainCard');
+      card.style.animation = 'shake .4s'; setTimeout(()=>card.style.animation='', 400);
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fas fa-user-plus"></i> Create Account';
+    }
+  } catch(err) {
+    showMsg('⚠ Cannot reach Java server. Make sure it is running: java -cp ".;mysql-connector-j-8.0.33.jar" SmartSegServer', true);
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fas fa-user-plus"></i> Create Account';
+  }
+});
+</script>
+</body>
+</html>

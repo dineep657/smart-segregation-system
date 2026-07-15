@@ -1,616 +1,221 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Smart Segregation System | Intelligent Waste Management Login</title>
-    <!-- Google Fonts & Font Awesome Icons -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Inter', sans-serif;
-            background: linear-gradient(145deg, #0b2f2c 0%, #051f1d 100%);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            overflow-x: hidden;
-            padding: 1.5rem;
-        }
-
-        /* animated particles / eco background elements */
-        .bg-smart {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 0;
-            overflow: hidden;
-            pointer-events: none;
-        }
-
-        .bg-smart .leaf {
-            position: absolute;
-            background: rgba(110, 210, 150, 0.08);
-            border-radius: 80% 0 80% 0;
-            transform: rotate(45deg);
-            width: 80px;
-            height: 80px;
-            animation: floatLeaf 18s infinite ease-in-out;
-        }
-
-        .bg-smart .bubble {
-            position: absolute;
-            background: radial-gradient(circle, rgba(80, 200, 140, 0.2), rgba(40, 140, 100, 0.05));
-            border-radius: 50%;
-            backdrop-filter: blur(2px);
-            animation: floatBubble 25s infinite alternate;
-        }
-
-        @keyframes floatLeaf {
-            0% { transform: translateY(0vh) rotate(0deg); opacity: 0.2; }
-            50% { transform: translateY(15vh) rotate(10deg); opacity: 0.5; }
-            100% { transform: translateY(-5vh) rotate(20deg); opacity: 0.2; }
-        }
-
-        @keyframes floatBubble {
-            0% { transform: translateY(100vh) scale(0.5); opacity: 0; }
-            30% { opacity: 0.3; }
-            100% { transform: translateY(-20vh) scale(1.2); opacity: 0; }
-        }
-
-        /* Main card container */
-        .login-container {
-            position: relative;
-            z-index: 10;
-            width: 100%;
-            max-width: 460px;
-            background: rgba(18, 32, 30, 0.75);
-            backdrop-filter: blur(12px);
-            border-radius: 2.5rem;
-            box-shadow: 0 25px 45px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(80, 210, 150, 0.2);
-            transition: transform 0.3s ease;
-            overflow: hidden;
-        }
-
-        .login-card {
-            padding: 2rem 2rem 2.5rem;
-        }
-
-        /* Brand header */
-        .brand {
-            text-align: center;
-            margin-bottom: 1.8rem;
-        }
-        .icon-circle {
-            background: linear-gradient(135deg, #2ecc71, #1f8a4c);
-            width: 70px;
-            height: 70px;
-            border-radius: 28px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 1rem;
-            box-shadow: 0 12px 18px -8px rgba(0,0,0,0.3);
-        }
-        .icon-circle i {
-            font-size: 2.8rem;
-            color: white;
-            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
-        }
-        h1 {
-            font-size: 1.9rem;
-            font-weight: 700;
-            letter-spacing: -0.3px;
-            background: linear-gradient(135deg, #EFFAF3, #B9F6CA);
-            background-clip: text;
-            -webkit-background-clip: text;
-            color: transparent;
-            margin-bottom: 0.3rem;
-        }
-        .sub {
-            font-size: 0.85rem;
-            color: #9bc5b4;
-            font-weight: 500;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-        .sub i {
-            font-size: 0.7rem;
-            color: #2ecc71;
-        }
-
-        /* form group styling */
-        .input-group {
-            margin-bottom: 1.5rem;
-            position: relative;
-        }
-        .input-group label {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 0.85rem;
-            font-weight: 500;
-            color: #c6f0df;
-            margin-bottom: 0.6rem;
-            letter-spacing: 0.3px;
-        }
-        .input-group label i {
-            font-size: 0.9rem;
-            color: #2ecc71;
-        }
-        .input-field {
-            width: 100%;
-            padding: 0.9rem 1rem;
-            background: rgba(10, 22, 20, 0.7);
-            border: 1px solid rgba(70, 170, 120, 0.5);
-            border-radius: 1.2rem;
-            font-size: 1rem;
-            font-weight: 500;
-            color: #f0f7f3;
-            outline: none;
-            transition: all 0.2s ease;
-            font-family: 'Inter', monospace;
-        }
-        .input-field:focus {
-            border-color: #2ecc71;
-            box-shadow: 0 0 0 3px rgba(46, 204, 113, 0.3);
-            background: rgba(20, 40, 35, 0.9);
-        }
-        .input-field::placeholder {
-            color: #6b9787;
-            font-weight: 400;
-            font-size: 0.9rem;
-        }
-
-        /* password wrapper */
-        .password-wrapper {
-            position: relative;
-        }
-        .toggle-password {
-            position: absolute;
-            right: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            background: transparent;
-            border: none;
-            color: #9bc5b4;
-            cursor: pointer;
-            font-size: 1.1rem;
-            transition: color 0.2s;
-        }
-        .toggle-password:hover {
-            color: #2ecc71;
-        }
-
-        /* additional row (remember & forgot) */
-        .form-options {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin: 1rem 0 1.8rem;
-            font-size: 0.85rem;
-        }
-        .checkbox-label {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            color: #cbe9de;
-            cursor: pointer;
-        }
-        .checkbox-label input {
-            width: 17px;
-            height: 17px;
-            accent-color: #2ecc71;
-            cursor: pointer;
-        }
-        .forgot-link {
-            color: #b0e0c8;
-            text-decoration: none;
-            font-weight: 500;
-            transition: color 0.2s;
-            border-bottom: 1px dashed transparent;
-        }
-        .forgot-link:hover {
-            color: #2ecc71;
-            border-bottom-color: #2ecc71;
-        }
-
-        /* login button */
-        .login-btn {
-            width: 100%;
-            background: linear-gradient(105deg, #27ae60, #1e874b);
-            border: none;
-            padding: 0.9rem;
-            border-radius: 2rem;
-            font-size: 1rem;
-            font-weight: 700;
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
-            cursor: pointer;
-            transition: all 0.25s;
-            box-shadow: 0 6px 14px rgba(0, 0, 0, 0.3);
-            letter-spacing: 0.5px;
-        }
-        .login-btn i {
-            font-size: 1.1rem;
-            transition: transform 0.2s;
-        }
-        .login-btn:hover {
-            background: linear-gradient(105deg, #2ecc71, #229954);
-            transform: translateY(-2px);
-            box-shadow: 0 12px 22px rgba(0, 0, 0, 0.4);
-        }
-        .login-btn:active {
-            transform: translateY(1px);
-        }
-
-        /* demo credentials hint */
-        .demo-badge {
-            margin-top: 2rem;
-            background: rgba(46, 204, 113, 0.12);
-            border-radius: 1.2rem;
-            padding: 0.8rem 1rem;
-            text-align: center;
-            backdrop-filter: blur(4px);
-            border: 1px solid rgba(46, 204, 113, 0.3);
-        }
-        .demo-badge p {
-            font-size: 0.75rem;
-            color: #bbe5d3;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
-        .demo-badge strong {
-            background: #1f5e46;
-            padding: 0.2rem 0.5rem;
-            border-radius: 20px;
-            font-family: monospace;
-            color: #e6ffed;
-            font-weight: 600;
-        }
-        .demo-badge i {
-            color: #f5b042;
-        }
-
-        /* message alert */
-        .message-area {
-            margin-top: 1rem;
-            font-size: 0.8rem;
-            text-align: center;
-            min-height: 44px;
-            color: #f5bc70;
-            font-weight: 500;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-        }
-        .error-msg {
-            color: #ffb47b;
-            background: rgba(220, 80, 40, 0.15);
-            padding: 0.5rem;
-            border-radius: 1rem;
-        }
-        .success-msg {
-            color: #b0ffcf;
-            background: rgba(46, 204, 113, 0.2);
-        }
-
-        /* footer */
-        .footer-note {
-            text-align: center;
-            margin-top: 1.5rem;
-            font-size: 0.7rem;
-            color: #598d78;
-        }
-
-        @media (max-width: 500px) {
-            .login-card {
-                padding: 1.5rem;
-            }
-            h1 {
-                font-size: 1.6rem;
-            }
-            .icon-circle {
-                width: 60px;
-                height: 60px;
-            }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no">
+<title>Smart Segregation | Login</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Inter',sans-serif;background:linear-gradient(145deg,#0b2f2c,#051f1d);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:1.5rem;position:relative;overflow-x:hidden;}
+.bg{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:0;}
+.leaf{position:absolute;background:rgba(110,210,150,.08);border-radius:80% 0 80% 0;transform:rotate(45deg);animation:floatLeaf 20s infinite ease-in-out;}
+.bubble{position:absolute;background:radial-gradient(circle,rgba(80,200,140,.2),rgba(40,140,100,.05));border-radius:50%;animation:floatBubble 28s infinite alternate;}
+@keyframes floatLeaf{0%{transform:translateY(0)rotate(0);opacity:.2}50%{transform:translateY(15vh)rotate(10deg);opacity:.5}100%{transform:translateY(-5vh)rotate(20deg);opacity:.2}}
+@keyframes floatBubble{0%{transform:translateY(100vh)scale(.5);opacity:0}30%{opacity:.3}100%{transform:translateY(-20vh)scale(1.2);opacity:0}}
+.card{position:relative;z-index:10;width:100%;max-width:460px;background:rgba(18,32,30,.85);backdrop-filter:blur(12px);border-radius:2.5rem;box-shadow:0 25px 45px rgba(0,0,0,.4),0 0 0 1px rgba(80,210,150,.2);overflow:hidden;}
+.card-body{padding:2rem 2rem 2.5rem;}
+.brand{text-align:center;margin-bottom:1.8rem;}
+.icon-circle{background:linear-gradient(135deg,#2ecc71,#1f8a4c);width:70px;height:70px;border-radius:28px;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;box-shadow:0 12px 18px -8px rgba(0,0,0,.3);}
+.icon-circle i{font-size:2.8rem;color:#fff;}
+.brand h1{font-size:1.9rem;font-weight:700;background:linear-gradient(135deg,#EFFAF3,#B9F6CA);-webkit-background-clip:text;background-clip:text;color:transparent;margin-bottom:.3rem;}
+.brand .sub{font-size:.85rem;color:#9bc5b4;display:flex;align-items:center;justify-content:center;gap:8px;}
+.input-group{margin-bottom:1.3rem;}
+.input-group label{display:flex;align-items:center;gap:8px;font-size:.85rem;font-weight:500;color:#c6f0df;margin-bottom:.5rem;}
+.input-group label i{color:#2ecc71;}
+.input-field{width:100%;padding:.85rem 1rem;background:rgba(10,22,20,.7);border:1px solid rgba(70,170,120,.5);border-radius:1.2rem;font-size:1rem;color:#f0f7f3;outline:none;transition:all .2s;font-family:'Inter',sans-serif;}
+.input-field:focus{border-color:#2ecc71;box-shadow:0 0 0 3px rgba(46,204,113,.3);}
+.input-field::placeholder{color:#6b9787;}
+.pwd-wrap{position:relative;}
+.eye-btn{position:absolute;right:14px;top:50%;transform:translateY(-50%);background:transparent;border:none;color:#9bc5b4;cursor:pointer;font-size:1.1rem;}
+.form-options{display:flex;justify-content:space-between;align-items:center;margin:.5rem 0 1.4rem;font-size:.85rem;}
+.checkbox-label{display:flex;align-items:center;gap:8px;color:#cbe9de;cursor:pointer;}
+.checkbox-label input{accent-color:#2ecc71;width:16px;height:16px;}
+.forgot-link{color:#b0e0c8;text-decoration:none;font-weight:500;}
+.forgot-link:hover{color:#2ecc71;}
+.login-btn{width:100%;background:linear-gradient(105deg,#27ae60,#1e874b);border:none;padding:.9rem;border-radius:2rem;font-size:1rem;font-weight:700;color:#fff;display:flex;align-items:center;justify-content:center;gap:12px;cursor:pointer;transition:all .25s;box-shadow:0 6px 14px rgba(0,0,0,.3);}
+.login-btn:hover{background:linear-gradient(105deg,#2ecc71,#229954);transform:translateY(-2px);}
+.login-btn:disabled{opacity:.6;cursor:not-allowed;transform:none;}
+.msg-area{margin-top:.8rem;font-size:.82rem;text-align:center;min-height:38px;}
+.error-msg{color:#ffb47b;background:rgba(220,80,40,.15);padding:.5rem .8rem;border-radius:1rem;display:block;}
+.success-msg{color:#b0ffcf;background:rgba(46,204,113,.2);padding:.5rem .8rem;border-radius:1rem;display:block;}
+.demo-badge{margin-top:1rem;background:rgba(46,204,113,.12);border-radius:1.2rem;padding:.75rem;text-align:center;border:1px solid rgba(46,204,113,.3);}
+.demo-badge p{font-size:.73rem;color:#bbe5d3;display:flex;align-items:center;justify-content:center;gap:6px;flex-wrap:wrap;}
+.demo-badge strong{background:#1f5e46;padding:.15rem .5rem;border-radius:20px;font-family:monospace;color:#e6ffed;cursor:pointer;}
+.demo-badge strong:hover{background:#27ae60;}
+.divider{display:flex;align-items:center;gap:.8rem;margin:1.2rem 0;}
+.divider hr{flex:1;border:none;border-top:1px solid rgba(70,170,120,.3);}
+.divider span{color:#9bc5b4;font-size:.75rem;}
+.signup-btn{width:100%;background:transparent;border:1px solid rgba(70,170,120,.5);padding:.8rem;border-radius:2rem;font-size:.9rem;font-weight:600;color:#9bc5b4;display:flex;align-items:center;justify-content:center;gap:10px;cursor:pointer;transition:all .25s;}
+.signup-btn:hover{background:rgba(46,204,113,.1);color:#2ecc71;border-color:#2ecc71;}
+.footer-note{text-align:center;margin-top:1.2rem;font-size:.7rem;color:#598d78;}
+@keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-8px)}40%,80%{transform:translateX(8px)}}
+</style>
 </head>
 <body>
-
-<div class="bg-smart">
-    <!-- random eco particles -->
-    <div class="leaf" style="top: 10%; left: 5%; width: 55px; height: 55px; animation-duration: 22s;"></div>
-    <div class="leaf" style="top: 70%; left: 85%; width: 70px; height: 70px; animation-duration: 19s; animation-delay: -3s;"></div>
-    <div class="leaf" style="top: 40%; left: 20%; width: 40px; height: 40px; animation-duration: 26s;"></div>
-    <div class="bubble" style="width: 140px; height: 140px; bottom: -40px; left: -30px; animation-duration: 28s;"></div>
-    <div class="bubble" style="width: 210px; height: 210px; top: -80px; right: -60px; animation-duration: 34s; opacity: 0.2;"></div>
-    <div class="bubble" style="width: 70px; height: 70px; bottom: 20%; right: 10%; animation-duration: 19s;"></div>
+<div class="bg">
+  <div class="leaf" style="top:10%;left:5%;width:55px;height:55px;animation-duration:22s"></div>
+  <div class="leaf" style="top:70%;left:85%;width:70px;height:70px;animation-duration:19s;animation-delay:-3s"></div>
+  <div class="leaf" style="top:40%;left:20%;width:40px;height:40px;animation-duration:26s"></div>
+  <div class="bubble" style="width:140px;height:140px;bottom:-40px;left:-30px;animation-duration:28s"></div>
+  <div class="bubble" style="width:200px;height:200px;top:-80px;right:-60px;animation-duration:34s;opacity:.2"></div>
 </div>
 
-<div class="login-container">
-    <div class="login-card">
-        <div class="brand">
-            <div class="icon-circle">
-                <i class="fas fa-leaf"></i>
-            </div>
-            <h1>Smart Segregation</h1>
-            <div class="sub">
-                <i class="fas fa-recycle"></i>
-                <span>AI-Powered Waste Management</span>
-                <i class="fas fa-microchip"></i>
-            </div>
-        </div>
-
-        <form id="loginForm" action="#" method="POST">
-            <div class="input-group">
-                <label><i class="fas fa-user-astronaut"></i> Username / Employee ID</label>
-                <input type="text" id="username" class="input-field" placeholder="operator@segregation | admin" autocomplete="username">
-            </div>
-
-            <div class="input-group">
-                <label><i class="fas fa-lock"></i> Password</label>
-                <div class="password-wrapper">
-                    <input type="password" id="password" class="input-field" placeholder="••••••••" autocomplete="current-password">
-                    <button type="button" class="toggle-password" id="togglePwdBtn" aria-label="Show password">
-                        <i class="far fa-eye-slash"></i>
-                    </button>
-                </div>
-            </div>
-
-            <div class="form-options">
-                <label class="checkbox-label">
-                    <input type="checkbox" id="rememberCheck"> <span>Keep me signed in</span>
-                </label>
-                <a href="#" id="forgotLink" class="forgot-link">Forgot access?</a>
-            </div>
-
-            <button type="submit" class="login-btn" id="loginButton">
-                <i class="fas fa-sign-in-alt"></i> Access Dashboard
-            </button>
-        </form>
-
-        <div class="message-area" id="messageArea">
-            <i class="fas fa-shield-alt"></i> Secure login · Eco credentials
-        </div>
-
-        <div class="demo-badge">
-            <p><i class="fas fa-flask"></i> Demo credentials: 
-            <strong>admin</strong> / <strong>segregate2025</strong>   |   
-            <strong>operator</strong> / <strong>greenbin</strong>
-            </p>
-        </div>
-        <div class="footer-note">
-            <i class="fas fa-charging-station"></i> Smart Segregation v2.0 · Zero Waste Initiative
-        </div>
+<div class="card" id="mainCard">
+  <div class="card-body">
+    <div class="brand">
+      <div class="icon-circle"><i class="fas fa-leaf"></i></div>
+      <h1>Smart Segregation</h1>
+      <div class="sub"><i class="fas fa-recycle"></i><span>AI-Powered Waste Management</span><i class="fas fa-microchip"></i></div>
     </div>
+
+    <form id="loginForm" autocomplete="on">
+      <div class="input-group">
+        <label><i class="fas fa-user"></i> Username</label>
+        <input id="uname" class="input-field" type="text" placeholder="admin / operator" autocomplete="username">
+        <div id="unameErr" style="font-size:.72rem;color:#e74c3c;margin-top:3px;display:none"><i class="fas fa-exclamation-circle"></i> Username is required</div>
+      </div>
+      <div class="input-group">
+        <label><i class="fas fa-lock"></i> Password</label>
+        <div class="pwd-wrap">
+          <input id="upass" class="input-field" type="password" placeholder="••••••" autocomplete="current-password">
+          <button type="button" class="eye-btn" id="eyeBtn"><i class="far fa-eye-slash"></i></button>
+        </div>
+        <div id="passErr" style="font-size:.72rem;color:#e74c3c;margin-top:3px;display:none"><i class="fas fa-exclamation-circle"></i> Password is required</div>
+      </div>
+      <div class="form-options">
+        <label class="checkbox-label"><input type="checkbox" id="remMe"> Keep me signed in</label>
+        <a href="#" class="forgot-link" id="forgotLink">Forgot access?</a>
+      </div>
+      <button type="submit" class="login-btn" id="loginBtn">
+        <i class="fas fa-sign-in-alt"></i> Access Dashboard
+      </button>
+    </form>
+
+    <div class="msg-area" id="msgArea"></div>
+
+    <div class="demo-badge">
+      <p><i class="fas fa-flask" style="color:#f5b042"></i>
+        Demo: <strong onclick="fill('admin','segregate2025')">admin/segregate2025</strong>
+        <strong onclick="fill('operator','greenbin')">operator/greenbin</strong>
+        <strong onclick="fill('supervisor','eco123')">supervisor/eco123</strong>
+      </p>
+    </div>
+
+    <div class="divider"><hr><span>OR</span><hr></div>
+
+    <button class="signup-btn" onclick="window.location.href='signup.html'">
+      <i class="fas fa-user-plus"></i> Create New Account
+    </button>
+
+    <div class="footer-note">
+      <i class="fas fa-database" style="color:#2ecc71"></i> Connected to MySQL · Smart Segregation v2.0
+    </div>
+  </div>
 </div>
 
 <script>
-    (function() {
-        // DOM Elements
-        const usernameInput = document.getElementById('username');
-        const passwordInput = document.getElementById('password');
-        const loginForm = document.getElementById('loginForm');
-        const messageArea = document.getElementById('messageArea');
-        const togglePwdBtn = document.getElementById('togglePwdBtn');
-        const rememberCheck = document.getElementById('rememberCheck');
-        const forgotLink = document.getElementById('forgotLink');
+const API = 'http://localhost:3000/api';
 
-        // ---------- Demo user database (simulated) ----------
-        const VALID_CREDENTIALS = [
-            { username: 'admin', password: 'segregate2025', role: 'System Administrator' },
-            { username: 'operator', password: 'greenbin', role: 'Waste Operator' },
-            { username: 'supervisor', password: 'eco123', role: 'Site Supervisor' },
-            { username: 'tech', password: 'smartbin', role: 'IoT Technician' }
-        ];
+// Demo fill
+function fill(u, p){
+  document.getElementById('uname').value = u;
+  document.getElementById('upass').value = p;
+  ['uname','upass'].forEach(id=>{
+    const el=document.getElementById(id);
+    el.style.borderColor='#2ecc71';
+    setTimeout(()=>el.style.borderColor='',800);
+  });
+}
 
-        // Helper: show message (error, success, info)
-        function showMessage(text, isError = false, isSuccess = false) {
-            messageArea.innerHTML = '';
-            const icon = document.createElement('i');
-            const span = document.createElement('span');
-            if (isError) {
-                icon.className = 'fas fa-exclamation-triangle';
-                messageArea.classList.add('error-msg');
-                messageArea.classList.remove('success-msg');
-            } else if (isSuccess) {
-                icon.className = 'fas fa-check-circle';
-                messageArea.classList.add('success-msg');
-                messageArea.classList.remove('error-msg');
-            } else {
-                icon.className = 'fas fa-info-circle';
-                messageArea.classList.remove('error-msg', 'success-msg');
-            }
-            span.innerText = text;
-            messageArea.appendChild(icon);
-            messageArea.appendChild(span);
-            // auto clear after 4 seconds if it's not persistent but fine
-            setTimeout(() => {
-                if (messageArea.innerHTML.includes(text)) {
-                    if (!isSuccess) {
-                        // keep success maybe longer? but reset to default message after 5s
-                        if (!isSuccess) {
-                            messageArea.innerHTML = '<i class="fas fa-shield-alt"></i> Secure login · Eco credentials';
-                            messageArea.classList.remove('error-msg', 'success-msg');
-                        } else {
-                            // for success we may keep but after 4sec revert to default neutral
-                            setTimeout(() => {
-                                if (messageArea.classList.contains('success-msg')) {
-                                    messageArea.innerHTML = '<i class="fas fa-shield-alt"></i> Secure login · Eco credentials';
-                                    messageArea.classList.remove('success-msg');
-                                }
-                            }, 3000);
-                        }
-                    } else {
-                        // do nothing extra, already handled
-                    }
-                }
-            }, 4000);
-        }
+// Show/hide password
+document.getElementById('eyeBtn').addEventListener('click', function(){
+  const inp = document.getElementById('upass');
+  const ic  = this.querySelector('i');
+  inp.type = inp.type === 'password' ? 'text' : 'password';
+  ic.className = inp.type === 'text' ? 'far fa-eye' : 'far fa-eye-slash';
+});
 
-        // Clear error style on input focus
-        function clearMessageOnInput() {
-            if (messageArea.classList.contains('error-msg')) {
-                messageArea.innerHTML = '<i class="fas fa-shield-alt"></i> Secure login · Eco credentials';
-                messageArea.classList.remove('error-msg', 'success-msg');
-            }
-        }
-        usernameInput.addEventListener('focus', clearMessageOnInput);
-        passwordInput.addEventListener('focus', clearMessageOnInput);
+// Forgot link
+document.getElementById('forgotLink').addEventListener('click', e=>{
+  e.preventDefault();
+  showMsg('Click a demo badge above to auto-fill, or contact your admin.', false);
+});
 
-        // Toggle password visibility
-        if (togglePwdBtn) {
-            togglePwdBtn.addEventListener('click', function() {
-                const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-                passwordInput.setAttribute('type', type);
-                const icon = this.querySelector('i');
-                if (type === 'text') {
-                    icon.classList.remove('fa-eye-slash');
-                    icon.classList.add('fa-eye');
-                } else {
-                    icon.classList.remove('fa-eye');
-                    icon.classList.add('fa-eye-slash');
-                }
-            });
-        }
+// Auto-fill remembered username
+const saved = localStorage.getItem('ssg_remember');
+if (saved) { document.getElementById('uname').value = saved; document.getElementById('remMe').checked = true; }
 
-        // Remember Me functionality (store username in localStorage, just front-end demo)
-        function loadRememberedUser() {
-            const savedUser = localStorage.getItem('smartSeg_rememberUser');
-            if (savedUser) {
-                usernameInput.value = savedUser;
-                rememberCheck.checked = true;
-            }
-        }
-        function saveRememberedUser(username) {
-            if (rememberCheck.checked) {
-                localStorage.setItem('smartSeg_rememberUser', username);
-            } else {
-                localStorage.removeItem('smartSeg_rememberUser');
-            }
-        }
+function showMsg(msg, isErr){
+  const el = document.getElementById('msgArea');
+  el.innerHTML = `<span class="${isErr?'error-msg':'success-msg'}">${msg}</span>`;
+  if (isErr) setTimeout(()=>el.innerHTML='', 4000);
+}
 
-        // Login validation — tries Java API first, then local fallback
-        async function performLogin(event) {
-            event.preventDefault();
+// Demo credentials fallback
+const LOCAL_USERS = [
+  {username:'admin',      password:'segregate2025', role:'System Administrator'},
+  {username:'operator',   password:'greenbin',      role:'Waste Operator'},
+  {username:'supervisor', password:'eco123',        role:'Site Supervisor'},
+  {username:'tech',       password:'smartbin',      role:'IoT Technician'}
+];
 
-            const username = usernameInput.value.trim();
-            const password = passwordInput.value;
-            if (!username) { showMessage('⚠️ Please enter username', true); usernameInput.focus(); return; }
-            if (!password) { showMessage('🔒 Password cannot be empty', true); passwordInput.focus(); return; }
+document.getElementById('loginForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  const u = document.getElementById('uname').value.trim();
+  const p = document.getElementById('upass').value;
 
-            const loginBtn = document.getElementById('loginButton');
-            loginBtn.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> Authenticating...';
-            loginBtn.disabled = true;
+  // Inline validation
+  let ok = true;
+  if (!u){ document.getElementById('unameErr').style.display='block'; ok=false; }
+  else document.getElementById('unameErr').style.display='none';
+  if (!p){ document.getElementById('passErr').style.display='block'; ok=false; }
+  else document.getElementById('passErr').style.display='none';
+  if (!ok) return;
 
-            let matchedUser = null;
+  const btn = document.getElementById('loginBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Authenticating...';
 
-            // Try Java backend first
-            try {
-                const res = await fetch('http://localhost:3000/api/login', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ username, password })
-                });
-                const data = await res.json();
-                if (data.success) {
-                    matchedUser = { username: data.username, role: data.role, token: data.token };
-                }
-            } catch(e) {
-                // Java not running — use local credentials
-            }
+  let user = null;
 
-            // Fallback to local credentials
-            if (!matchedUser) {
-                const found = VALID_CREDENTIALS.find(c =>
-                    c.username.toLowerCase() === username.toLowerCase() && c.password === password
-                );
-                if (found) matchedUser = { username: found.username, role: found.role, token: 'local_' + Date.now() };
-            }
+  // 1. Try Java + MySQL backend
+  try {
+    const res  = await fetch(`${API}/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username: u, password: p })
+    });
+    const data = await res.json();
+    if (data.success) user = { username: data.username, role: data.role, token: data.token };
+    else {
+      showMsg('❌ Invalid credentials. Check username / password.', true);
+      const card = document.getElementById('mainCard');
+      card.style.animation = 'shake .4s'; setTimeout(()=>card.style.animation='', 400);
+      btn.disabled = false; btn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Access Dashboard';
+      return;
+    }
+  } catch(err) {
+    // 2. Java offline — fallback to local users
+    const found = LOCAL_USERS.find(c => c.username.toLowerCase() === u.toLowerCase() && c.password === p);
+    if (found) user = { username: found.username, role: found.role, token: 'local_' + Date.now() };
+    else {
+      showMsg('❌ Invalid credentials. Also could not reach Java server.', true);
+      btn.disabled = false; btn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Access Dashboard';
+      return;
+    }
+  }
 
-            if (matchedUser) {
-                saveRememberedUser(username);
-                localStorage.setItem('ssg_token', matchedUser.token);
-                localStorage.setItem('ssg_user', JSON.stringify({ username: matchedUser.username, role: matchedUser.role }));
-                showMessage(`✅ Welcome ${matchedUser.role}! Loading dashboard...`, false, true);
-                loginBtn.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> Loading dashboard...';
-                setTimeout(() => { window.location.href = 'index.html'; }, 1000);
-            } else {
-                showMessage('❌ Invalid credentials. Check username/password.', true);
-                passwordInput.value = '';
-                passwordInput.focus();
-                loginBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Access Dashboard';
-                loginBtn.disabled = false;
-            }
-        }
-
-            if (matchedUser) {
-                // Save session to localStorage so index.html can read it
-                saveRememberedUser(username);
-                const sessionData = {
-                    username: matchedUser.username,
-                    role: matchedUser.role,
-                    token: 'local_' + Date.now()
-                };
-                localStorage.setItem('ssg_token', sessionData.token);
-                localStorage.setItem('ssg_user', JSON.stringify(sessionData));
-
-                showMessage(`✅ Welcome ${matchedUser.role}! Redirecting to dashboard...`, false, true);
-                const loginBtn = document.getElementById('loginButton');
-                loginBtn.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> Loading dashboard...';
-                loginBtn.disabled = true;
-
-                // Redirect to main app
-                setTimeout(() => {
-                    window.location.href = 'index.html';
-                }, 1200);
-                return true;
-            } else {
-                // Wrong credentials
-                showMessage('❌ Invalid credentials. Access denied. Please check username/password.', true);
-                passwordInput.value = '';  // clear password field for security
-                passwordInput.focus();
-                return false;
-            }
-        }
-
-        // Attach event listeners
-        loginForm.addEventListener('submit', performLogin);
-        forgotLink.addEventListener('click', e => {
-            e.preventDefault();
-            showMessage('📧 Use demo creds: admin/segregate2025 | operator/greenbin | supervisor/eco123', false);
-        });
-
-        // load remembered username on page load
-        loadRememberedUser();
-
-        usernameInput.addEventListener('blur', function() {
-            if (this.value.trim() === '' && this.value.length > 0) {
-                showMessage('Username cannot be just spaces', true);
-            }
-        });
-    })();
+  // Success
+  if (document.getElementById('remMe').checked) localStorage.setItem('ssg_remember', u);
+  else localStorage.removeItem('ssg_remember');
+  localStorage.setItem('ssg_token', user.token);
+  localStorage.setItem('ssg_user', JSON.stringify({ username: user.username, role: user.role }));
+  showMsg(`✅ Welcome back, ${user.role}!`, false);
+  btn.innerHTML = '<i class="fas fa-check"></i> Redirecting...';
+  setTimeout(() => { window.location.href = 'index.html'; }, 900);
+});
 </script>
 </body>
 </html>
