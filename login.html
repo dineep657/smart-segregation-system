@@ -511,48 +511,80 @@
             }
         }
 
-        // Login validation and simulation
-        function performLogin(event) {
+        // Login validation — tries Java API first, then local fallback
+        async function performLogin(event) {
             event.preventDefault();
 
             const username = usernameInput.value.trim();
-            const password = passwordInput.value;  // do not trim password strictly, but no leading/trailing spaces matter
-            if (!username) {
-                showMessage('⚠️ Please enter username / Employee ID', true);
-                usernameInput.focus();
-                return false;
-            }
-            if (!password) {
-                showMessage('🔒 Password cannot be empty', true);
-                passwordInput.focus();
-                return false;
+            const password = passwordInput.value;
+            if (!username) { showMessage('⚠️ Please enter username', true); usernameInput.focus(); return; }
+            if (!password) { showMessage('🔒 Password cannot be empty', true); passwordInput.focus(); return; }
+
+            const loginBtn = document.getElementById('loginButton');
+            loginBtn.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> Authenticating...';
+            loginBtn.disabled = true;
+
+            let matchedUser = null;
+
+            // Try Java backend first
+            try {
+                const res = await fetch('http://localhost:3000/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    matchedUser = { username: data.username, role: data.role, token: data.token };
+                }
+            } catch(e) {
+                // Java not running — use local credentials
             }
 
-            // Find matching user
-            const matchedUser = VALID_CREDENTIALS.find(cred => 
-                cred.username.toLowerCase() === username.toLowerCase() && cred.password === password
-            );
+            // Fallback to local credentials
+            if (!matchedUser) {
+                const found = VALID_CREDENTIALS.find(c =>
+                    c.username.toLowerCase() === username.toLowerCase() && c.password === password
+                );
+                if (found) matchedUser = { username: found.username, role: found.role, token: 'local_' + Date.now() };
+            }
 
             if (matchedUser) {
-                // Success: save remember option if checked
                 saveRememberedUser(username);
-                // Display success with role info
-                showMessage(`✅ Access granted! Welcome ${matchedUser.role}. Redirecting to Smart Segregation Hub...`, false, true);
-                // Disable button and show loading state
+                localStorage.setItem('ssg_token', matchedUser.token);
+                localStorage.setItem('ssg_user', JSON.stringify({ username: matchedUser.username, role: matchedUser.role }));
+                showMessage(`✅ Welcome ${matchedUser.role}! Loading dashboard...`, false, true);
+                loginBtn.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> Loading dashboard...';
+                setTimeout(() => { window.location.href = 'index.html'; }, 1000);
+            } else {
+                showMessage('❌ Invalid credentials. Check username/password.', true);
+                passwordInput.value = '';
+                passwordInput.focus();
+                loginBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Access Dashboard';
+                loginBtn.disabled = false;
+            }
+        }
+
+            if (matchedUser) {
+                // Save session to localStorage so index.html can read it
+                saveRememberedUser(username);
+                const sessionData = {
+                    username: matchedUser.username,
+                    role: matchedUser.role,
+                    token: 'local_' + Date.now()
+                };
+                localStorage.setItem('ssg_token', sessionData.token);
+                localStorage.setItem('ssg_user', JSON.stringify(sessionData));
+
+                showMessage(`✅ Welcome ${matchedUser.role}! Redirecting to dashboard...`, false, true);
                 const loginBtn = document.getElementById('loginButton');
-                const originalBtnHtml = loginBtn.innerHTML;
-                loginBtn.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> Authorizing...';
+                loginBtn.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> Loading dashboard...';
                 loginBtn.disabled = true;
-                
-                // Simulate redirect after 1.8 seconds (demo dashboard simulation)
+
+                // Redirect to main app
                 setTimeout(() => {
-                    // In a real system, redirect to dashboard. For this demo, we show a sweet modal-like console and page update.
-                    // But to mimic real smart segregation system, we replace page content with a minimal dashboard preview
-                    // This demonstrates successful login while staying on the same page but with full system simulation.
-                    // Since it's a login page requirement, we build an elegant "dashboard preview" overlay but fully functional
-                    // respecting the spirit: after login, show main segregation system greeting.
-                    createDashboardPreview(matchedUser);
-                }, 1600);
+                    window.location.href = 'index.html';
+                }, 1200);
                 return true;
             } else {
                 // Wrong credentials
@@ -563,85 +595,16 @@
             }
         }
 
-        // Demo dashboard preview after successful login (without losing context)
-        function createDashboardPreview(user) {
-            // Remove the login container and replace with a smart segregation dashboard simulation
-            const container = document.querySelector('.login-container');
-            const bgElements = document.querySelector('.bg-smart');
-            
-            // Fade out and replace
-            container.style.transition = 'opacity 0.4s ease, transform 0.3s';
-            container.style.opacity = '0';
-            container.style.transform = 'scale(0.96)';
-            
-            setTimeout(() => {
-                // Build new dashboard interface inside the same wrapper
-                const newDashboard = document.createElement('div');
-                newDashboard.className = 'login-container';  // reuse same card style but new content
-                newDashboard.style.opacity = '0';
-                newDashboard.style.transform = 'scale(0.98)';
-                newDashboard.style.transition = 'all 0.5s cubic-bezier(0.2, 0.9, 0.4, 1.1)';
-                
-                newDashboard.innerHTML = `
-                    <div class="login-card" style="text-align: center;">
-                        <div class="icon-circle" style="background: linear-gradient(145deg, #1f9a5a, #0f6e3f);">
-                            <i class="fas fa-charging-station"></i>
-                        </div>
-                        <h1 style="font-size: 1.8rem;">Smart Segregation Core</h1>
-                        <div class="sub" style="margin-bottom: 1.5rem;">
-                            <i class="fas fa-user-check"></i> Welcome, ${user.role}
-                        </div>
-                        <div style="background: rgba(0, 0, 0, 0.3); border-radius: 2rem; padding: 1.2rem; margin: 1rem 0;">
-                            <p style="display: flex; align-items: center; justify-content: center; gap: 12px; font-weight: 500;">
-                                <i class="fas fa-trash-alt" style="color:#2ecc71;"></i> 
-                                Real-time segregation metrics: <strong style="color:#bef5cf;">ACTIVE</strong>
-                            </p>
-                            <div style="display: flex; gap: 1rem; justify-content: center; margin: 1rem 0; flex-wrap: wrap;">
-                                <span style="background: #1b4d3e; padding: 0.3rem 1rem; border-radius: 30px;"><i class="fas fa-apple-alt"></i> Organic: 68%</span>
-                                <span style="background: #1b4d3e; padding: 0.3rem 1rem; border-radius: 30px;"><i class="fas fa-box-open"></i> Recyclable: 24%</span>
-                                <span style="background: #1b4d3e; padding: 0.3rem 1rem; border-radius: 30px;"><i class="fas fa-dumpster"></i> Residual: 8%</span>
-                            </div>
-                            <hr style="border-color: #2c6e55; margin: 0.9rem 0;">
-                            <p style="font-size: 0.9rem;"><i class="fas fa-microchip"></i> AI Vision: Bin status OPTIMAL | Load 42%</p>
-                        </div>
-                        <button id="logoutBtn" class="login-btn" style="background: #2c3e2b; margin-top: 0.5rem;">
-                            <i class="fas fa-sign-out-alt"></i> Logout & Return
-                        </button>
-                        <div class="footer-note" style="margin-top: 1rem;">
-                            <i class="fas fa-chart-line"></i> Smart Segregation System · Real-time analytics
-                        </div>
-                    </div>
-                `;
-                container.parentNode.replaceChild(newDashboard, container);
-                newDashboard.style.opacity = '1';
-                newDashboard.style.transform = 'scale(1)';
-                
-                // Attach logout event
-                const logoutBtn = newDashboard.querySelector('#logoutBtn');
-                if (logoutBtn) {
-                    logoutBtn.addEventListener('click', function(e) {
-                        e.preventDefault();
-                        // Reload to initial login page (simulate logout)
-                        window.location.reload();
-                    });
-                }
-            }, 350);
-        }
-
-        // Forgot password demo interaction (informative)
-        function handleForgot(e) {
-            e.preventDefault();
-            showMessage('📧 Contact system admin or use demo creds: admin/segregate2025 | operator/greenbin', false);
-        }
-
         // Attach event listeners
         loginForm.addEventListener('submit', performLogin);
-        forgotLink.addEventListener('click', handleForgot);
-        
+        forgotLink.addEventListener('click', e => {
+            e.preventDefault();
+            showMessage('📧 Use demo creds: admin/segregate2025 | operator/greenbin | supervisor/eco123', false);
+        });
+
         // load remembered username on page load
         loadRememberedUser();
 
-        // Optional: add simple client-side validation for leading/trailing spaces warning
         usernameInput.addEventListener('blur', function() {
             if (this.value.trim() === '' && this.value.length > 0) {
                 showMessage('Username cannot be just spaces', true);

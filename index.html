@@ -506,11 +506,10 @@ document.getElementById('logoutBtn')?.addEventListener('click',async()=>{
   clearInterval(pollTimer);
   try{ await api('/logout','POST'); }catch(e){}
   token=null; curUser=null;
-  localStorage.removeItem('ssg_token'); localStorage.removeItem('ssg_user');
-  document.getElementById('dashWrap').classList.remove('visible');
-  setTimeout(()=>{document.getElementById('dashWrap').style.display='none';},400);
-  document.getElementById('authOverlay').classList.remove('hidden');
-  authMode='login'; renderAuth();
+  localStorage.removeItem('ssg_token');
+  localStorage.removeItem('ssg_user');
+  // Redirect back to login page
+  window.location.href = 'login.html';
 });
 </script>
 
@@ -1443,17 +1442,25 @@ window.dismissAllAlerts=async function(){
 };
 
 // ==================== BOOT ====================
-// Auto-login if valid session exists
+// Check for existing session — from Java token OR from login.html redirect
 (async function boot(){
   if(token && curUser){
+    // Try Java server first
     try{
       const r=await api('/stats');
       if(r.totalWaste){ enterDash(); return; }
-    }catch(e){}
+    }catch(e){
+      // Java not running — accept local session from login.html
+      if(token.startsWith('local_')){
+        enterDash(); return;
+      }
+    }
   }
+  // No valid session — redirect to login page
   token=null; curUser=null;
-  localStorage.removeItem('ssg_token'); localStorage.removeItem('ssg_user');
-  renderAuth();
+  localStorage.removeItem('ssg_token');
+  localStorage.removeItem('ssg_user');
+  window.location.href = 'login.html';
 })();
 </script>
 </body>
