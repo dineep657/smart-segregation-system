@@ -2,6 +2,7 @@ import com.sun.net.httpserver.*;
 import java.io.*;
 import java.net.*;
 import java.nio.file.*;
+import java.sql.*;
 import java.util.*;
 import java.util.concurrent.*;
 import java.time.*;
@@ -387,10 +388,61 @@ public class SmartSegServer {
         if(alertDB.size()>50) alertDB.remove(alertDB.size()-1);
     }
 
-    // ===================== AUTH BUSINESS LOGIC =====================
+    // ===================== MYSQL DATABASE CONFIG =====================
+    static final String DB_URL  = "jdbc:mysql://localhost:3306/auth_system?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true";
+    static final String DB_USER = "root";
+    static final String DB_PASS = "Dineep123";
 
-    /** Java: validate login, create session token */
+    // Test MySQL connection on startup
+    static boolean mysqlAvailable = false;
+
+    static void initMySQL() {
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            java.sql.Connection conn = java.sql.DriverManager.getConnection(DB_URL, DB_USER, DB_PASS);
+            conn.close();
+            mysqlAvailable = true;
+            System.out.println("  ✅  MySQL connected → auth_system database");
+        } catch (Exception e) {
+            mysqlAvailable = false;
+            System.out.println("  ⚠   MySQL not available — using in-memory users. Error: " + e.getMessage());
+        }
+    }
+
+    /** Java: validate login against MySQL first, fallback to in-memory */
     static String login(String username, String password) {
+        if (mysqlAvailable) {
+            try (java.sql.Connection conn = java.sql.DriverManager.getConnection(DB_URL, DB_USER, DB_PASS)) {
+                java.sql.PreparedStatement ps = conn.prepareStatement(
+                    "SELECT username, email, role FROM users WHERE username = ? AND password = ?");
+                ps.setString(1, username);
+                ps.setString(2, password);
+                java.sql.ResultSet rs = ps.executeQuery();
+                if (rs.next()) {
+                    String role  = rs.getString("role");
+                    String email = rs.getString("email");
+                    // Update last_login
+                    java.sql.PreparedStatement upd = conn.prepareStatement(
+                        "UPDATE users SET last_login = NOW() WHERE username = ?");
+                    upd.setString(1, username);
+                    upd.executeUpdate();
+                    String token = UUID.randomUUID().toString();
+                    sessions.put(token, username);
+                    // Sync to in-memory if not present
+                    if (userDB.stream().noneMatch(u -> u.username.equals(username))) {
+                        userDB.add(new User(username, password, role != null ? role : "Waste Operator", email != null ? email : ""));
+                    }
+                    addAlert("User '" + username + "' logged in via MySQL", "Just now", "info", "fas fa-sign-in-alt", "auth");
+                    System.out.println("  ✅  MySQL login: " + username + " [" + role + "]");
+                    return token;
+                }
+                System.out.println("  ❌  MySQL: invalid credentials for: " + username);
+                return null;
+            } catch (Exception e) {
+                System.out.println("  ⚠   MySQL error: " + e.getMessage() + " — using in-memory fallback");
+            }
+        }
+        // Fallback: in-memory
         return userDB.stream()
             .filter(u -> u.username.equals(username) && u.password.equals(password))
             .findFirst()
@@ -398,16 +450,33 @@ public class SmartSegServer {
                 u.lastLogin = LocalDateTime.now();
                 String token = UUID.randomUUID().toString();
                 sessions.put(token, username);
-                addAlert("User '" + username + "' logged in", "Just now", "info", "fas fa-sign-in-alt", "auth");
+                addAlert("User '" + username + "' logged in (offline mode)", "Just now", "info", "fas fa-sign-in-alt", "auth");
                 return token;
             }).orElse(null);
     }
 
-    /** Java: register new user */
+    /** Java: register new user — saves to MySQL + in-memory */
     static boolean signup(String username, String password, String role, String email) {
         boolean exists = userDB.stream().anyMatch(u -> u.username.equals(username));
         if (exists) return false;
-        userDB.add(new User(username, password, role, email));
+
+        // Save to MySQL
+        if (mysqlAvailable) {
+            try (java.sql.Connection conn = java.sql.DriverManager.getConnection(DB_URL, DB_USER, DB_PASS)) {
+                java.sql.PreparedStatement ps = conn.prepareStatement(
+                    "INSERT INTO users (username, email, password, role) VALUES (?, ?, ?, ?)");
+                ps.setString(1, username);
+                ps.setString(2, email != null && !email.isEmpty() ? email : username + "@smartseg.io");
+                ps.setString(3, password);
+                ps.setString(4, role != null && !role.isEmpty() ? role : "Waste Operator");
+                ps.executeUpdate();
+                System.out.println("  ✅  MySQL signup: " + username + " saved to auth_system.users");
+            } catch (Exception e) {
+                System.out.println("  ⚠   MySQL signup error: " + e.getMessage());
+                if (e.getMessage() != null && e.getMessage().contains("Duplicate")) return false;
+            }
+        }
+        userDB.add(new User(username, password, role != null ? role : "Waste Operator", email != null ? email : ""));
         return true;
     }
 
@@ -712,6 +781,7 @@ public class SmartSegServer {
 
     public static void main(String[] args) throws Exception {
         initData();
+        initMySQL();        // Connect to MySQL auth_system database
         startSensorThread();
 
         HttpServer server = HttpServer.create(new InetSocketAddress(PORT), 0);
