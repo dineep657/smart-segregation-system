@@ -1,14 +1,13 @@
 {
   "name": "smart-segregation-system",
   "version": "1.0.0",
-  "description": "AI-Powered Smart Waste Segregation System - Java Backend + HTML/CSS/JS Frontend",
+  "description": "AI-Powered Smart Waste Segregation System",
   "scripts": {
-    "start": "java -cp \".;mysql-connector-j-8.0.33.jar\" SmartSegServer",
     "build": "javac -cp \".;mysql-connector-j-8.0.33.jar\" SmartSegServer.java",
-    "dev":   "npm run build & npm start",
+    "start": "java -cp \".;mysql-connector-j-8.0.33.jar\" SmartSegServer",
+    "dev":   "start.bat",
     "open":  "start http://localhost:3000/login.html"
   },
-  "keywords": ["waste-management", "java", "ai", "iot", "mysql"],
   "author": "dineep657",
   "license": "MIT"
 }

@@ -828,43 +828,90 @@ async function runImageDetection(){
   if(!imgEl.src||imgEl.src===window.location.href){showNoWastePopup('no-image');return;}
   btn.innerHTML='<i class="fas fa-spinner fa-spin"></i> Detecting...'; btn.disabled=true;
 
-  // Classes COCO-SSD detects that are NOT waste — skip these entirely
+  // ── Classes that are NEVER waste ──────────────────────────────────────
   const skipClasses=['person','car','truck','bus','motorcycle','bicycle',
     'dog','cat','bird','horse','sheep','cow','elephant','bear','zebra',
     'giraffe','airplane','train','boat','traffic light','fire hydrant',
-    'stop sign','parking meter'];
+    'stop sign','parking meter','bench','chair','couch','bed','dining table',
+    'toilet','sink','refrigerator','clock','vase','potted plant'];
 
-  // All COCO classes we can map to waste (including potted plant)
+  // ── Classes that look like real objects in screenshots → skip ─────────
+  // When you screenshot a phone/screen, COCO sees "cell phone","tv","laptop"
+  // but those aren't physical waste — they're just screen content
+  const screenClasses=['cell phone','laptop','tv','keyboard','mouse',
+    'remote','book','bottle'];
+
+  // ── Minimum confidence to trust a COCO detection (0.0–1.0) ───────────
+  // Low confidence = COCO is guessing → likely a screenshot or unclear image
+  const MIN_CONFIDENCE = 0.55;
+
+  // ── Detect if this is a screenshot by filename ────────────────────────
+  function isScreenshot(file){
+    if(!file) return false;
+    const name = file.name.toLowerCase();
+    return name.includes('screenshot') || name.includes('screen') ||
+           name.includes('capture') || name.includes('snap') ||
+           name.startsWith('img_') || name.startsWith('dsc') ||
+           /^\d{8}/.test(name); // date-prefixed filenames like 20240115_...
+  }
+
   const wasteCocoClasses=Object.keys(COCO_TO_WASTE).filter(k=>COCO_TO_WASTE[k]!==null);
 
   try{
     let classified=false;
 
+    // ── If filename looks like a screenshot → skip COCO, show no-waste ──
+    if(isScreenshot(btn._file)){
+      showNoWastePopup('screenshot');
+      btn.innerHTML='<i class="fas fa-search"></i> Detect Waste'; btn.disabled=false;
+      return;
+    }
+
     if(tfReady&&cocoModel){
       const preds=await cocoModel.detect(imgEl);
 
-      // Remove non-waste classes
-      const candidates=preds.filter(p=>!skipClasses.includes(p.class));
+      // Separate: what COCO found vs what we skipped
+      const allDetected = preds.filter(p => p.score >= MIN_CONFIDENCE);
+      const skipped     = allDetected.filter(p => skipClasses.includes(p.class));
+      const confident   = allDetected.filter(p => !skipClasses.includes(p.class));
 
-      // Prefer known waste-mapped classes first
-      const knownWaste=candidates.filter(p=>wasteCocoClasses.includes(p.class));
-      const toProcess=knownWaste.length>0 ? knownWaste : candidates;
+      // If COCO found things but ALL of them were skipped (person, animal, car etc.)
+      // → this is clearly not a waste image — show no-waste popup immediately
+      if(allDetected.length > 0 && confident.length === 0){
+        showNoWastePopup('not-waste');
+        btn.innerHTML='<i class="fas fa-search"></i> Detect Waste'; btn.disabled=false;
+        return;
+      }
+
+      // Filter 2: if ALL high-confidence detections are screen-type classes
+      // (phone, laptop etc.) with no real physical waste, treat as screenshot
+      const onlyScreenItems = confident.length > 0 &&
+        confident.every(p => screenClasses.includes(p.class));
+
+      if(onlyScreenItems){
+        showNoWastePopup('screenshot');
+        btn.innerHTML='<i class="fas fa-search"></i> Detect Waste'; btn.disabled=false;
+        return;
+      }
+
+      // Filter 3: prefer known waste-mapped classes
+      const knownWaste=confident.filter(p=>wasteCocoClasses.includes(p.class));
+      const toProcess=knownWaste.length>0 ? knownWaste : confident;
 
       if(toProcess.length>0){
         drawBBoxes(imgEl,toProcess);
         for(const p of toProcess){
           const map=COCO_TO_WASTE[p.class];
-          // Use mapped hint, or the raw COCO label as hint to Java
           await callJavaDetect(map ? map.hint : p.class);
         }
         showDetectedPopup(toProcess.length);
         classified=true;
       } else {
-        // COCO found nothing useful — try filename as fallback hint
+        // COCO found nothing confident — try filename hint
         const hint=getFilenameHint(btn._file);
         if(hint){
           await callJavaDetect(hint);
-          toast(`💡 Context-based classification: "${hint}"`, 'info');
+          toast(`💡 Classified by context: "${hint}"`, 'info');
           classified=true;
         }
       }
@@ -878,7 +925,6 @@ async function runImageDetection(){
       }
     }
 
-    // Only show no-waste popup if nothing could be classified at all
     if(!classified) showNoWastePopup('not-found');
 
   }catch(e){ toast('Detection error: '+e.message,'danger'); }
@@ -910,6 +956,28 @@ function showNoWastePopup(reason){
         'Make sure the waste item is clearly visible',
         'Try a closer or better-lit photo',
         'Or use the <strong>keyword box</strong> below to classify manually'
+      ]
+    },
+    'not-waste': {
+      icon: 'fas fa-user-slash',
+      color: '#8e44ad',
+      title: 'This is Not a Waste Image',
+      body: 'The AI detected a <strong>person, animal, or non-waste object</strong> in this image — not waste.',
+      tips: [
+        'Upload a photo of an actual waste item (e.g., bottle, battery, food scrap)',
+        'Do not upload photos of people, animals, or vehicles',
+        'Or use the <strong>keyword box</strong> to manually classify an item by name'
+      ]
+    },
+    'screenshot': {
+      icon: 'fas fa-desktop',
+      color: '#f39c12',
+      title: 'Screenshot Detected',
+      body: 'This looks like a <strong>screenshot or screen photo</strong> — not a physical waste item.',
+      tips: [
+        'Upload a real photo of a waste item, not a screen capture',
+        'Examples: a plastic bottle, battery, food scraps, cardboard',
+        'Or type the item name in the keyword box below'
       ]
     },
     'no-model': {
